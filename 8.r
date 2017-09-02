@@ -122,7 +122,7 @@ ttest = function(n1 = 5, n2 = 5,
         stop("Error: a probability is negative.")
       }
       #
-      # generate of correlated Binomial variables.
+      # Generate correlated Binomial variables.
       #
         n <- n1
         u <- sample.int(4, n * trials, replace = TRUE, prob = prob)
