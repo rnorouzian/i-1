@@ -122,10 +122,10 @@ ttest = function(n1 = 5, n2 = 5,
         stop("Error: a probability is negative.")
       }
       #
-      # Illustrate generation of correlated Binomial variables.
+      # generate of correlated Binomial variables.
       #
         n <- n1
-        u <- sample.int(4, n * trials, replace=TRUE, prob=prob)
+        u <- sample.int(4, n * trials, replace = TRUE, prob = prob)
         y <- floor((u-1)/2)
         x <- 1 - u %% 2
       bi1 <- colSums(matrix(x, nrow = trials)) # Sum in groups of `max.score`
