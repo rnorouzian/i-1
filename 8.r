@@ -13,6 +13,16 @@ ttest = function(n1 = 5, n2 = 5,
                  ...
 ){
   
+   decimal <- function(x, k){
+     
+      if(is.character(x)) {
+        return(x)
+      }else{
+        format(round(x, k), nsmall = k, scientific =
+                 ifelse(x >= 1e5 || x <= -1e5 || x <= 1e-5 & x >= -1e-5, TRUE, FALSE) )
+        }
+    }
+  
   ttest.sim = function(){
     
     options(warn = -1)
@@ -27,7 +37,6 @@ ttest = function(n1 = 5, n2 = 5,
       
       beta = qnorm(c(1e-10, .9999999999))
          q = c(min.score, max.score)
-      
       
   mu.sigma = solve(cbind(1L, beta), q)
       
@@ -46,7 +55,6 @@ ttest = function(n1 = 5, n2 = 5,
     TRUE.d = (mean.g1 - mean.g2) / sd
     }
     
-    
     if(n1 < 2L) { n1 = 2L } ; if(n2 < 2L) { n2 = 2L }
     
     if(!paired & !researcher.tool){  
@@ -57,7 +65,6 @@ ttest = function(n1 = 5, n2 = 5,
     if(paired & !researcher.tool){
       
       cor.pop = correlation # true correlation between normal pops.
-      
       
       mu <- c(0, 0)
       cov.pop <- matrix(c(1, cor.pop, cor.pop, 1), nrow = 2)
@@ -82,11 +89,10 @@ ttest = function(n1 = 5, n2 = 5,
     
       m1 = max.score*p1
       m2 = max.score*p2
-      sd1 = sqrt(m1*(1-p1))
-      sd2 = sqrt(m2*(1-p2))
-      TRUE.d = (m1-m2) / sqrt((((n1 - 1)*((sd1^2))) + (n2 - 1)*((sd2^2)))/((n1+n2)-2))
+     sd1 = sqrt(m1*(1-p1))
+     sd2 = sqrt(m2*(1-p2))
+  TRUE.d = (m1-m2) / sqrt((((n1 - 1)*((sd1^2))) + (n2 - 1)*((sd2^2)))/((n1+n2)-2))
     }
-    
     
     if(researcher.tool & paired){
       
@@ -103,31 +109,30 @@ ttest = function(n1 = 5, n2 = 5,
            q = .5
          rho = correlation
          
-         m1 = max.score*p
-         m2 = max.score*q
+          m1 = max.score*p
+          m2 = max.score*q
          sd1 = sqrt(m1*(1-p))
          sd2 = sqrt(m2*(1-q))
-         TRUE.d = (m1-m2) / sqrt((((n1 - 1)*((sd1^2))) + (n2 - 1)*((sd2^2)))/((n1+n2)-2))
+      TRUE.d = (m1-m2) / sqrt((((n1 - 1)*((sd1^2))) + (n2 - 1)*((sd2^2)))/((n1+n2)-2))
       
-      a.0 <- a(rho, p, q)
+       a.0 <- a(rho, p, q)
       prob <- c(`(0,0)`= a.0, `(1,0)`=1-q-a.0, `(0,1)`= 1-p-a.0, `(1,1)`= a.0+p+q-1)
-      if (min(prob) < 0) {
+      if(min(prob) < 0) {
         print(prob)
         stop("Error: a probability is negative.")
       }
       #
       # Illustrate generation of correlated Binomial variables.
       #
-      n <- n1
-      u <- sample.int(4, n * trials, replace=TRUE, prob=prob)
-      y <- floor((u-1)/2)
-      x <- 1 - u %% 2
+        n <- n1
+        u <- sample.int(4, n * trials, replace=TRUE, prob=prob)
+        y <- floor((u-1)/2)
+        x <- 1 - u %% 2
       bi1 <- colSums(matrix(x, nrow = trials)) # Sum in groups of `max.score`
       bi2 <- colSums(matrix(y, nrow = trials)) # Sum in groups of `max.score`
       
       y = c(bi1, bi2)
     }
-    
     
     if(!paired) {
       
@@ -138,13 +143,11 @@ ttest = function(n1 = 5, n2 = 5,
       groups = factor(rep(1:2, times = c(n1, n2)), labels = c("Post-Test", "Pre-Test") )
     }
     
-    
     mean.g1 = if(!paired)  mean(y[groups == "Treatment"])  else   mean(y[groups == "Post-Test"])  
     mean.g2 = if(!paired)  mean(y[groups == "Control"])    else   mean(y[groups == "Pre-Test"])    
     
     sd.g1 = if(!paired) sd(y[groups == "Treatment"]) else sd(y[groups == "Post-Test"])
     sd.g2 = if(!paired) sd(y[groups == "Control"])   else sd(y[groups == "Pre-Test"])
-    
     
     groups.for.t = factor( rep(1:2, times = c(n1, n2)) )
     
@@ -169,7 +172,6 @@ ttest = function(n1 = 5, n2 = 5,
                font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Scores",
                pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = c(lab1, lab2), main = NA,
                cex.main = 2)
-      
     } else {
       
       par(font.lab = 2, xaxt = "n", ...)
@@ -182,16 +184,6 @@ par(xaxt = "s") ; if(researcher.tool) axis(1, at = min(y):max(y), font = 2) else
 
     gpos = rev(cumsum(rev(tapply(groups, groups, length)) + 2) - 1)
     
-    decimal <- function(x, k){
-      
-      if(is.character(x)) {
-        return(x)
-      }else{
-        format(round(x, k), nsmall = k, scientific =
-                 ifelse(x >= 1e5 || x <= -1e5 || x <= 1e-5 & x >= -1e-5, TRUE, FALSE) )
-      }
-    }
-    
     pars = par("usr")  
     
     segments( c(mean.g2, mean.g1), c(pars[3], pars[4]), c(mean.g2, mean.g1), rep( gpos[[2]], 2), lty = 2,
@@ -199,13 +191,11 @@ par(xaxt = "s") ; if(researcher.tool) axis(1, at = min(y):max(y), font = 2) else
     
     arrows(mean.g2, gpos[[2]], mean.g1, gpos[[2]], code = 3, length = .08, col = "darkgreen")
     
-    
     mean.diff = mean.g1 - mean.g2
     
-    text( (mean.g1+mean.g2)/2, gpos[[2]], bquote(bold("Mean diff." == .(decimal((mean.diff), 2)))), font = 2, pos = 3, col = "green4", cex = 1.15 )
+    text((mean.g1+mean.g2)/2, gpos[[2]], bquote(bold("Mean diff." == .(decimal((mean.diff), 2)))), font = 2, pos = 3, col = "green4", cex = 1.15 )
     
     legend("topright", legend = bquote(bold("Cohen's"~ bolditalic(d) == .(decimal(Cohend, 2)) )), bty = "n", text.col = "red4", cex = 1.15, bg = NA)
-    legend("bottomright", legend = bquote("t.value" == .(as.numeric(t.value))))
     
     if(descriptives) {
       
@@ -224,16 +214,13 @@ par(xaxt = "s") ; if(researcher.tool) axis(1, at = min(y):max(y), font = 2) else
     invisible(list(Cohend = Cohend, mean.diff = mean.diff, t.value = t.value, TRUE.d = TRUE.d, p.value = p.value))
   }
   
- 
   if(simulation){
     
     if(missing(sim.time)) sim.time = .7
     
-    
        Cohend.sim = numeric(n.sim)
     mean.diff.sim = numeric(n.sim)
       t.value.sim = numeric(n.sim)
-    
     
     for(i in 1:n.sim){
       
@@ -255,20 +242,10 @@ par(xaxt = "s") ; if(researcher.tool) axis(1, at = min(y):max(y), font = 2) else
     
   } else {
     
-    b = ttest.sim()
-
-    library(ReporteRs)
-    
-    doc = addPlot(docx(), fun = ttest.sim, vector.graphic = TRUE, width = 5.5, height = 6,  
-               par.properties = parCenter(), editable = TRUE)
-    
-     writeDoc(doc, file = "t.testsim3.docx" )
-    
-    
+    b = ttest.sim()    
     list(t.value = b$t.value, Cohend = b$Cohend, TRUE.Cohen.d = b$TRUE.d, p.value = b$p.value)
     }
 }
-
 
 ttest(n1 = 30, n2 = 30, sim.time = .7, min.score = 0, max.score = 25, 
       simulation = FALSE, n.sim = 1, paired = FALSE,
