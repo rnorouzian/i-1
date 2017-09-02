@@ -1,8 +1,8 @@
      prior = function(x) dbeta(x, 15.56689246, 7.051444) 
 likelihood = function(x) dbinom(55, 100, x)
  posterior = function(x) prior(x)*likelihood(x)
-
-source("https://raw.githubusercontent.com/GPSND/HDI/master/HDI.R")
+       
+source("https://raw.githubusercontent.com/izeh/i/master/i.r")
 CI = HDI(posterior)
 
   Posterior = curve(posterior, n = 1e4, axes = FALSE, lwd = 2, yaxs = "i",
