@@ -2,7 +2,7 @@ biling.survey = function(N = 40, pBi = .5, ...){
   
   ResponseSequence = sample(x = 0:1, prob = c(1 - pBi, pBi), size = N, replace = TRUE)  # Generate a random sample of N responses
                                                                                         # (B = 1, M = 0)
-  runProp = cumsum(ResponseSequence) / 1:N   # Compute the running proportion of B:
+  runProp = cumsum(ResponseSequence) / 1:N   # Compute the running proportion of B as each parent responds
    
   par(las = 1, tck = -.02, font.lab = 2, cex.lab = 1, ...)  
   plot.ts(runProp, ty = "o", ylim = c(0, 1), yaxt = "n", pch = 21, bg = 3, xlab = "Number of Respondents", 
