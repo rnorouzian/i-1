@@ -1,6 +1,6 @@
 biling.survey = function(N = 40, pBi = .5, ...){
   
-  ResponseSequence = sample(x = 0:1, prob = c(1 - pBi, pBi), size = N, replace = TRUE)  # Generate a random sample of N responses
+  ResponseSequence = sample(x = 0:1, prob = c(1 - pBi, pBi), size = N, replace = TRUE)  # Generate a N responses from parents
                                                                                         # (B = 1, M = 0)
   Prop = cumsum(ResponseSequence) / 1:N   # Compute the running proportion of B as each parent responds
    
@@ -8,7 +8,7 @@ biling.survey = function(N = 40, pBi = .5, ...){
   plot.ts(Prop, ty = "o", ylim = c(0, 1), yaxt = "n", pch = 21, bg = 3, xlab = "Number of Respondents", 
           ylab = "Proportion of (B)")
   
-  axis(2, at = seq(0, 1L, len = 6), labels = paste0(seq(0, 1e2, len = 6), "%"))
+  axis(2, at = seq(0, 1L, len = 6), lab = paste0(seq(0, 1e2, len = 6), "%"))
   
   ResponseLetters = paste( c("M","B")[ResponseSequence[1L:1e1] + 1L], collapse = "")
   
