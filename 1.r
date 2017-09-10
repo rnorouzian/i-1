@@ -4,7 +4,7 @@ biling.survey = function(N = 40, pBi = .5, ...){
                                                                                         # (B = 1, M = 0)
   Prop = cumsum(ResponseSequence) / 1:N   # Compute running proportion of B as each parent responds
    
-  par(las = 1, tck = -.02, font.lab = 2, cex.lab = 1, ...)  
+  par(las = 1, tck = -.02, font.lab = 2, ...)  
   plot.ts(Prop, ty = "o", ylim = c(0, 1), yaxt = "n", pch = 21, bg = 3, xlab = "Number of Parents", 
           ylab = "Proportion of (B)")
   
