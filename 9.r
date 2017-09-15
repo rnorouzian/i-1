@@ -1,4 +1,4 @@
-d.CI.sim <- function(d, n1, n2 = NA, conf.level = .95, n.sim = 5, ylabel = FALSE){
+d.CI.sim <- function(d, n1, n2 = NA, conf.level = .95, n.sim = 5, ylabel = TRUE){
   
 CI.d <- function(da = d, n1a = n1, n2a = n2, conf.levela = conf.level){
   
@@ -48,4 +48,4 @@ c(CI = CI.d(da = ds, n1a = n1, n2a = n2, conf.levela = conf.level), ds = ds)
   noquote(paste0("Coverage = ", mean(capture)*1e2, "%")) 
 }
 # Example of use:
-d.CI.sim(d = .5, n1 = 30, n2 = 30, n.sim = 20, ylabel = TRUE)
+d.CI.sim(d = .5, n1 = 30, n2 = 30, n.sim = 20)
