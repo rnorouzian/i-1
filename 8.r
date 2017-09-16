@@ -9,7 +9,7 @@ ttest = function(n1 = 5, n2 = 5,
                  descriptives = TRUE,
                  correlation = .5,
                  researcher.tool = FALSE,
-                 effect.size = .5,
+                 effect.size = 1,
                  ...
 ){
   
@@ -246,7 +246,5 @@ par(xaxt = "s") ; if(researcher.tool) axis(1, at = min(y):max(y), font = 2) else
     list(t.value = b$t.value, Cohend = b$Cohend, TRUE.Cohen.d = b$TRUE.d, p.value = b$p.value)
     }
 }
-
-ttest(n1 = 30, n2 = 30, sim.time = .7, min.score = 0, max.score = 25, 
-      simulation = FALSE, n.sim = 1, paired = FALSE,
-      researcher.tool = FALSE, effect.size = .5)
+# Example of use:
+ttest(n1 = 30, n2 = 30, min.score = 0, max.score = 25, effect.size = .5)
