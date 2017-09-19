@@ -165,16 +165,15 @@ ttest = function(n1 = 5, n2 = 5,
     original.par = par(no.readonly = TRUE)
     on.exit(par(original.par))
     
+    par(font.lab = 2, xaxt = "n", ...)
     if(subjects) {
       
-      par(font.lab = 2, xaxt = "n", ...)
       dotchart(y, groups = groups, color = c(4, 2)[groups], 
                font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Scores",
                pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = c(lab1, lab2), main = NA,
                cex.main = 2)
     } else {
       
-      par(font.lab = 2, xaxt = "n", ...)
       dotchart(y, groups = groups, color = c(4, 2)[groups], 
                font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Scores",
                pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = NA, main = NA)
