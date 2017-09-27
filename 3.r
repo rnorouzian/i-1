@@ -1,4 +1,4 @@
-C = c(15.56689246, 7.051444)
+C = c(15.56689246, 7.051444) ; options(warn = -1)
 curve(dbeta(x, C[1], C[2]), n = 1e4, axes = FALSE, lwd = 2, yaxs = "i", xpd = TRUE, 
           xlab = "Proportion of preference for (B)", ylab = NA, font.lab = 2)
 
