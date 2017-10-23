@@ -1,11 +1,11 @@
 biling.survey = function(N = 40, pBi = .5, ...){
   
-  Responses = sample(c(0, 1), size = N, prob = c(1 - pBi, pBi), replace = TRUE)  # Generate N responses from parents
+  Responses = sample(0:1, size = N, prob = c(1 - pBi, pBi), replace = TRUE)  # Generate N responses from parents
                                                                                  # (B = 1, M = 0)
   Prop = cumsum(Responses) / 1:N   # Compute running proportion of B as each parent responds
    
   par(las = 1, tck = -.02, font.lab = 2, ...)  
-  plot.ts(Prop, ty = "o", ylim = c(0, 1), yaxt = "n", pch = 21, bg = 3, xlab = "Number of Parents", 
+  plot.ts(Prop, ty = "o", ylim = 0:1, yaxt = "n", pch = 21, bg = 3, xlab = "Number of Parents", 
           ylab = "Proportion of (B)")
   
   axis(2, at = seq(0, 1L, len = 6), lab = paste0(seq(0, 1e2, len = 6), "%"))
