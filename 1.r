@@ -1,7 +1,7 @@
 biling.survey = function(N = 40, pBi = .5, ...){
   
 Responses = sample(0:1, size = N, prob = c(1 - pBi, pBi), replace = TRUE)  # Generate N responses from parents
-                                                                                 # (B = 1, M = 0)
+                                                                           # (B = 1, M = 0)
 Prop = cumsum(Responses) / 1:N   # Compute running proportion of B as each parent responds
    
 par(las = 1, tck = -.02, font.lab = 2, ...)  
