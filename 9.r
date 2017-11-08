@@ -45,7 +45,7 @@ c(CI = CI.d(da = ds, n1a = n1, n2a = n2, conf.levela = conf.level), ds = ds)
   segments(sim[ ,1], 1:n.sim, sim[ ,2], 1:n.sim, lend = 1, col = ifelse(capture, 1, 2))
   points(sim[, 3], 1:n.sim, pch = 19, col = ifelse(capture, 1, 2), cex = ifelse(n.sim > 50, .6, .65))
   
-  noquote(paste0("Coverage = ", mean(capture)*1e2, "%")) 
+  cat(paste0("\t", "Coverage = ", mean(capture)*1e2, "%"))   
 }
 # Example of use:
 d.CI.sim(d = .5, n1 = 30, n2 = 30, n.sim = 20)
