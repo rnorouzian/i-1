@@ -1,16 +1,14 @@
-p.CI <- function(s, n, conf.level = .95) { ## s = # of successes  
-  ## n = # of trials
-  original.par = par(no.readonly = TRUE)
-  on.exit(par(original.par))
+p.CI <- function(s, n, conf.level = .95) { ## s = no. of agreements
+                                           ## n = total no. of parents
   
   par(mfrow = c(2, 1), mar = c(3, 4.1, 3, .5), las = 1, lend = 1)
   alpha = (1 - conf.level)/2
   
-  L <- if (s == 0) 0 else qbeta(p = alpha, shape1 = s, shape2 = n - s + 1)
-  U <- if (s == n) 1 else qbeta(p = 1 - alpha, shape1 = s + 1, shape2 = n - s)
+  L <- if(s == 0) 0 else qbeta(alpha, s, n - s + 1)
+  U <- if(s == n) 1 else qbeta(1 - alpha, s + 1, n - s)
   
-  curve(dbeta(x, shape1 = s, shape2 = n - s + 1), n = 1e4, lwd = 2, col = 4, ylab = "Density", main = "Beta Distributions", xlab = NA)
-  curve(dbeta(x, shape1 = s + 1, shape2 = n - s), n = 1e4, lwd = 2, col = 2, add = TRUE)
+  curve(dbeta(x, s, n - s + 1), n = 1e4, lwd = 2, col = 4, ylab = "Density", main = "Beta Distributions", xlab = NA)
+  curve(dbeta(x, s + 1, n - s), n = 1e4, lwd = 2, col = 2, add = TRUE)
   
   abline(v = c(L, U), col = c(4, 2), lty = 3)
   
