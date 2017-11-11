@@ -16,8 +16,8 @@ p.CI <- function(s, n, conf.level = .95) { ## s = no. of agreements
   
   text(c(L, U, s/n), 0, signif(c(L, U, s/n), 2), pos = 3, font = 2, xpd = TRUE)
   
-  plot(x <- 0:n, dbinom(x, s = n, p = L), ty = "h", lwd = 2, col = 4, ylab = "Probability", main = "Binomial Distributions")
-  lines(x <- 0:n, dbinom(x, s = n, p = U), ty = "h", lwd = 2, col = 2, lty = 2, xpd = TRUE)
+  plot(x <- 0:n, dbinom(x, n, L), ty = "h", lwd = 2, col = 4, ylab = "Probability", main = "Binomial Distributions")
+  lines(x <- 0:n, dbinom(x, n, U), ty = "h", lwd = 2, col = 2, lty = 2, xpd = TRUE)
   
   return(c(L, U))
 }
