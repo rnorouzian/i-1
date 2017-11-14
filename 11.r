@@ -82,14 +82,13 @@ if(subjects) {
   dotchart(y, groups = groups, color = c(4, 2)[groups], 
            font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Gain Scores",
            pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = c(lab1, lab2), main = NA,
-           cex.main = 2)
-  
+           cex.main = 2) 
 } else {
   
-  par(font.lab = 2, xaxt = "n", ...)
-  dotchart(y, groups = groups, color = c(4, 2)[groups], 
-           font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Gain Scores",
-           pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = NA, main = NA)
+par(font.lab = 2, xaxt = "n", ...)
+dotchart(y, groups = groups, color = c(4, 2)[groups], 
+         font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Gain Scores",
+         pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = NA, main = NA)
 }
 
 par(xaxt = "s") ; axis(1, font = 2)
@@ -122,9 +121,6 @@ legend("bottomleft", legend = bquote(bold(Mean == .(decimal(mean.g2, 2)))), text
 legend("bottomleft", legend = bquote(bold(sd == .(decimal(sd.g2, 2)))), text.col = 2, bty = "n", bg = NA,
          adj =  c(-.1, 0.5))
 }
-
-list(Cohend = Cohend, mean.diff = mean.diff, t.value = t.value, TRUE.d = TRUE.d, p.value = p.value, sd.g1 = sd.g1, sd.g2 = sd.g2)
-
 m = matrix(c("R", "R", "O1", "O3", "T", "", "O2", "O4", "->", "->", "O2 - O1", "O4 - O3", "->", "->", "GainT", "GainC"), nrow = 2)
 dimnames(m) = list("THE PRE-POST CONTROL DESIGN:" = c("", ""), c(rep("", 8)))
 show(noquote(m))
