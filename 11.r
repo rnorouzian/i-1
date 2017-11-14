@@ -135,4 +135,4 @@ dimnames(m) = list("THE PRE-POST CONTROL DESIGN:" = c("", ""), c(rep("", 8)))
 show(noquote(m))
 }
 # Example of use:
-ttest(n1 = 30, n2 = 30, effect.size = .75)
+ttest(n1 = 30, n2 = 30, effect.size = .5)
