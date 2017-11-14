@@ -1,4 +1,4 @@
-ttest = function(n1 = 5, n2 = 5, min.score = 0, max.score = 25, subjects = TRUE, descriptives = TRUE, correlation = .5, effect.size = 1,
+ttest = function(n1 = 5, n2 = 5, min.score = 0, max.score = 25, subjects = TRUE, descriptives = TRUE, correlation = .7, effect.size = 1,
                  ...){
   
 decimal <- function(x, k){
@@ -12,16 +12,13 @@ ifelse(x >= 1e5 || x <= -1e5 || x <= 1e-5 & x >= -1e-5, TRUE, FALSE) )
 if(min.score >= max.score){
   stop("\n\tYour \"min.score\" must be smaller than your \"max.score\".")  }
 
-if(n1 != n2){ 
-  warning(message("\n\tIn a paired design, Your \"n1\" must be equal to your \"n2\".\n")) ; n2 = n1 }
-
 beta = qnorm(c(1e-10, .9999999999))
-q = c(min.score, max.score)
+   q = c(min.score, max.score)
 
 mu.sigma = solve(cbind(1L, beta), q)
 
 mean = mu.sigma[[1]]
-sd = mu.sigma[[2]]
+  sd = mu.sigma[[2]]
 
 coeff = effect.size*sd
 
@@ -48,13 +45,13 @@ b <- mvnorm.mat[ , 2] * sd + mean.g2
 
 y1 = c(a - b)
 
-mvnorm.mat <- mvrnorm(n1, Sigma = cov.pop, mu = mu)
+mvnorm.mat <- mvrnorm(n2, Sigma = cov.pop, mu = mu)
 
 a <- mvnorm.mat[ , 1] * sd + mean.g2
 b <- mvnorm.mat[ , 2] * sd + mean.g2
 
 y2 = c(a - b)
-  
+
 y = c(y1, y2)
 
 groups = factor(rep(1:2, c(n1, n2)), labels = c("Treatment", "Control"))
@@ -71,7 +68,7 @@ test = t.test(y ~ groups.for.t, var.equal = TRUE)
 
 t.value = unname(test$statistic) ; p.value = test$p.value
 
-Cohend = t.value / sqrt(n1) 
+Cohend = t.value / sqrt((n1*n2)/(n1+n2)) 
 
 lab1 = if(n1 < 10 || n2 < 10) paste0("subj #", rev(1L:n1)) else c(paste0("subj #", rev(n1)[1]), paste0(rep(".", n1 - 2)), paste0("subj #", 1L))
 lab2 = if(n1 < 10 || n2 < 10) paste0("subj #", rev(1L:n2)) else c(paste0("subj #", rev(n2)[1]), paste0(rep(".", n2 - 2)), paste0("subj #", 1L))
@@ -81,26 +78,28 @@ on.exit(par(original.par))
 
 if(subjects) {
   
-par(font.lab = 2, xaxt = "n", ...)
-dotchart(y, groups = groups, color = c(4, 2)[groups], 
-         font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Gain Scores",
-         pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = c(lab1, lab2), main = NA,
-         cex.main = 2)  
+  par(font.lab = 2, xaxt = "n", ...)
+  dotchart(y, groups = groups, color = c(4, 2)[groups], 
+           font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Gain Scores",
+           pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = c(lab1, lab2), main = NA,
+           cex.main = 2)
+  
 } else {
   
-par(font.lab = 2, xaxt = "n", ...)
-dotchart(y, groups = groups, color = c(4, 2)[groups], 
-         font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Gain Scores",
-         pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = NA, main = NA)
+  par(font.lab = 2, xaxt = "n", ...)
+  dotchart(y, groups = groups, color = c(4, 2)[groups], 
+           font = 2, pch = 19, gcolor = c(4, 2), xlab = "Participants' Gain Scores",
+           pt.cex = ifelse(n1 <= 20 || n2 <= 20, 1.5, .8), labels = NA, main = NA)
 }
+
 par(xaxt = "s") ; axis(1, font = 2)
 
 gpos = rev(cumsum(rev(tapply(groups, groups, length)) + 2) - 1)
 
-pars = par("usr")  
+u = par("usr")  
 
-segments( c(mean.g2, mean.g1), c(pars[3], pars[4]), c(mean.g2, mean.g1), rep( gpos[[2]], 2), lty = 2,
-          col = c(2, 4) )
+segments(c(mean.g2, mean.g1), c(u[3], u[4]), c(mean.g2, mean.g1), rep(gpos[[2]], 2), lty = 2,
+          col = c(2, 4))
 
 arrows(mean.g2, gpos[[2]], mean.g1, gpos[[2]], code = 3, length = .08, col = "darkgreen")
 
@@ -115,16 +114,20 @@ if(descriptives) {
 legend("topleft", legend = bquote(bold(Mean == .(decimal(mean.g1, 2)))), text.col = 4, bty = "n", bg = NA)
   
 legend("topleft", legend = bquote(bold(sd == .(decimal(sd.g1, 2)))), text.col = 4, bty = "n", bg = NA,
-       inset = .03, adj =  c(.2, 0.5) )
+         inset = .03, adj =  c(.2, 0.5) )
+  
   
 legend("bottomleft", legend = bquote(bold(Mean == .(decimal(mean.g2, 2)))), text.col = 2, bty = "n", bg = NA, 
          inset = .03, adj = .1)
 legend("bottomleft", legend = bquote(bold(sd == .(decimal(sd.g2, 2)))), text.col = 2, bty = "n", bg = NA,
          adj =  c(-.1, 0.5))
 }
+
+list(Cohend = Cohend, mean.diff = mean.diff, t.value = t.value, TRUE.d = TRUE.d, p.value = p.value, sd.g1 = sd.g1, sd.g2 = sd.g2)
+
 m = matrix(c("R", "R", "O1", "O3", "T", "", "O2", "O4", "->", "->", "O2 - O1", "O4 - O3", "->", "->", "GainT", "GainC"), nrow = 2)
 dimnames(m) = list("THE PRE-POST CONTROL DESIGN:" = c("", ""), c(rep("", 8)))
 show(noquote(m))
 }
-# Example of use:
+#Example of use:
 ttest(n1 = 30, n2 = 30, effect.size = .5)
