@@ -117,8 +117,7 @@ legend("bottomleft", legend = bquote(bold(sd == .(decimal(sd.g2, 2)))), text.col
          adj =  c(-.1, 0.5))
 }
 m = matrix(c("R", "R", "O1", "O3", "T", "", "O2", "O4", "->", "->", "O2 - O1", "O4 - O3", "->", "->", "GainT", "GainC"), nrow = 2)
-dimnames(m) = list("THE PRE-POST CONTROL DESIGN:" = c("", ""), c(rep("", 8)))
-noquote(m)
+dimnames(m) = list("THE PRE-POST CONTROL DESIGN:" = c("", ""), c(rep("", 8))) ; return(noquote(m))
 }
 #Example of use:
 ttest(n1 = 30, n2 = 30, effect.size = .5)
