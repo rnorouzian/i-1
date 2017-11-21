@@ -7,14 +7,20 @@ Prop = cumsum(Responses) / 1:N   # Compute running proportion of B as each paren
 par(las = 1, tck = -.02, font.lab = 2, ...)  
 plot.ts(Prop, ty = "o", ylim = 0:1, yaxt = "n", pch = 21, bg = 3, xlab = "Number of Parents", 
         ylab = "Proportion of (B)")
+
+CI = binom.test(cumsum(Responses)[N], N)[[4]]
+arrows(N, CI[1], N, CI[2], code = 3, angle = 90, length = .08, lend = 1)
+points(N, Prop[N], pch = 21, bg = "cyan")
   
 axis(2, at = seq(0, 1L, len = 6), lab = paste0(seq(0, 1e2, len = 6), "%"))
   
 ResponseSeq = paste(c("M", "B")[Responses[1L:1e1] + 1L], collapse = "")
   
 Display = paste0("Response Sequence = ", ResponseSeq, ". . .")
-  
-text(N, c(1, .95), c(Display, paste0("Proportion of B in ", N, " responses = ", Prop[N]*1e2, "%")), adj = c(1, .5), col = "red4", font = 2, cex = .8)
+I = signif(CI, 3)
+CI = paste0("95% CI: [", I[1], ", ", I[2], "]")
+
+text(N , c(1, .95, .9), c(Display, paste0("Proportion of Y in ", N, " responses = ", Prop[N]), CI), adj = c(1, .5), col = "red4", font = 2, cex = .8)  
 }
 #Example of use:
 biling.survey(N = 100, pBi = .75)
