@@ -1,6 +1,6 @@
 HDI <- function(Posterior, domain = c(0, 1), level = .95, eps = 1e-3) {
   
-  lower = domain[1] ; upper = domain[2]
+  lower = min(domain) ; upper = max(domain)
   posterior = function(x) Posterior(x)/integrate(Posterior, lower, upper)[[1]]
   mode = optimize(posterior, interval = domain, maximum = TRUE, tol = 1e-20)[[1]]
   inverse.posterior <- function(x, side = "left") {
