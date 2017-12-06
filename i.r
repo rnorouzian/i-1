@@ -1,22 +1,29 @@
-prob_ab <- function(fun, a, b, domain){
-  total.area <- integrate(fun, domain[1], domain[2])[[1]]
-  integrate(fun, a, b)[[1]] / total.area
-}
-invert_prob_ab <- function(fun, a, prob, domain){  
-  O <- function(b, fun, a, prob){
-  (prob_ab(fun, a, b, domain = domain) - prob)^2
-}
-  b <- optimize(O, c(a, domain[2]), a = a, fun = fun, prob = prob)$minimum
-  return(b)
-}
-
-HDI <- function(fun, prob = .95, domain = c(0, 1)){
-  mode <- optimize(fun, interval = domain, maximum = TRUE, tol = 1e-12)[[1]]
-     O <- function(a, fun, prob, domain){
-     b <- invert_prob_ab(fun, a, prob, domain)  
-     b - a
-}
- abest <- optimize(O, c(0, mode), fun = fun, prob = prob, domain = domain)$minimum
-     b <- invert_prob_ab(fun, abest, prob, domain) 
-     return(c(abest,b))
+HDI <- function(Posterior, domain = c(0, 1), level = .95, eps = 1e-3) {
+  
+  lower = domain[1] ; upper = domain[2]
+  posterior = function(x) Posterior(x)/integrate(Posterior, lower, upper)[[1]]
+  mode = optimize(posterior, interval = domain, maximum = TRUE, tol = 1e-20)[[1]]
+  inverse.posterior <- function(x, side = "left") {
+    target <- function(y) posterior(y) - x
+    ur <- switch(side,
+                 left = try(uniroot(target, interval = c(lower, mode))),
+                right = try(uniroot(target, interval = c(mode, upper))))
+    if(inherits(ur, "try-error")) stop("inverse.posterior failed: You may change prior specification or extend limit?")
+    return(ur$root)
+  }
+  areafun <- function(h) {
+    i1 <- inverse.posterior(h, "left")
+    i2 <- inverse.posterior(h, "right")
+    return(integrate(posterior, i1, i2)[[1]])
+  }
+  post.area <- integrate(posterior, lower, upper)[[1]]
+  if(post.area<level) stop("limits don't encompass desired area: a =", round(post.area, 3))
+  find.lims <- function(a) {
+    ur <- uniroot(function(h) areafun(h) / post.area - a,
+                  c(eps, posterior(mode) - eps))
+    return(ur$root)
+  }
+  f <- find.lims(level)
+  return(c(inverse.posterior(f, "left"),
+           inverse.posterior(f, "right")))
 }
