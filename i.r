@@ -1,9 +1,9 @@
-HDI <- function(Posterior, lower = 0, upper = 1, level = .95, eps = 1e-3) {
+HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3) {
   
-  if(!is.function(Posterior)) stop("Error: 'Posterior' must be a function of form 'f(x)'.")
+  if(!is.function(FUN)) stop("Error: 'FUN' must be a function of form 'f(x)'.")
 
   lower = min(lower, upper) ; upper = max(lower, upper)
-  posterior = function(x) Posterior(x)/integrate(Posterior, lower, upper)[[1]]
+  posterior = function(x) FUN(x)/integrate(FUN, lower, upper)[[1]]
   mode = optimize(posterior, interval = c(lower, upper), maximum = TRUE, tol = 1e-20)[[1]]
   inverse.posterior <- function(x, side = "left") {
     target <- function(y) posterior(y) - x
