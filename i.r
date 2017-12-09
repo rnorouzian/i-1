@@ -1,6 +1,6 @@
 HDI <- function(Posterior, lower = 0, upper = 1, level = .95, eps = 1e-3) {
   
-  if(!is.function(Posterior)) stop("Error: 'Posterior' must be a function.")
+  if(!is.function(Posterior)) stop("Error: 'Posterior' must be a function of form 'f(x)'.")
 
   lower = min(lower, upper) ; upper = max(lower, upper)
   posterior = function(x) Posterior(x)/integrate(Posterior, lower, upper)[[1]]
