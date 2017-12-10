@@ -1,6 +1,5 @@
 d.priors <- function(n1, n2 = NA, t, m, s, lo = -Inf, hi = Inf, dist.name = c("dnorm", "dcauchy", "dlogis"),
                      scale = .35, margin = 7, top = .71){
-   
    d = dist.name
 loop = length(d) 
   CI = matrix(NA, loop, 2)
