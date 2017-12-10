@@ -1,5 +1,5 @@
 d.priors <- function(n1, n2 = NA, t, m, s, lo = -Inf, hi = Inf, dist.name = c("dnorm", "dcauchy", "dlogis"),
-                     scale = .35, margin = 7, top = .71){
+                     scale = .35, margin = 7, top = .71, LL = -9, UL = 9){
    d = dist.name
 loop = length(d) 
   CI = matrix(NA, loop, 2)
@@ -23,10 +23,10 @@ for(i in 1:loop){
 likelihood = function(x) dt(t, df, x*sqrt(N))
          k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
  posterior = function(x) prior(x)*likelihood(x) / k
-   mode[i] = optimize(posterior, c(-9, 9), maximum = TRUE, tol = 1e-20)[[1]]
+   mode[i] = optimize(posterior, c(LL, UL), maximum = TRUE, tol = 1e-20)[[1]]
    mean[i] = integrate(function(x) x*posterior(x), lo, hi)[[1]]
      sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo, hi)[[1]] - mean^2)
-    CI[i,] = HDI(posterior, -5, 5)
+    CI[i,] = HDI(posterior, LL, UL)
    from[i] = mean - margin * sd
      to[i] = mean + margin * sd  
 h[i] = list(curve(posterior, from, to, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
