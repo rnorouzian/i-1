@@ -1,4 +1,4 @@
-HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3) {
+HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
   
   if(!is.function(FUN)) stop("Error: 'FUN' must be a function.")
   if(length(formals(FUN)) > 1) stop("Error: 'FUN' must be a 'single-argument' function.")
