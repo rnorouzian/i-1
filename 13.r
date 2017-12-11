@@ -1,4 +1,4 @@
-d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name = "dcauchy", LL = -3, UL = 3){
+d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name = "dcauchy", LL = -8, UL = 8){
   
   is.v = function(x) length(x) > 1
   if(is.v(m) & is.v(s)) stop("Error: Explore 'm' and 's' one at a time.")  
