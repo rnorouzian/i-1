@@ -1,6 +1,6 @@
 source("https://raw.githubusercontent.com/izeh/i/master/i.r")
 
-int.d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, 
+ms.d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, 
                        margin = 1.01, add = FALSE, col = 1, top = 6, LL = -8, UL = 8){
   
 is.v = function(x) length(x) > 1
