@@ -4,10 +4,9 @@ int.d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name,
                        margin = 1.01, add = FALSE, col = 1, top = 6, LL = -8, UL = 8){
   
 is.v = function(x) length(x) > 1
-deci = function(x, k = 3) format(round(x, k), nsmall = k)
+d = dist.name   
   
-d = dist.name
-  
+if(is.v(d)) stop("Error: Only 'm' or 's' can be a vector with length > 1.")  
 if(is.v(m) & is.v(s)) stop("Error: Explore 'm' and 's' one at a time.")
 f <- if(is.v(m)) function(x) get(d)(x, m[i], s) else function(x) get(d)(x, m, s[i])
   
