@@ -1,3 +1,5 @@
+source("https://raw.githubusercontent.com/izeh/i/master/i.r")
+
 d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name = "dcauchy", LL = -8, UL = 8){
   
   is.v = function(x) length(x) > 1
