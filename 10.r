@@ -31,7 +31,7 @@ likelihood = function(x) dt(t, df, x*sqrt(N))
     CI[i,] = HDI(posterior, LL, UL)
    from[i] = mean - margin * sd
      to[i] = mean + margin * sd  
-h[i] = list(curve(posterior, from, to, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
+      h[i] = list(curve(posterior, from, to, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
 }
 
 f = sapply(h, function(x) max(x[[2]])) + 1:loop
