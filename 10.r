@@ -2,6 +2,10 @@ source("https://raw.githubusercontent.com/izeh/i/master/i.r")
 
 d.priors <- function(n1, n2 = NA, t, m, s, lo = -Inf, hi = Inf, dist.name = c("dnorm", "dcauchy", "dlogis"),
                      scale = .35, margin = 7, top = .71, LL = -9, UL = 9){
+  
+  is.v = function(x) length(x) > 1
+  if(is.v(m) || is.v(s)) stop("Error: Only 'dist.name' can be a vector with a length > 1.")
+  
    d = dist.name
 loop = length(d) 
   CI = matrix(NA, loop, 2)
