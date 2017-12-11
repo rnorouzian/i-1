@@ -7,7 +7,7 @@ is.v = function(x) length(x) > 1
 d = dist.name   
   
 if(is.v(d)) stop("Error: Only 'm' or 's' can be a vector with length > 1.")  
-if(is.v(m) & is.v(s)) stop("Error: Explore 'm' and 's' one at a time.")
+if(is.v(m) & is.v(s)) stop("Error: Explore 'm' or 's' one at a time.")
 f <- if(is.v(m)) function(x) get(d)(x, m[i], s) else function(x) get(d)(x, m, s[i])
   
  N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
@@ -42,7 +42,7 @@ if(!add){
   abline(v = 1:loop, col = 8, lty = 3)
   legend("topleft", if(is.v(m)) "The effect of\nPrior Mean" else if(is.v(s)) "The effect of\nPrior Width (SD)" else " ", bty = "n", text.font = 2, cex = .8)  
   at = if(is.v(m))length(m) else if(is.v(s))length(s)
-  if(is.v(m) || is.v(s)) axis(1, at = 1:at, lab = if(is.v(m)) m else if(is.v(s)) s, font = 2, las = 1, cex.axis = .8, mgp = c(2, .5, 0))
+  if(is.v(m) || is.v(s)) axis(1, at = 1:at, lab = if(is.v(m)) round(m, 3) else if(is.v(s)) round(s, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .5, 0))
 }
   segments(1:loop, CI[, 1], 1:loop, CI[, 2], lend = 1, col = col)  
   lines(1:loop, mode, col = col, lty = 3)
