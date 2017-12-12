@@ -7,7 +7,7 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
 
   lower = min(lower, upper) ; upper = max(lower, upper)
   posterior = function(x) fun(x)/integrate(fun, lower, upper)[[1]]
-  mode = optimize(posterior, interval = c(lower, upper), maximum = TRUE, tol = 1e-20)[[1]]
+  mode = optimize(posterior, c(lower, upper), maximum = TRUE, tol = 1e-10)[[1]]
   inverse.posterior <- function(x, side = "left") {
     target <- function(y) posterior(y) - x
     ur <- switch(side,
