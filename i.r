@@ -21,7 +21,7 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
     i2 <- inverse.posterior(h, "right")
     return(integrate(posterior, i1, i2)[[1]])
   }
-  post.area <- integrate(posterior, lower, upper)[[1]]
+  post.area <- 1
   if(post.area<level) stop("limits don't encompass desired area: a =", round(post.area, 3))
   find.lims <- function(a) {
     ur <- uniroot(function(h) areafun(h) / post.area - a,
