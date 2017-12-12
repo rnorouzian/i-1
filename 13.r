@@ -46,7 +46,7 @@ d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name = "dcau
   legend("topleft", if(is.v(m)) "The effect of\nPrior Mean" else if(is.v(s)) "The effect of\nPrior Width (SD)" else " ", bty = "n", text.font = 2, cex = .7)  
   points(mode, 1:loop, pch = 21, bg = "red4", cex = .8, col = "red4", xpd = NA)
   lab = if(is.v(m)) round(m, 3) else if(is.v(s)) round(s, 3)
-  if(is.v(m) || is.v(s)) axis(2, at = 1:if(is.v(m))length(m) else if(is.v(s))length(s) else NA, lab = lab, font = 2, las = 1, cex.axis = .8, tick = FALSE, mgp = c(1, .1, 0))
+  if(is.v(m) || is.v(s)) axis(2, at = 1:if(is.v(m))length(m) else if(is.v(s))length(s), lab = lab, font = 2, las = 1, cex.axis = .8, tick = FALSE, mgp = c(1, .1, 0))
   
   I = deci(CI) ; o = deci(mode)
   
