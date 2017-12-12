@@ -13,7 +13,6 @@ if(is.v(d)) stop("Error: Only 'm' or 's' can be a vector with length > 1.")
 if(is.v(m) & pr || is.v(s) & pr) message("\tNote: You can see only '1 prior' at a time i.e., when length of 'm' & 's' is '1'.")
 if(add & pr) message("\tNote: 'add' only works for overlying 'Credible Intervals' to compare them.")
 
-
 f <- if(is.v(m)) function(x) get(d)(x, m[i], s) else function(x) get(d)(x, m, s[i])
   
  N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
