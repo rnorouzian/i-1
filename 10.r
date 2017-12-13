@@ -43,7 +43,7 @@ par(mgp = c(2, .5, 0))
 plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, top*max(f)), ylab = NA, yaxt = "n", xlab = "Credible Interval 'd'", font.lab = 2)
 abline(h = 1:loop, col = 8, lty = 3)
 segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop)
-axis(2, at = 1:loop, lab = d, font = 2, las = 1, cex.axis = .8, tick = FALSE) ; axis(3)
+axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tick = FALSE) ; axis(3)
 
 for(i in 1:loop){
   polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .4), border = NA, xpd = NA)
