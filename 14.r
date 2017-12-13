@@ -5,9 +5,7 @@ prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scal
   is.v = function(x) length(x) > 1
   if(is.v(a) || is.v(b)) stop("Error: Only 'dist.name' can be a vector with length > 1.")
   deci = function(x, k = 3) format(round(x, k), nsmall = k)
-   d = dist.name
-  Bi = yes
-  pr = show.prior
+   d = dist.name ; Bi = yes ; pr = show.prior
 loop = length(d)
   CI = matrix(NA, loop, 2)
 mode = numeric(loop)
