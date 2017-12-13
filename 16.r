@@ -1,10 +1,8 @@
 source("https://raw.githubusercontent.com/izeh/i/master/i.r")
 
-ab.prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE, 
-                          yes = 55, n = 1e2, col = 1, show.prior = FALSE){
-  d = dist.name
-  Bi = yes
-  pr = show.prior    
+ab.prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE, yes = 55, n = 1e2, col = 1, show.prior = FALSE){
+  
+  d = dist.name ; Bi = yes ; pr = show.prior    
   is.v = function(x) length(x) > 1
   if(is.v(d)) stop("Error: Only 'a' or 'b' can be a vector with length > 1.")
   if(is.v(a) & is.v(b)) stop("Error: Explore 'a' and 'b' one at a time.")
