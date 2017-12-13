@@ -7,14 +7,12 @@ is.v = function(x) length(x) > 1
 if(is.v(d)) stop("Error: Only 'a' or 'b' can be a vector with length > 1.")
 if(is.v(a) & is.v(b)) stop("Error: Explore 'a' and 'b' one at a time.")
 
-deci = function(x, k = 3) format(round(x, k), nsmall = k)
-  
+deci = function(x, k = 3) format(round(x, k), nsmall = k)  
 f <- if(is.v(a)) function(x) get(d)(x, a[i], b) else function(x) get(d)(x, a, b[i])
   
 loop = if(is.v(a)) length(a) else length(b) 
   CI = matrix(NA, loop, 2)
   mode = numeric(loop)
-  
 for(i in 1:loop){
     p = function(x) f(x)*as.integer(x >= lo)*as.integer(x <= hi)
 prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
@@ -26,7 +24,6 @@ mode[i] = optimize(posterior, c(lo, hi), maximum = TRUE)[[1]]
 CI[i,] = HDI(posterior)
   }
 }
-  
 if(!pr){
 graphics.off()
 original.par = par(no.readonly = TRUE)
