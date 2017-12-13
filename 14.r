@@ -14,7 +14,6 @@ mode = numeric(loop)
 for(i in 1:loop){
          p = function(x) get(d[i])(x, a, b)*as.integer(x >= lo)*as.integer(x <= hi)
      prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
-     
 if(!pr){     
 likelihood = function(x) dbinom(Bi, n, x)
          k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
@@ -24,9 +23,7 @@ likelihood = function(x) dbinom(Bi, n, x)
     CI[i,] = HDI(posterior)
    }
 }
-
 if(!pr){  
-  
 plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = 0:1, ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval 'B'", font.lab = 2, mgp = c(2, .5, 0))
 abline(h = 1:loop, col = 8, lty = 3)
 axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
