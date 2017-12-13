@@ -44,7 +44,7 @@ prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.
     I = deci(CI*1e2 , 2); o = deci(mode*1e2, 2)
     text(mode, 1:loop, paste0("[", I[,1], "%", ", ", o, "%", ", ", I[,2], "%", "]"), cex = .7, pos = pos, xpd = NA)
   }else{
-    curve(prior, lo, hi, yaxt = "n", ylab = NA, xaxt = "n", xlab = "Proportion", bty = "n", font.lab = 2, lwd = 2, n = 5e2, main = bquote(Proportion*" ~ "*.(substring(d, 2))(.(round(a, 2)), .(round(b, 2)))))
+    curve(prior, lo, hi, yaxt = "n", ylab = NA, xaxt = "n", xlab = "Proportion", bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(Proportion*" ~ "*.(substring(d, 2))(.(round(a, 2)), .(round(b, 2)))))
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .4, 0))
   }
 }
