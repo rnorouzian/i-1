@@ -21,7 +21,7 @@ prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scal
       likelihood = function(x) dbinom(Bi, n, x)
       k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
       posterior = function(x) prior(x)*likelihood(x) / k
-      h[i] = list(curve(posterior, ty = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
+      h[i] = list(curve(posterior, ty = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 8e2))
       mode[i] = optimize(posterior, c(lo, hi), maximum = TRUE)[[1]]
       CI[i,] = HDI(posterior)
     }
