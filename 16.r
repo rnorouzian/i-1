@@ -32,7 +32,7 @@ ab.prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE,
     }
   }
   
-  if(!add & pr){curve(prior, lo, hi, yaxt = "n", ylab = NA, xaxt = "n", xlab = "Proportion", bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(Proportion*" ~ "*.(substring(d, 2))(.(a), .(b))))
+  if(!add & pr){curve(prior, lo, hi, yaxt = "n", xaxt = "n", ylab = NA, xlab = "Proportion", bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(Proportion*" ~ "*.(substring(d, 2))(.(round(a, 2)), .(round(b, 2)))))
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .4, 0))
   }
   
