@@ -3,7 +3,8 @@ source("https://raw.githubusercontent.com/izeh/i/master/i.r")
 prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE){
   
   is.v = function(x) length(x) > 1
-  if(is.v(a) || is.v(b)) stop("Error: Only 'dist.name' can be a vector with length > 1.")  
+  if(is.v(a) || is.v(b)) stop("Error: Only 'dist.name' can be a vector with length > 1.")
+  deci = function(x, k = 3) format(round(x, k), nsmall = k)
   d = dist.name
   Bi = yes
   pr = show.prior
@@ -44,7 +45,7 @@ prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scal
     m = scale*sapply(h, function(x) max(x[[2]])) + 1:loop
     segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
     points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.5, col = "magenta", xpd = NA)
-    I = round(CI, 4)*1e2 ; o = round(mode, 4)*1e2
+    I = deci(CI*1e2 , 2); o = deci(mode*1e2, 2)
     text(mode, 1:loop, paste0(I[,1], "%", "    ", o, "%", "    ", I[,2], "%"), cex = .75, pos = 3, font = 2, xpd = NA)
   }else{
     curve(prior, lo, hi, yaxt = "n", ylab = NA, xaxt = "n", xlab = "Proportion", bty = "n", font.lab = 2, lwd = 2, n = 5e2, main = bquote(Proportion*" ~ "*.(substring(d, 2))(.(round(a, 2)), .(round(b, 2)))))
