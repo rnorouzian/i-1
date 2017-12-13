@@ -10,7 +10,6 @@ prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.
   if(is.v(a) & is.v(b)) stop("Error: Explore 'a' and 'b' one at a time.")
   
   deci = function(x, k = 3) format(round(x, k), nsmall = k)
-  
   f <- if(is.v(a)) function(x) get(d)(x, a[i], b) else function(x) get(d)(x, a, b[i])
   
   loop = if(is.v(a)) length(a) else length(b) 
