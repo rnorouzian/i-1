@@ -331,7 +331,6 @@ d = dist.name ; pr = show.prior
   
 if(is.eq(m, s) & !is.eq(m, s, d)) d = ab.df(d, m) else if(is.eq(m, d) & !is.eq(m, s, d)) s = ab.df(s, m) else if(is.eq(s, d) & !is.eq(m, s, d)) m = ab.df(m, d)
   
-  
   deci = function(x, k = 3) format(round(x, k), nsmall = k)
   
   N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
@@ -385,3 +384,65 @@ curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(del
 
 #===================================================================================================================
 
+ms.d.hyper = function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
+                      col = 1, top = 6, margin = 1.01, LL = -5, UL = 5, show.prior = FALSE){
+  
+  d = dist.name ; pr = show.prior
+  is.eq = function(...) length(unique(lengths(list(...)))) == 1
+  ab.df = function(x, y) c(x, rep(rev(x)[1], abs(length(y) - length(x))))
+  
+  if(is.eq(m, s) & !is.eq(m, s, d)) d = ab.df(d, m) else if(is.eq(m, d) & !is.eq(m, s, d)) s = ab.df(s, m) else if(is.eq(s, d) & !is.eq(m, s, d)) m = ab.df(m, d)
+  
+  deci = function(x, k = 3) format(round(x, k), nsmall = k)
+  
+  d = dist.name
+  pr = show.prior
+  if(add & pr) message("\tNote: 'add' only works for overlying 'Credible Intervals' to compare them.")
+
+  N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
+  df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2)   
+  
+  options(warn = -1)
+  loop = length(m) 
+  CI = matrix(NA, loop, 2)
+  mode = numeric(loop)
+  mean = numeric(loop)
+  sd = numeric(loop)
+  from = numeric(loop)
+  to = numeric(loop)
+  
+  for(i in 1:loop){
+    p = function(x) get(d[i])(x, m[i], s[i])*as.integer(x >= lo)*as.integer(x <= hi)
+    prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
+    
+if(!pr){    
+    likelihood = function(x) dt(t, df, x*sqrt(N))
+    k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
+    posterior = function(x) prior(x)*likelihood(x) / k
+    mode[i] = optimize(posterior, c(LL, UL), maximum = TRUE, tol = 1e-20)[[1]]
+    mean[i] = integrate(function(x) x*posterior(x), lo, hi)[[1]]
+    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo, hi)[[1]] - mean^2)
+    CI[i,] = HDI(posterior, LL, UL)
+    from[i] = mean - top * sd
+    to[i] = mean + top * sd
+}
+  }
+  
+  if(!add & !pr){
+    plot(rep(1:loop, 2), CI[, 1:2], type = "n", ylim = c(min(from), max(to)), xlim = c(1, margin*loop), xlab = "Prior Parameter 'M'", xaxt = "n", ylab = "Credible Interval 'd'", font.lab = 2)
+    abline(v = 1:loop, col = 8, lty = 3, mgp = c(2, .5, 0))
+    axis(3, at = 1:length(s), lab = round(s, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .2, 0))
+    text(mean(par('usr')[1:2]), 1.06*par('usr')[4], "Prior Parameter 'S'", pos = 3, cex = 1, xpd = NA, font = 2)
+    axis(1, at = 1:length(m), lab = round(m, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .5, 0))
+  }
+  
+  if(!pr){
+  segments(1:loop, CI[, 1], 1:loop, CI[, 2], lend = 1, col = col)  
+  lines(1:loop, mode, col = col, lty = 3)
+  points(1:loop, mode, pch = 21, bg = col, cex = .8, col = col, xpd = NA)
+  }
+  
+  if(!add & pr){
+    curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(delta))), bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(delta*" ~ "*.(if(lo > -Inf || hi < Inf) "truncated-")*.(substring(d, 2))(.(round(m, 2)), .(round(s, 2)))), mgp = c(2, .5, 0))
+  }
+}
