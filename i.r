@@ -199,7 +199,7 @@ deci = function(x, k = 3) format(round(x, k), nsmall = k)
   
   if(!pr){  
     
-    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = 0:1, ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval 'B'", font.lab = 2, mgp = c(2, .5, 0))
+    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = 0:1, ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
@@ -256,7 +256,7 @@ if(is.df(a, b, d)){ a = cr(a, b, d) ; b = cr(b, a, d) ; d = cr(d, a, b) }
     on.exit(par(original.par))
     
     par(mgp = c(2.2, .3, 0), mar = c(5.1, 4.1, 4.1, 3))   
-    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = c(0, 1), ylim = c(1, 1.01*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval 'Proportion'", font.lab = 2)
+    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = c(0, 1), ylim = c(1, 1.01*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2)
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4", xpd = NA)
@@ -372,7 +372,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
   
   if(!pr){
     f = sapply(h, function(x) max(x[[2]])) + 1:loop
-    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, top*max(f)), ylab = NA, yaxt = "n", xlab = "Credible Interval 'd'", font.lab = 2, mgp = c(2, .5, 0))
+    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
     legend("topleft", paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")"), pch = 22, pt.bg = 1:loop, col = 1:loop, cex = .7, bg = NA, bty = "n", pt.cex = .6)
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop)
@@ -438,7 +438,7 @@ if(!pr){
   
 if(!pr){   
   par(mgp = c(2, .5, 0), mar = c(5.1, 4.1, 4.1, 3))   
-  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, 1.01*loop), ylab = NA, yaxt = "n", xlab = "Credible Interval 'd'", font.lab = 2)
+  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, 1.01*loop), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2)
   abline(h = 1:loop, col = 8, lty = 3)
   segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4")  
   points(mode, 1:loop, pch = 21, bg = "red4", cex = .8, col = "red4", xpd = NA)
@@ -500,7 +500,7 @@ if(!pr){
   }
   
   if(!add & !pr){
-    plot(rep(1:loop, 2), CI[, 1:2], type = "n", ylim = c(min(from), max(to)), xlim = c(1, margin*loop), xlab = "Prior Parameter 'M'", xaxt = "n", ylab = "Credible Interval 'd'", font.lab = 2)
+    plot(rep(1:loop, 2), CI[, 1:2], type = "n", ylim = c(min(from), max(to)), xlim = c(1, margin*loop), xlab = "Prior Parameter 'M'", xaxt = "n", ylab = bquote(bold("Credible Interval "(delta))), font.lab = 2)
     abline(v = 1:loop, col = 8, lty = 3, mgp = c(2, .5, 0))
     axis(3, at = 1:length(s), lab = round(s, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .2, 0))
     text(mean(par('usr')[1:2]), 1.06*par('usr')[4], "Prior Parameter 'S'", pos = 3, cex = 1, xpd = NA, font = 2)
