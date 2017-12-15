@@ -316,8 +316,72 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
     I = deci(CI) ; o = deci(mode)
     text(c(CI[,1], o, CI[,2]), 1:loop, c(I[,1], o, I[,2]), pos = 3, font = 2, cex = .8, xpd = NA)
   }else{
-    curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(delta))), bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(delta*" ~ "*.(if(lo > -Inf || hi < Inf) "truncated-")*.(substring(d, 2))(.(round(m, 2)), .(round(s)))), mgp = c(2, .5, 0))
+    curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(delta))), bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(delta*" ~ "*.(if(lo > -Inf || hi < Inf) "truncated-")*.(substring(d, 2))(.(round(m, 2)), .(round(s, 2)))), mgp = c(2, .5, 0))
   }
 }
 
 #========================================================================================================================
+
+d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -4, UL = 4, pos = 3, show.prior = FALSE){
+  
+is.eq = function(...) length(unique(lengths(list(...)))) == 1
+ab.df = function(x, y) c(x, rep(rev(x)[1], abs(length(y) - length(x))))
+
+d = dist.name ; pr = show.prior
+  
+if(is.eq(m, s) & !is.eq(m, s, d)) d = ab.df(d, m) else if(is.eq(m, d) & !is.eq(m, s, d)) s = ab.df(s, m) else if(is.eq(s, d) & !is.eq(m, s, d)) m = ab.df(m, d)
+  
+  
+  deci = function(x, k = 3) format(round(x, k), nsmall = k)
+  
+  N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
+  df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2)   
+  
+  options(warn = -1)
+  original.par = par(no.readonly = TRUE)
+  on.exit(par(original.par))
+  
+  loop = length(m)
+  CI = matrix(NA, loop, 2)
+  mode = numeric(loop)
+  mean = numeric(loop)
+  sd = numeric(loop)
+  from = numeric(loop)
+  to = numeric(loop)
+  
+  for(i in 1:loop){
+    p = function(x) get(d[i])(x, m[i], s[i])*as.integer(x >= lo)*as.integer(x <= hi)
+    prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
+    
+if(!pr){   
+    likelihood = function(x) dt(t, df, x*sqrt(N))
+    k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
+    posterior = function(x) prior(x)*likelihood(x) / k
+    mode[i] = optimize(posterior, c(LL, UL), maximum = TRUE, tol = 1e-20)[[1]]
+    mean[i] = integrate(function(x) x*posterior(x), lo, hi)[[1]]
+    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo, hi)[[1]] - mean^2)
+    CI[i,] = HDI(posterior, LL, UL)
+    from[i] = mean - 7 * sd
+    to[i] = mean + 10 * sd 
+     }
+  }
+  
+if(!pr){   
+  par(mgp = c(2, .5, 0), mar = c(5.1, 4.1, 4.1, 3))   
+  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, 1.01*loop), ylab = NA, yaxt = "n", xlab = "Credible Interval 'd'", font.lab = 2)
+  abline(h = 1:loop, col = 8, lty = 3)
+  segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4")  
+  points(mode, 1:loop, pch = 21, bg = "red4", cex = .8, col = "red4", xpd = NA)
+  axis(2, at = 1:length(m), lab = deci(m), font = 2, las = 1, cex.axis = .8, tick = FALSE, mgp = c(2, .2, 0))
+  axis(4, at = 1:length(s), lab = deci(s), font = 2, las = 1, cex.axis = .8, tick = FALSE, mgp = c(2, .2, 0))
+  text(par('usr')[1:2], par('usr')[4], c("M", "S"), pos = 3, cex = 1.5, xpd = NA, font = 2)
+  I = deci(CI) ; o = deci(mode)
+  text(mode, 1:loop, paste0("[", I[,1], ",  ", o, ",  ", I[,2], "]"), pos = pos, cex = .8, xpd = NA)
+}else{
+  
+curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(delta))), bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(delta*" ~ "*.(if(lo > -Inf || hi < Inf) "truncated-")*.(substring(d, 2))(.(round(m, 2)), .(round(s, 2)))), mgp = c(2, .5, 0))
+  }  
+}
+
+#===================================================================================================================
+
