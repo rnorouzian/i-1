@@ -128,6 +128,46 @@ return(c(mode = parm[[1]], scale = parm[[2]]))
 }, c("Low", "High", "Cover"))    
   
 #===============================================================================================
+
+norm.id <- Vectorize(function(Low, High, Cover = NA){
+
+options(warn = -1)
+  
+q <- c(Low, High)
+  
+coverage <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 100 else if(is.na(Cover)) .95 else Cover
+  
+p1 <- (1 - coverage) / 2 
+p2 <- 1 - p1
+  
+alpha <- c(p1, p2)
+  
+is.df <- function(a, b, sig = 4) (round(a, sig) != round(b, sig))
+  
+if( p1 <= 0 || p2 >= 1 || q[1] >= q[2] || p1 >= p2 ) {
+
+stop("\n\tUnable to find such a prior, make sure you have selected the correct values.")
+  
+} else {
+    
+beta <- qnorm(alpha)
+    
+parm <- solve(cbind(1, beta), q)
+    
+q <- qnorm(c(p1, p2), parm[[1]], parm[[2]])
+}
+
+if(is.df(Low, q[[1]]) || is.df(High, q[[2]])) {
+  
+  stop("\n\tUnable to find such a prior, make sure you have selected the correct values.")
+} else {
+  
+  return(c(mean = parm[[1]], sd = parm[[2]]))
+  
+  }
+}, c("Low", "High", "Cover"))
+  
+#===============================================================================================
   
 prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE){
   
