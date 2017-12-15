@@ -109,10 +109,10 @@ f <- function(x) {
     y <- c(Low, High) - qcauchy(c(p1, p2), location = x[1],  scale = x[2])
   }
   
-parm <- optim(c(1, 1), function(x) sum(f(x)^2), control=list(reltol=(.Machine$double.eps)))[[1]]
+parm <- optim(c(1, 1), function(x) sum(f(x)^2), control = list(reltol = (.Machine$double.eps)))[[1]]
 }
 
-q <- qcauchy(c(p1, p2), parm[1], parm[2])
+q <- qcauchy(c(p1, p2), parm[[1]], parm[[2]])
 
 is.df = function(a, b, sig = 4) round(a, sig) != round(b, sig)
 
@@ -132,13 +132,12 @@ norm.id <- Vectorize(function(Low, High, Cover = NA){
 
 options(warn = -1)
   
-q <- c(Low, High)
-  
 coverage <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 100 else if(is.na(Cover)) .95 else Cover
   
 p1 <- (1 - coverage) / 2 
 p2 <- 1 - p1
   
+q <- c(Low, High)  
 alpha <- c(p1, p2)
   
 is.df <- function(a, b, sig = 4) (round(a, sig) != round(b, sig))
@@ -171,11 +170,10 @@ if(is.df(Low, q[[1]]) || is.df(High, q[[2]])) {
 prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE){
   
 d = dist.name
-is.eq = function(...) length(unique(lengths(list(...)))) == 1
-ab.df = function(x, y) c(x, rep(rev(x)[1], abs(length(y) - length(x))))
+is.df = function(...) length(unique(lengths(list(...)))) != 1
+cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
 
-if(is.eq(a, b) & !is.eq(a, b, d)) d = ab.df(d, a) else if(is.eq(a, d) & !is.eq(a, b, d)) b = ab.df(b, a) else if(is.eq(b, d) & !is.eq(a, b, d)) a = ab.df(a, d)
-
+if(is.df(a, b, d)){ a = cr(a, b, d) ; b = cr(b, a, d) ; d = cr(d, a, b) }
 deci = function(x, k = 3) format(round(x, k), nsmall = k)                                                                                                                           
   
   Bi = yes
@@ -225,16 +223,14 @@ deci = function(x, k = 3) format(round(x, k), nsmall = k)
 
 prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.prior = FALSE, pos = 3){
   
-  d = dist.name
-  Bi = yes
-  pr = show.prior
-  d = dist.name
-  d = dist.name
-  is.eq = function(...) length(unique(lengths(list(...)))) == 1
-  ab.df = function(x, y) c(x, rep(rev(x)[1], abs(length(y) - length(x))))
-  
-  if(is.eq(a, b) & !is.eq(a, b, d)) d = ab.df(d, a) else if(is.eq(a, d) & !is.eq(a, b, d)) b = ab.df(b, a) else if(is.eq(b, d) & !is.eq(a, b, d)) a = ab.df(a, d)
-  
+d = dist.name
+Bi = yes
+pr = show.prior
+
+is.df = function(...) length(unique(lengths(list(...)))) != 1
+cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
+
+if(is.df(a, b, d)){ a = cr(a, b, d) ; b = cr(b, a, d) ; d = cr(d, a, b) }
   
   deci = function(x, k = 3) format(round(x, k), nsmall = k)
   
@@ -285,10 +281,10 @@ ab.prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE,
   pr = show.prior    
   is.v = function(x) length(x) > 1
   d = dist.name
-  is.eq = function(...) length(unique(lengths(list(...)))) == 1
-  ab.df = function(x, y) c(x, rep(rev(x)[1], abs(length(y) - length(x))))
-  
-  if(is.eq(a, b) & !is.eq(a, b, d)) d = ab.df(d, a) else if(is.eq(a, d) & !is.eq(a, b, d)) b = ab.df(b, a) else if(is.eq(b, d) & !is.eq(a, b, d)) a = ab.df(a, d)
+is.df <- function(...) length(unique(lengths(list(...)))) != 1
+cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
+
+if(is.df(a, b, d)){ a = cr(a, b, d) ; b = cr(b, a, d) ; d = cr(d, a, b) }
   
   if(is.v(a) & pr || is.v(b) & pr) message("\tNote: You can see only '1 prior' at a time.")
   if(add & pr) message("\tNote: 'add' only works for overlying 'Credible Intervals' to compare them.")
@@ -337,10 +333,10 @@ ab.prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE,
 d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -5, UL = 5){
   
   d = dist.name ; pr = show.prior
-  is.eq = function(...) length(unique(lengths(list(...)))) == 1
-  ab.df = function(x, y) c(x, rep(rev(x)[1], abs(length(y) - length(x))))
+  is.df = function(...) length(unique(lengths(list(...)))) != 1
+  cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
   
-  if(is.eq(m, s) & !is.eq(m, s, d)) d = ab.df(d, m) else if(is.eq(m, d) & !is.eq(m, s, d)) s = ab.df(s, m) else if(is.eq(s, d) & !is.eq(m, s, d)) m = ab.df(m, d)
+  if(is.df(m, s, d)){ m = cr(m, s, d) ; s = cr(s, m, d) ; d = cr(d, m, s) }
   
   loop = length(d) 
   CI = matrix(NA, loop, 2)
@@ -399,13 +395,12 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
 #========================================================================================================================
 
 d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -4, UL = 4, pos = 3, show.prior = FALSE){
-  
-is.eq = function(...) length(unique(lengths(list(...)))) == 1
-ab.df = function(x, y) c(x, rep(rev(x)[1], abs(length(y) - length(x))))
 
 d = dist.name ; pr = show.prior
+  is.df <- function(...) length(unique(lengths(list(...)))) != 1
+  cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
   
-if(is.eq(m, s) & !is.eq(m, s, d)) d = ab.df(d, m) else if(is.eq(m, d) & !is.eq(m, s, d)) s = ab.df(s, m) else if(is.eq(s, d) & !is.eq(m, s, d)) m = ab.df(m, d)
+  if(is.df(m, s, d)){ m = cr(m, s, d) ; s = cr(s, m, d) ; d = cr(d, m, s) }  
   
   deci = function(x, k = 3) format(round(x, k), nsmall = k)
   
@@ -464,11 +459,11 @@ ms.d.hyper = function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add 
                       col = 1, top = 6, margin = 1.01, LL = -5, UL = 5, show.prior = FALSE){
   
   d = dist.name ; pr = show.prior
-  is.eq = function(...) length(unique(lengths(list(...)))) == 1
-  ab.df = function(x, y) c(x, rep(rev(x)[1], abs(length(y) - length(x))))
+  is.df <- function(...) length(unique(lengths(list(...)))) != 1
+  cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
   
-  if(is.eq(m, s) & !is.eq(m, s, d)) d = ab.df(d, m) else if(is.eq(m, d) & !is.eq(m, s, d)) s = ab.df(s, m) else if(is.eq(s, d) & !is.eq(m, s, d)) m = ab.df(m, d)
-  
+  if(is.df(m, s, d)){ m = cr(m, s, d) ; s = cr(s, m, d) ; d = cr(d, m, s) }
+    
   deci = function(x, k = 3) format(round(x, k), nsmall = k)
   
   d = dist.name
