@@ -73,11 +73,11 @@ sol <- nlm(objective, log(c(1e1, 1e1)), x = c(L, U), prob = x.p, lower = 0, uppe
     
 parm <- as.numeric(exp(sol$estimate))
     
-quantiles <- qbeta(p = c(p1, p2), parm[1], parm[2])
+q <- qbeta(p = c(p1, p2), parm[[1]], parm[[2]])
     
-unequal <- function(a, b, sig = 3) round(a, sig) != round(b, sig)
+is.df <- function(a, b, sig = 3) round(a, sig) != round(b, sig)
     
-if(unequal(L, quantiles[1]) || unequal(U, quantiles[2])){
+if(is.df(L, q[1]) || is.df(U, q[2])){
       
 stop("Error: \n\tUnable to find such a prior, make sure you have selected the correct values.")
 
@@ -85,8 +85,7 @@ stop("Error: \n\tUnable to find such a prior, make sure you have selected the co
       
 return(c(alpha = parm[[1]], beta = parm[[2]]))    
     }
-  }
-  
+  } 
 }, c("Low", "High", "Cover"))
   
 #===============================================================================================
@@ -220,7 +219,6 @@ deci = function(x, k = 3) format(round(x, k), nsmall = k)
     curve(prior, lo, hi, yaxt = "n", xaxt = "n", ylab = NA, xlab = "Proportion", bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(Proportion*" ~ "*.(if(lo > 0 || hi < 1) "truncated-")*.(substring(d, 2))(.(round(a, 2)), .(round(b, 2)))))
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .4, 0))
   }
-  
 }
 
 #==========================================================================================================================
