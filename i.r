@@ -221,7 +221,7 @@ deci = function(x, k = 3) format(round(x, k), nsmall = k)
 
 #==========================================================================================================================
 
-prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.prior = FALSE, pos = 3){
+prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.prior = FALSE, pos = 3, top = 1.01){
   
 d = dist.name
 Bi = yes
@@ -256,7 +256,7 @@ if(is.df(a, b, d)){ a = cr(a, b, d) ; b = cr(b, a, d) ; d = cr(d, a, b) }
     on.exit(par(original.par))
     
     par(mgp = c(2.2, .3, 0), mar = c(5.1, 4.1, 4.1, 3))   
-    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = c(0, 1), ylim = c(1, 1.01*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2)
+    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = c(0, 1), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2)
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4", xpd = NA)
@@ -394,7 +394,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
 
 #========================================================================================================================
 
-d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -4, UL = 4, pos = 3, show.prior = FALSE){
+d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -4, UL = 4, pos = 3, show.prior = FALSE, top = 1.01){
 
 d = dist.name ; pr = show.prior
   is.df <- function(...) length(unique(lengths(list(...)))) != 1
@@ -438,7 +438,7 @@ if(!pr){
   
 if(!pr){   
   par(mgp = c(2, .5, 0), mar = c(5.1, 4.1, 4.1, 3))   
-  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, 1.01*loop), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2)
+  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2)
   abline(h = 1:loop, col = 8, lty = 3)
   segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4")  
   points(mode, 1:loop, pch = 21, bg = "red4", cex = .8, col = "red4", xpd = NA)
