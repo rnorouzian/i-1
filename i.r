@@ -258,7 +258,7 @@ ab.prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE,
 
 #====================================================================================================================
 
-d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE){
+d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -5, UL = 5){
   
   d = dist.name ; pr = show.prior
   is.eq = function(...) length(unique(lengths(list(...)))) == 1
@@ -293,7 +293,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
       from[i] = mean - margin * sd
       to[i] = mean + margin * sd
       mode[i] = optimize(posterior, c(from, to), maximum = TRUE, tol = 1e-10)[[1]]
-      CI[i,] = HDI(posterior, from, to)
+      CI[i,] = HDI(posterior, LL, UL)
       h[i] = list(curve(posterior, from, to, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
     }
   }
