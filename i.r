@@ -170,11 +170,11 @@ if(is.df(Low, q[[1]]) || is.df(High, q[[2]])) {
 prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE){
   
 d = dist.name
-is.df = function(...) length(unique(lengths(list(...)))) != 1
-cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
-
-if(is.df(a, b, d)){ a = cr(a, b, d) ; b = cr(b, a, d) ; d = cr(d, a, b) }
-deci = function(x, k = 3) format(round(x, k), nsmall = k)                                                                                                                           
+eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
+I = eq(a, b, d)
+a = I[[1]] ; b = I[[2]] ; d = I[[3]]
+                           
+deci <- function(x, k = 3) format(round(x, k), nsmall = k)                                                                                                                           
   
   Bi = yes
   pr = show.prior
@@ -226,11 +226,10 @@ prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.
 d = dist.name
 Bi = yes
 pr = show.prior
-
-is.df = function(...) length(unique(lengths(list(...)))) != 1
-cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
-
-if(is.df(a, b, d)){ a = cr(a, b, d) ; b = cr(b, a, d) ; d = cr(d, a, b) }
+  
+eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
+I = eq(a, b, d)
+a = I[[1]] ; b = I[[2]] ; d = I[[3]]
   
   deci = function(x, k = 3) format(round(x, k), nsmall = k)
   
@@ -281,15 +280,15 @@ ab.prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE,
   pr = show.prior    
   is.v = function(x) length(x) > 1
   d = dist.name
-is.df <- function(...) length(unique(lengths(list(...)))) != 1
-cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
-
-if(is.df(a, b, d)){ a = cr(a, b, d) ; b = cr(b, a, d) ; d = cr(d, a, b) }
+  
+eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
+I = eq(a, b, d)
+a = I[[1]] ; b = I[[2]] ; d = I[[3]]
   
   if(is.v(a) & pr || is.v(b) & pr) message("\tNote: You can see only '1 prior' at a time.")
   if(add & pr) message("\tNote: 'add' only works for overlying 'Credible Intervals' to compare them.")
   
-  deci = function(x, k = 3) format(round(x, k), nsmall = k)
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
   loop = length(d)
   CI = matrix(NA, loop, 2)
@@ -333,10 +332,9 @@ if(is.df(a, b, d)){ a = cr(a, b, d) ; b = cr(b, a, d) ; d = cr(d, a, b) }
 d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -5, UL = 5){
   
   d = dist.name ; pr = show.prior
-  is.df = function(...) length(unique(lengths(list(...)))) != 1
-  cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
-  
-  if(is.df(m, s, d)){ m = cr(m, s, d) ; s = cr(s, m, d) ; d = cr(d, m, s) }
+  eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
+  I = eq(m, s, d)
+  m = I[[1]] ; s = I[[2]] ; d = I[[3]]
   
   loop = length(d) 
   CI = matrix(NA, loop, 2)
@@ -397,10 +395,9 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
 d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -4, UL = 4, pos = 3, show.prior = FALSE, top = 1.01){
 
 d = dist.name ; pr = show.prior
-  is.df <- function(...) length(unique(lengths(list(...)))) != 1
-  cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
-  
-  if(is.df(m, s, d)){ m = cr(m, s, d) ; s = cr(s, m, d) ; d = cr(d, m, s) }  
+  eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
+  I = eq(m, s, d)
+  m = I[[1]] ; s = I[[2]] ; d = I[[3]] 
   
   deci = function(x, k = 3) format(round(x, k), nsmall = k)
   
@@ -459,10 +456,9 @@ ms.d.hyper = function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add 
                       col = 1, top = 6, margin = 1.01, LL = -5, UL = 5, show.prior = FALSE){
   
   d = dist.name ; pr = show.prior
-  is.df <- function(...) length(unique(lengths(list(...)))) != 1
-  cr <- function(x, y, z) c(x, rep(rev(x)[1], max(lengths(list(x, y, z))) - length(x)))
-  
-  if(is.df(m, s, d)){ m = cr(m, s, d) ; s = cr(s, m, d) ; d = cr(d, m, s) }
+  eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
+  I = eq(m, s, d)
+  m = I[[1]] ; s = I[[2]] ; d = I[[3]]
     
   deci = function(x, k = 3) format(round(x, k), nsmall = k)
   
