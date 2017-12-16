@@ -167,7 +167,7 @@ if(is.df(Low, q[[1]]) || is.df(High, q[[2]])) {
   
 #===============================================================================================
   
-prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE){
+prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
   
 d = dist.name
 eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
@@ -199,7 +199,7 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
   if(!pr){  
     
-    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = 0:1, ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .5, 0))
+    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
@@ -329,7 +329,7 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]]
 
 #====================================================================================================================
 
-d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -5, UL = 5){
+d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -5, UL = 5, bottom = 1){
   
   d = dist.name ; pr = show.prior
   eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
@@ -371,7 +371,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
   
   if(!pr){
     f = sapply(h, function(x) max(x[[2]])) + 1:loop
-    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
+    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
     legend("topleft", rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, pt.bg = loop:1, col = loop:1, cex = .7, bty = "n", pt.cex = .6, xpd = NA)
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop)
