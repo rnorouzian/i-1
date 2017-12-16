@@ -35,7 +35,7 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
 
 #==================================================================================================================
 
-beta.id = Vectorize(function(Low, High, Cover = NA){
+beta.id <- Vectorize(function(Low, High, Cover = NA){
   
 options(warn = -1)
 L <- if(is.character(Low)) as.numeric(substr(Low, 1, nchar(Low)-1)) / 100 else Low
@@ -128,7 +128,7 @@ return(c(mode = parm[[1]], scale = parm[[2]]))
   
 #===============================================================================================
 
-norm.id <- Vectorize(function(Low, High, Cover = NA){
+normal.id <- Vectorize(function(Low, High, Cover = NA){
 
 options(warn = -1)
   
@@ -204,7 +204,7 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
-    legend("topleft", paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")"), pch = 22, pt.bg = 1:loop, col = 1:loop, cex = .7, bg = NA, bty = "n", pt.cex = .6, xpd = NA)
+    legend("topleft", rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, pt.bg = loop:1, col = loop:1, cex = .7, bty = "n", pt.cex = .6, xpd = NA)
     for(i in 1:loop){
       polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .4), border = NA, xpd = NA)
     }
@@ -231,7 +231,7 @@ eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(length
 I = eq(a, b, d)
 a = I[[1]] ; b = I[[2]] ; d = I[[3]]
   
-  deci = function(x, k = 3) format(round(x, k), nsmall = k)
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
   loop = length(a)
   CI = matrix(NA, loop, 2)
@@ -336,6 +336,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
   I = eq(m, s, d)
   m = I[[1]] ; s = I[[2]] ; d = I[[3]]
   
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)                           
   loop = length(d) 
   CI = matrix(NA, loop, 2)
   mode = numeric(loop)
@@ -372,7 +373,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
     f = sapply(h, function(x) max(x[[2]])) + 1:loop
     plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
-    legend("topleft", paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")"), pch = 22, pt.bg = 1:loop, col = 1:loop, cex = .7, bg = NA, bty = "n", pt.cex = .6)
+    legend("topleft", rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, pt.bg = loop:1, col = loop:1, cex = .7, bty = "n", pt.cex = .6, xpd = NA)
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop)
     axis(2, at = 1:loop, lab = d, font = 2, las = 1, cex.axis = .8, tick = FALSE, mgp = c(2, .5, 0)) ; axis(3, mgp = c(2, .5, 0))
     
@@ -382,7 +383,6 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
     a = scale*(f-1:loop)+1:loop
     segments(mode, 1:loop, mode, a, lty = 3, xpd = NA, lend = 1)
     points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.1, col = 4, xpd = NA)
-    deci = function(x, k = 3) format(round(x, k), nsmall = k)
     I = deci(CI) ; o = deci(mode)
     text(c(CI[,1], o, CI[,2]), 1:loop, c(I[,1], o, I[,2]), pos = 3, font = 2, cex = .8, xpd = NA)
   }else{
@@ -399,7 +399,7 @@ d = dist.name ; pr = show.prior
   I = eq(m, s, d)
   m = I[[1]] ; s = I[[2]] ; d = I[[3]] 
   
-  deci = function(x, k = 3) format(round(x, k), nsmall = k)
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
   N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
   df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2)   
@@ -452,7 +452,7 @@ curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(del
 
 #===================================================================================================================
 
-ms.d.hyper = function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
+ms.d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
                       col = 1, top = 6, margin = 1.01, LL = -5, UL = 5, show.prior = FALSE){
   
   d = dist.name ; pr = show.prior
@@ -460,7 +460,7 @@ ms.d.hyper = function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add 
   I = eq(m, s, d)
   m = I[[1]] ; s = I[[2]] ; d = I[[3]]
     
-  deci = function(x, k = 3) format(round(x, k), nsmall = k)
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
   d = dist.name
   pr = show.prior
