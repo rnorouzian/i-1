@@ -302,7 +302,7 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]]
       likelihood = function(x) dbinom(Bi, n, x)
       k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
       posterior = function(x) prior(x)*likelihood(x) / k
-      mode[i] = optimize(posterior, c(lo, hi), maximum = TRUE, tol = 1e-20)[[1]]
+      mode[i] = optimize(posterior, c(lo, hi), maximum = TRUE)[[1]]
       CI[i,] = HDI(posterior)
     }
   }
