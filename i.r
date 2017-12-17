@@ -206,7 +206,7 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
     legend("topleft", rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, pt.bg = loop:1, col = loop:1, cex = .7, bty = "n", pt.cex = .6, xpd = NA)
     for(i in 1:loop){
-      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .5), border = NA, xpd = NA)
+      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .6), border = NA, xpd = NA)
     }
     m = scale*sapply(h, function(x) max(x[[2]])) + 1:loop
     segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
@@ -378,7 +378,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
     axis(2, at = 1:loop, lab = d, font = 2, las = 1, cex.axis = .8, tick = FALSE, mgp = c(2, .5, 0)) ; axis(3, mgp = c(2, .5, 0))
     
     for(i in 1:loop){
-      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .5), border = NA, xpd = NA)
+      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .6), border = NA, xpd = NA)
     }
     a = scale*(f-1:loop)+1:loop
     segments(mode, 1:loop, mode, a, lty = 3, xpd = NA, lend = 1)
