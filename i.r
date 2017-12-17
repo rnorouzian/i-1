@@ -7,7 +7,7 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
 
   lower = min(lower, upper) ; upper = max(lower, upper)
   posterior = function(x) fun(x)/integrate(fun, lower, upper)[[1]]
-  mode = optimize(posterior, c(lower, upper), maximum = TRUE, tol = 1e-10)[[1]]
+  mode = optimize(posterior, c(lower, upper), maximum = TRUE, tol = 1e-12)[[1]]
   inverse.posterior <- function(x, side = "left") {
     target <- function(y) posterior(y) - x
     ur <- switch(side,
@@ -22,7 +22,7 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
     return(integrate(posterior, i1, i2)[[1]])
   }
   post.area <- 1
-  if(post.area<level) stop("limits don't encompass desired area: a =", round(post.area, 3))
+  if(post.area < level) stop("limits don't encompass desired area: a =", round(post.area, 3))
   find.lims <- function(a) {
     ur <- uniroot(function(h) areafun(h) / post.area - a,
                   c(eps, posterior(mode) - eps))
