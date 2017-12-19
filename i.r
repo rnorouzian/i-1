@@ -170,9 +170,9 @@ if(is.df(Low, q[[1]]) || is.df(High, q[[2]])) {
 prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
   
 d = dist.name
-eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
-I = eq(a, b, d)
-a = I[[1]] ; b = I[[2]] ; d = I[[3]]
+eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+I = eq(a, b, d, lo, hi)
+a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
                            
 deci <- function(x, k = 3) format(round(x, k), nsmall = k)                                                                                                                           
   
@@ -184,15 +184,15 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   h = list()
   
   for(i in 1:loop){
-    p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo)*as.integer(x <= hi)
-    prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
+    p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
+    prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
     
     if(!pr){     
       likelihood = function(x) dbinom(Bi, n, x)
-      k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
+      k = integrate(function(x) prior(x)*likelihood(x), lo[i], hi[i])[[1]]
       posterior = function(x) prior(x)*likelihood(x) / k
       h[i] = list(curve(posterior, ty = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 1e3))
-      mode[i] = optimize(posterior, c(lo, hi), maximum = TRUE)[[1]]
+      mode[i] = optimize(posterior, c(lo[i], hi[i]), maximum = TRUE)[[1]]
       CI[i,] = HDI(posterior)
     }
   }
@@ -228,9 +228,9 @@ d = dist.name
 Bi = yes
 pr = show.prior
   
-eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
-I = eq(a, b, d)
-a = I[[1]] ; b = I[[2]] ; d = I[[3]]
+eq <- function(...) { lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+I = eq(a, b, d, lo, hi)
+a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
   
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
@@ -239,13 +239,13 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]]
   mode = numeric(loop)
   
   for(i in 1:loop){
-    p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo)*as.integer(x <= hi)
-    prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
+    p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
+    prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
     if(!pr){
       like = function(x) dbinom(Bi, n, x)
-      k = integrate(function(x) prior(x)*like(x), lo, hi)[[1]]
+      k = integrate(function(x) prior(x)*likelihood(x), lo[i], hi[i])[[1]]
       posterior = function(x) prior(x)*like(x) / k
-      mode[i] = optimize(posterior, c(lo, hi), maximum = TRUE)[[1]]
+      mode[i] = optimize(posterior, c(lo[i], hi[i]), maximum = TRUE)[[1]]
       CI[i,] = HDI(posterior)
     }
   }
@@ -282,9 +282,9 @@ ab.prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE,
   is.v = function(x) length(x) > 1
   d = dist.name
   
-eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
-I = eq(a, b, d)
-a = I[[1]] ; b = I[[2]] ; d = I[[3]]
+eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+I = eq(a, b, d, lo, hi)
+a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
   
   if(is.v(a) & pr || is.v(b) & pr) message("\tNote: You can see only '1 prior' at a time.")
   if(add & pr) message("\tNote: 'add' only works for overlying 'Credible Intervals' to compare them.")
@@ -296,14 +296,14 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]]
   mode = numeric(loop)
   
   for(i in 1:loop){
-    p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo)*as.integer(x <= hi)
-    prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
+    p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
+    prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
     
     if(!pr){    
       likelihood = function(x) dbinom(Bi, n, x)
-      k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
+      k = integrate(function(x) prior(x)*likelihood(x), lo[i], hi[i])[[1]]
       posterior = function(x) prior(x)*likelihood(x) / k
-      mode[i] = optimize(posterior, c(lo, hi), maximum = TRUE)[[1]]
+      mode[i] = optimize(posterior, c(lo[i], hi[i]), maximum = TRUE)[[1]]
       CI[i,] = HDI(posterior)
     }
   }
@@ -332,10 +332,15 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]]
 
 d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -5, UL = 5, bottom = 1){
   
-  d = dist.name ; pr = show.prior
-  eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
-  I = eq(m, s, d)
-  m = I[[1]] ; s = I[[2]] ; d = I[[3]]
+  d = dist.name 
+  pr = show.prior
+  eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+  I = eq(m, s, d, lo, hi)
+  m = I[[1]] 
+  s = I[[2]] 
+  d = I[[3]] 
+  lo = I[[4]] 
+  hi = I[[5]]
   
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)                           
   loop = length(d) 
@@ -353,15 +358,15 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
   options(warn = -1)
   
   for(i in 1:loop){
-    p = function(x) get(d[i])(x, m[i], s[i])*as.integer(x >= lo)*as.integer(x <= hi)
-    prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
+    p = function(x) get(d[i])(x, m[i], s[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
+    prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
     
     if(!pr){     
       likelihood = function(x) dt(t, df, x*sqrt(N))
-      k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
+      k = integrate(function(x) prior(x)*likelihood(x), lo[i], hi[i])[[1]]
       posterior = function(x) prior(x)*likelihood(x) / k
-      mean[i] = integrate(function(x) x*posterior(x), lo, hi)[[1]]
-      sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo, hi)[[1]] - mean^2)
+      mean[i] = integrate(function(x) x*posterior(x), lo[i], hi[i])[[1]]
+      sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean^2)
       from[i] = mean - margin * sd
       to[i] = mean + margin * sd
       mode[i] = optimize(posterior, c(from, to), maximum = TRUE, tol = 1e-10)[[1]]
@@ -374,7 +379,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
     f = sapply(h, function(x) max(x[[2]])) + 1:loop
     plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
-    legend("topleft", rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA)
+    legend("topleft", rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5)
     box()
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop)
     axis(2, at = 1:loop, lab = d, font = 2, las = 1, cex.axis = .8, tick = FALSE, mgp = c(2, .5, 0)) ; axis(3, mgp = c(2, .5, 0))
@@ -396,10 +401,11 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
 
 d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -4, UL = 4, pos = 3, show.prior = FALSE, top = 1.01){
 
-d = dist.name ; pr = show.prior
-  eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
+  d = dist.name 
+ pr = show.prior
+  eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(m, s, d)
-  m = I[[1]] ; s = I[[2]] ; d = I[[3]] 
+  m = I[[1]] ; s = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]] 
   
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
@@ -419,16 +425,16 @@ d = dist.name ; pr = show.prior
   to = numeric(loop)
   
   for(i in 1:loop){
-    p = function(x) get(d[i])(x, m[i], s[i])*as.integer(x >= lo)*as.integer(x <= hi)
-    prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
+    p = function(x) get(d[i])(x, m[i], s[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
+    prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
     
 if(!pr){   
     likelihood = function(x) dt(t, df, x*sqrt(N))
-    k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
+    k = integrate(function(x) prior(x)*likelihood(x), lo[i], hi[i])[[1]]
     posterior = function(x) prior(x)*likelihood(x) / k
-    mode[i] = optimize(posterior, c(LL, UL), maximum = TRUE, tol = 1e-20)[[1]]
-    mean[i] = integrate(function(x) x*posterior(x), lo, hi)[[1]]
-    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo, hi)[[1]] - mean^2)
+    mode[i] = optimize(posterior, c(LL, UL), maximum = TRUE, tol = 1e-10)[[1]]
+    mean[i] = integrate(function(x) x*posterior(x), lo[i], hi[i])[[1]]
+    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean^2)
     CI[i,] = HDI(posterior, LL, UL)
     from[i] = mean - 7 * sd
     to[i] = mean + 10 * sd 
@@ -457,15 +463,14 @@ curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(del
 ms.d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
                       col = 1, top = 6, margin = 1.01, LL = -5, UL = 5, show.prior = FALSE){
   
-  d = dist.name ; pr = show.prior
-  eq <- function(...) lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x))))
-  I = eq(m, s, d)
-  m = I[[1]] ; s = I[[2]] ; d = I[[3]]
+  d = dist.name 
+  pr = show.prior
+  eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+  I = eq(m, s, d, lo, hi)
+  m = I[[1]] ; s = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
     
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
-  
-  d = dist.name
-  pr = show.prior
+
   if(add & pr) message("\tNote: 'add' only works for overlying 'Credible Intervals' to compare them.")
 
   N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
@@ -481,16 +486,16 @@ ms.d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add
   to = numeric(loop)
   
   for(i in 1:loop){
-    p = function(x) get(d[i])(x, m[i], s[i])*as.integer(x >= lo)*as.integer(x <= hi)
-    prior = function(x) p(x)/integrate(p, lo, hi)[[1]]
+    p = function(x) get(d[i])(x, m[i], s[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
+    prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
     
 if(!pr){    
     likelihood = function(x) dt(t, df, x*sqrt(N))
-    k = integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
+    k = integrate(function(x) prior(x)*likelihood(x), lo[i], hi[i])[[1]]
     posterior = function(x) prior(x)*likelihood(x) / k
-    mode[i] = optimize(posterior, c(LL, UL), maximum = TRUE, tol = 1e-20)[[1]]
-    mean[i] = integrate(function(x) x*posterior(x), lo, hi)[[1]]
-    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo, hi)[[1]] - mean^2)
+    mode[i] = optimize(posterior, c(LL, UL), maximum = TRUE, tol = 1e-10)[[1]]
+    mean[i] = integrate(function(x) x*posterior(x), lo[i], hi[i])[[1]]
+    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean^2)
     CI[i,] = HDI(posterior, LL, UL)
     from[i] = mean - top * sd
     to[i] = mean + top * sd
