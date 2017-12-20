@@ -35,6 +35,29 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
 
 #==================================================================================================================
 
+hdi <- function(x, y, level = .95){
+  dx <- diff(x)
+  areas <- dx * .5 * (head(y, -1) + tail(y, -1))
+  peak <- which.max(areas)
+  range <- c(peak, peak)
+  found <- areas[peak]
+  while(found < level) {
+    if(areas[range[1]-1] > areas[range[2]+1]) {
+      range[1] <- range[1]-1
+      found <- found + areas[range[1]-1]
+    } else {
+      range[2] <- range[2]+1
+      found <- found + areas[range[2]+1]
+    }
+  }
+  val<-x[range]
+  attr(val, "indexes") <-range
+  attr(val, "area") <-found
+  return(val)
+}
+
+#==================================================================================================================
+
 beta.id <- Vectorize(function(Low, High, Cover = NA){
   
 options(warn = -1)
