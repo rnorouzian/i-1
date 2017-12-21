@@ -543,3 +543,65 @@ if(!pr){
     curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(delta))), bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(delta*" ~ "*.(if(lo > -Inf || hi < Inf) "truncated-")*.(substring(d, 2))(.(round(m, 2)), .(round(s, 2)))), mgp = c(2, .5, 0))
   }
 }
+
+#=================================================================================================================
+
+prop.update <- function(n = 100, yes = 55, top = 5, scale = .1, a = 1.5, b = 1.5, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, lo = 0, hi = 1, tol = 1e5){
+
+pri <- show.prior
+s <- yes  
+d <- dist.name
+if(tol < 1e3) stop("'tol' must be '10000' or larger.")
+is.v = function(x) length(x) > 1
+if(is.v(d) || is.v(a) || is.v(b)) stop("Choose only 'one' prior knowledge base at a time.")
+
+eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
+I <- eq(n, s) ; n <- I[[1]] ; s <- I[[2]]
+loop <- length(n) 
+
+  props <- seq(lo, hi, 1/tol)
+  pr <- get(d)(props, a, b)
+  pr <- tol * pr / sum(pr)
+  
+  original.par = par(no.readonly = TRUE)
+  on.exit(par(original.par))
+   
+  par(mar = c(5, 6.8, 4, 2))
+  plot(pr~props, ylim = c(0, top*loop), type = "n", yaxs = "i", ylab = NA, xlab = "Proportion", font.lab = 2, axes = FALSE, mgp = c(2, .4, 0),main = if(pri) bquote(Proportion*" ~ "*.(if(lo > 0 || hi < 1) "truncated-")*.(substring(d, 2))(.(round(a, 2)), .(round(b, 2)))) else NA)
+  axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
+
+if(!pri){  
+  abline(h = 1:loop+1, col = 8, lty = 3)
+  axis(2, at = 0:loop+1, lab = c("Base knowledge", paste0("Study ", 1:loop)), las = 1, font = 2, cex.axis = .9, mgp = c(2, .2, 0), tick = FALSE, xpd = NA)
+}  
+  polygon(x = props, y = prior.scale*pr, col = adjustcolor(8, .8))
+  
+  I = hdi(x = props, y = pr, level = level)
+  
+  m = props[which.max(pr)]
+  y = prior.scale*(pr[which.max(pr)])
+  segments(I[1], 0, I[2], 0, lend = 1, lwd = 4, xpd = NA)
+  points(m, 0, pch = 19, xpd = NA, cex = 1.4)
+  segments(m, 0, m, y, lty = 3)
+  text(c(.85*I[1], m, I[2]), 0, paste0(round(c(I[1], m, I[2])*1e2, 4), "%"), pos = 3, cex = .8, font = 2, xpd = NA)
+
+if(!pri){
+  for(i in 1:loop) {
+    ps <- dbinom(s[i], n[i], props) * pr
+    ps <- tol * ps / sum(ps)
+polygon(y = scale*ps+i+1, x = props, col = adjustcolor(i+1, .5), border = NA, xpd = NA)
+I = hdi(x = props, y = ps, level = level)
+m = props[which.max(ps)]
+q = deci(I*1e2 , 2); o = deci(m*1e2, 2)
+y = ps[which.max(ps)]*scale + (i+1)
+segments(I[1], i+1, I[2], i+1, lend = 1, lwd = 3, col = i +1)
+segments(m, i+1, m, y, lty = 3, xpd = NA)
+text(m, i+1, paste0(q[1], "%", "     ", o, "%", "     ", q[2], "%"), pos = 3, cex = .7, font = 2)
+points(m, i+1, pch = 19)
+
+    pr <- ps
+    }
+  }
+}
+
