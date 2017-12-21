@@ -2,6 +2,7 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
   
   if(!is.function(FUN)) stop("Error: 'FUN' must be a function.")
   if(length(formals(FUN)) > 1) stop("Error: 'FUN' must be a 'single-argument' function.")
+  if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
   x <- formals(FUN)
   fun <- function(x) FUN(x)
 
@@ -22,7 +23,6 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
     return(integrate(posterior, i1, i2)[[1]])
   }
   post.area <- 1
-  if(post.area < level) stop("limits don't encompass desired area: a =", round(post.area, 3))
   find.lims <- function(a) {
     ur <- uniroot(function(h) areafun(h) / post.area - a,
                   c(eps, posterior(mode) - eps))
