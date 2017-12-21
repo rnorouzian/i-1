@@ -576,7 +576,7 @@ if(!pri){
   abline(h = 1:loop+1, col = 8, lty = 3)
   axis(2, at = 0:loop+1, lab = c("Base knowledge", paste0("Study ", 1:loop)), las = 1, font = 2, cex.axis = .9, mgp = c(2, .2, 0), tick = FALSE, xpd = NA)
 }  
-  polygon(x = props, y = prior.scale*pr, col = adjustcolor(8, .8))
+  polygon(x = c(lo, props, hi), y = prior.scale*c(0, pr, 0), col = adjustcolor(8, .8))
   
   I = hdi(x = props, y = pr, level = level)
   
