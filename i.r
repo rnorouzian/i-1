@@ -427,7 +427,7 @@ d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -
   d = dist.name 
  pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
-  I = eq(m, s, d)
+  I = eq(m, s, d, lo, hi)
   m = I[[1]] ; s = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]] 
   
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
