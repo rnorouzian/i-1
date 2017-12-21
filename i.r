@@ -460,7 +460,7 @@ if(!pr){
     sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean^2)
     CI[i,] = HDI(posterior, LL, UL)
     from[i] = mean - 7 * sd
-    to[i] = mean + 10 * sd 
+    to[i] = mean + 7 * sd 
      }
   }
   
