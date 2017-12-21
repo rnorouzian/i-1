@@ -1,4 +1,6 @@
-     prior = function(x) dbeta(x, 15.56689246, 7.051444) 
+     source("https://raw.githubusercontent.com/izeh/i/master/i.r")
+         C = beta.id(.6, .8, .6)
+     prior = function(x) dbeta(x, C[1,], C[2,]) 
 likelihood = function(x) dbinom(55, 100, x)
  posterior = function(x) prior(x)*likelihood(x)
       mode = optimize(posterior, interval = 0:1, maximum = TRUE, tol = 1e-12)[[1]]
