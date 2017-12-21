@@ -551,7 +551,7 @@ prop.update <- function(n = 100, yes = 55, top = 5, scale = .1, a = 1.5, b = 1.5
 pri <- show.prior
 s <- yes  
 d <- dist.name
-if(tol < 1e3) stop("'tol' must be '10000' or larger.")
+if(tol < 1e4) stop("'tol' must be '10000' or larger.")
 is.v = function(x) length(x) > 1
 if(is.v(d) || is.v(a) || is.v(b)) stop("Choose only 'one' prior knowledge base at a time.")
 
