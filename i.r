@@ -606,3 +606,71 @@ points(m, i+1, pch = 19)
   }
 }
 
+#=======================================================================================================================
+
+d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.name, prior.scale = 1, level = .95, show.prior = FALSE, lo = -2, hi = 2, tol = 1e4){
+  
+  pri <- show.prior
+  d <- dist.name
+  if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
+  is.v = function(x) length(x) > 1
+  if(is.v(d)|| is.v(m) || is.v(s)) stop("Choose only 'one' prior knowledge base at a time.")
+  
+  eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
+  I <- eq(t, n1, n2) 
+  t <- I[[1]]  
+  n1 <- I[[2]]  
+  n2 <- I[[3]] 
+  loop <- length(t) 
+  
+  ds <- seq(lo, hi, 1/tol)
+  pr <- get(d)(ds, m, s)
+  pr <- tol * pr / sum(pr)
+  
+  original.par = par(no.readonly = TRUE)
+  on.exit(par(original.par))
+  
+  par(mar = c(5, 6.8, 4, 2))
+  plot(pr~ds, ylim = c(0, top*loop), xlim = c(lo, hi), type = "n", xaxs = "i", yaxs = "i", ylab = NA, xlab = bquote(bold("Effect Size"~ (delta))), font.lab = 2, mgp = c(2, .4, 0),main = if(pri) bquote("Effect Size"*" ~ "*.(if(lo > -Inf || hi < Inf) "truncated-")*.(substring(d, 2))(.(round(m, 2)), .(round(s, 2)))) else NA, yaxt = "n", bty = "n")
+  
+  if(!pri){  
+    abline(h = 1:loop+1, col = 8, lty = 3)
+    axis(2, at = 0:loop+1, lab = c("Base knowledge", paste0("Study ", 1:loop)), las = 1, font = 2, cex.axis = .9, mgp = c(2, .2, 0), tick = FALSE, xpd = NA)
+  }  
+
+  polygon(x = c(lo, ds, hi), y = prior.scale*c(0, pr, 0), col = adjustcolor(8, .8))
+  
+  I = hdi(x = ds, y = pr, level = level)
+  
+  mode = ds[which.max(pr)]
+  y = prior.scale*(pr[which.max(pr)])
+  segments(I[1], 0, I[2], 0, lend = 1, lwd = 4, xpd = NA)
+  points(mode, 0, pch = 19, xpd = NA, cex = 1.4)
+  segments(mode, 0, mode, y, lty = 3)
+  text(c(.85*I[1], mode, I[2]), 0, paste0(round(c(I[1], mode, I[2]), 3)), pos = 3, cex = .8, font = 2, xpd = NA)
+  
+  N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
+  df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2) 
+  
+  options(warn = -1)
+  if(!pri){
+    for(i in 1:loop) {
+     
+      ps <- dt(t[i], df[i], ds*sqrt(N[i])) * pr
+      ps <- tol * ps / sum(ps)
+      polygon(y = scale*ps+i+1, x = ds, col = adjustcolor(i+1, .5), border = NA, xpd = NA)
+      I = hdi(x = ds, y = ps, level = level)
+      mode = ds[which.max(ps)]
+      q = deci(I, 3); o = deci(mode, 3)
+      y = ps[which.max(ps)]*scale + (i+1)
+      segments(I[1], i+1, I[2], i+1, lend = 1, lwd = 3, col = i +1)
+      segments(mode, i+1, mode, y, lty = 3, xpd = NA)
+      text(mode, i+1, paste0(q[1], "     ", o, "     ", q[2]), pos = 3, cex = .7, font = 2)
+      points(mode, i+1, pch = 19)
+      
+      pr <- ps
+    }
+  }
+}
+
