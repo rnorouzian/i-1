@@ -554,7 +554,7 @@ s <- yes
 d <- dist.name
 if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
 is.v = function(x) length(x) > 1
-if(is.v(d) || is.v(a) || is.v(b)) stop("Choose only 'one' prior knowledge base at a time.")
+if(is.v(d) || is.v(a) || is.v(b)) stop("Error: Choose only 'one' prior knowledge base at a time.")
 
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
 deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
@@ -599,7 +599,7 @@ y = ps[which.max(ps)]*scale + (i+1)
 segments(I[1], i+1, I[2], i+1, lend = 1, lwd = 3, col = i +1)
 segments(m, i+1, m, y, lty = 3, xpd = NA)
 text(m, i+1, paste0(q[1], "%", "     ", o, "%", "     ", q[2], "%"), pos = 3, cex = .7, font = 2)
-points(m, i+1, pch = 19)
+points(m, i+1, pch = 21, bg = "cyan", col = "magenta")
 
     pr <- ps
     }
@@ -614,7 +614,7 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
   d <- dist.name
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
   is.v = function(x) length(x) > 1
-  if(is.v(d)|| is.v(m) || is.v(s)) stop("Choose only 'one' prior knowledge base at a time.")
+  if(is.v(d)|| is.v(m) || is.v(s)) stop("Error: Choose only 'one' prior knowledge base at a time.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
@@ -667,7 +667,7 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
       segments(I[1], i+1, I[2], i+1, lend = 1, lwd = 3, col = i +1)
       segments(mode, i+1, mode, y, lty = 3, xpd = NA)
       text(mode, i+1, paste0(q[1], "     ", o, "     ", q[2]), pos = 3, cex = .7, font = 2)
-      points(mode, i+1, pch = 19)
+      points(mode, i+1, pch = 21, bg = "cyan", col = "magenta")
       
       pr <- ps
     }
