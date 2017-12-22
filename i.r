@@ -612,8 +612,10 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
   
   pri <- show.prior
   d <- dist.name
+  if(lo == -Inf) lo <- -5
+  if(hi ==  Inf) hi <- 5
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
-  is.v = function(x) length(x) > 1
+  is.v <- function(x) length(x) > 1
   if(is.v(d)|| is.v(m) || is.v(s)) stop("Error: Choose only 'one' prior knowledge base at a time.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
