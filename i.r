@@ -423,7 +423,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
 
 #========================================================================================================================
 
-d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -4, UL = 4, pos = 3, show.prior = FALSE, top = 1.01){
+d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -4, UL = 4, pos = 3, show.prior = FALSE, top = 1.01, margin = 6){
 
   d = dist.name 
  pr = show.prior
@@ -460,8 +460,8 @@ if(!pr){
     mean[i] = integrate(function(x) x*posterior(x), lo[i], hi[i])[[1]]
     sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean^2)
     CI[i,] = HDI(posterior, LL, UL)
-    from[i] = mean - 7 * sd
-    to[i] = mean + 7 * sd 
+    from[i] = mean - margin * sd
+    to[i] = mean + margin * sd 
      }
   }
   
