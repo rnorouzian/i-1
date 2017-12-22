@@ -215,7 +215,7 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
       likelihood = function(x) dbinom(Bi, n, x)
       k = integrate(function(x) prior(x)*likelihood(x), lo[i], hi[i])[[1]]
       posterior = function(x) prior(x)*likelihood(x) / k
-      h[i] = list(curve(posterior, ty = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 1e3))
+      h[i] = list(curve(posterior, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 1e3))
       mode[i] = optimize(posterior, c(lo[i], hi[i]), maximum = TRUE)[[1]]
       CI[i,] = HDI(posterior)
     }
