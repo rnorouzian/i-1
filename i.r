@@ -223,7 +223,7 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
   if(!pr){  
     
-    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .5, 0))
+    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
@@ -280,7 +280,7 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
     on.exit(par(original.par))
     
     par(mgp = c(2.2, .3, 0), mar = c(5.1, 4.1, 4.1, 3))   
-    plot(CI[, 1:2], rep(1:loop, 2), ty = "n", xlim = c(0, 1), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2)
+    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(0, 1), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2)
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4", xpd = NA)
