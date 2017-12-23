@@ -608,15 +608,15 @@ points(m, i+1, pch = 21, bg = "cyan", col = "magenta")
 
 #=======================================================================================================================
 
-d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.name, prior.scale = 1, level = .95, show.prior = FALSE, lo = -2, hi = 2, tol = 1e4){
+d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.name, prior.scale = 1, level = .95, show.prior = FALSE, lo = -2, hi = 2, tol = 1e4, margin = hi){
   
   pri <- show.prior
   d <- dist.name
   if(is.infinite(lo)) lo <- -5
   if(is.infinite(hi)) hi <- 5
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
-  is.v <- function(x) length(x) > 1
-  if(is.v(d) || is.v(m) || is.v(s)) stop("Error: Choose only 'one' prior knowledge base at a time.")
+  is.v = function(x) length(x) > 1
+  if(is.v(d)|| is.v(m) || is.v(s)) stop("Choose only 'one' prior knowledge base at a time.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
@@ -634,14 +634,14 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
   on.exit(par(original.par))
   
   par(mar = c(5, 6.8, 4, 2))
-  plot(pr~ds, ylim = c(0, top*loop), xlim = c(lo, hi), type = "n", xaxs = "i", yaxs = "i", ylab = NA, xlab = bquote(bold("Effect Size"~ (delta))), font.lab = 2, mgp = c(2, .4, 0),main = if(pri) bquote("Effect Size"*" ~ "*.(if(lo > -Inf || hi < Inf) "truncated-")*.(substring(d, 2))(.(round(m, 2)), .(round(s, 2)))) else NA, yaxt = "n", bty = "n")
+  plot(pr~ds, ylim = c(0, top*loop), xlim = c(-margin, margin), type = "n", xaxs = "i", yaxs = "i", ylab = NA, xlab = bquote(bold("Effect Size"~ (delta))), font.lab = 2, mgp = c(2, .4, 0),main = if(pri) bquote("Effect Size"*" ~ "*.(if(lo > -Inf || hi < Inf) "truncated-")*.(substring(d, 2))(.(round(m, 2)), .(round(s, 2)))) else NA, yaxt = "n", bty = "n")
   
   if(!pri){  
     abline(h = 1:loop+1, col = 8, lty = 3)
     axis(2, at = 0:loop+1, lab = c("Base knowledge", paste0("Study ", 1:loop)), las = 1, font = 2, cex.axis = .9, mgp = c(2, .2, 0), tick = FALSE, xpd = NA)
   }  
 
-  polygon(x = c(lo, ds, hi), y = prior.scale*c(0, pr, 0), col = adjustcolor(8, .8))
+  polygon(x = c(-margin, ds, margin), y = prior.scale*c(0, pr, 0), col = adjustcolor(8, .8))
   
   I = hdi(x = ds, y = pr, level = level)
   
@@ -675,4 +675,3 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
     }
   }
 }
-
