@@ -626,9 +626,9 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
   n2 <- I[[3]] 
   loop <- length(t) 
   
-  ds <- seq(lo, hi, 1/tol)
-  pr <- get(d)(ds, m, s)
-  pr <- tol * pr / sum(pr)
+  ds <- seq(-4, 4, 1/tol)
+  prx <- get(d)(ds, m, s)*as.integer(ds >= lo)*as.integer(ds <= hi)
+  pr <- tol * prx / sum(prx)
   
   original.par = par(no.readonly = TRUE)
   on.exit(par(original.par))
