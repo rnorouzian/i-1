@@ -354,7 +354,7 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
 
 #====================================================================================================================
 
-d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -5, UL = 5, bottom = 1){
+d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1){
   
   d = dist.name 
   pr = show.prior
@@ -423,7 +423,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
 
 #========================================================================================================================
 
-d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -4, UL = 4, pos = 3, show.prior = FALSE, top = 1.01, margin = 6){
+d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -3, UL = 3, pos = 3, show.prior = FALSE, top = 1.01, margin = 6){
 
   d = dist.name 
  pr = show.prior
@@ -485,7 +485,7 @@ curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(del
 #===================================================================================================================
 
 ms.d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
-                      col = 1, top = 6, margin = 1.01, LL = -5, UL = 5, show.prior = FALSE){
+                      col = 1, top = 6, margin = 1.01, LL = -3, UL = 3, show.prior = FALSE){
   
   d = dist.name 
   pr = show.prior
@@ -553,7 +553,7 @@ pri <- show.prior
 s <- yes  
 d <- dist.name   
 if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
-is.v = function(x) length(x) > 1
+is.v <- function(x) length(x) > 1
 if(is.v(d) || is.v(a) || is.v(b)) stop("Error: Choose only 'one' prior knowledge base at a time.")
 
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -615,7 +615,7 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
   if(is.infinite(lo)) lo <- -5
   if(is.infinite(hi)) hi <- 5
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
-  is.v = function(x) length(x) > 1
+  is.v <- function(x) length(x) > 1
   if(is.v(d)|| is.v(m) || is.v(s)) stop("Choose only 'one' prior knowledge base at a time.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
