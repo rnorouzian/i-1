@@ -598,7 +598,7 @@ q = deci(I*1e2 , 2); o = deci(m*1e2, 2)
 y = ps[which.max(ps)]*scale + (i+1)
 segments(I[1], i+1, I[2], i+1, lend = 1, lwd = 3, col = i +1)
 segments(m, i+1, m, y, lty = 3, xpd = NA)
-text(m, i+1, paste0(q[1], "%", "     ", o, "%", "     ", q[2], "%"), pos = 3, cex = .7, font = 2)
+text(m, i+1, paste0(q[1], "%", "     ", o, "%", "     ", q[2], "%"), pos = 3, cex = .7, font = 2, xpd = NA)
 points(m, i+1, pch = 21, bg = "cyan", col = "magenta")
 
     pr <- ps
@@ -668,7 +668,7 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
       y = ps[which.max(ps)]*scale + (i+1)
       segments(I[1], i+1, I[2], i+1, lend = 1, lwd = 3, col = i +1)
       segments(mode, i+1, mode, y, lty = 3, xpd = NA)
-      text(mode, i+1, paste0(q[1], "     ", o, "     ", q[2]), pos = 3, cex = .7, font = 2)
+      text(mode, i+1, paste0(q[1], "     ", o, "     ", q[2]), pos = 3, cex = .7, font = 2, xpd = NA)
       points(mode, i+1, pch = 21, bg = "cyan", col = "magenta")
       
       pr <- ps
