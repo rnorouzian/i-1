@@ -547,12 +547,11 @@ if(!pr){
 
 #=================================================================================================================
 
-prop.update <- function(n = 100, yes = 55, top = 5, scale = .1, a = 1.5, b = 1.5, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
+prop.update <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, hi = 1, a = 1.5, b = 1.5, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
 
 pri <- show.prior
 s <- yes  
-d <- dist.name
-lo <- 0 ; hi <- 1 ;   
+d <- dist.name   
 if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
 is.v = function(x) length(x) > 1
 if(is.v(d) || is.v(a) || is.v(b)) stop("Error: Choose only 'one' prior knowledge base at a time.")
@@ -562,9 +561,9 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
 I <- eq(n, s) ; n <- I[[1]] ; s <- I[[2]]
 loop <- length(n) 
 
-  props <- seq(lo, hi, 1/tol)
-  pr <- get(d)(props, a, b)
-  pr <- tol * pr / sum(pr)
+  props <- seq(0, 1, 1/tol)
+  prx <- get(d)(props, a, b)*as.integer(props >= lo)*as.integer(props <= hi)
+  pr <- tol * prx / sum(prx)
   
   original.par = par(no.readonly = TRUE)
   on.exit(par(original.par))
