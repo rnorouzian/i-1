@@ -675,3 +675,69 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
     }
   }
 }
+
+#==================================================================================================================
+
+peta.update <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 2, lo = 0, hi = 1, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
+  
+  pri <- show.prior
+  d <- dist.name
+  if(hi == 1) hi <- .9999999 ;
+  if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
+  is.v <- function(x) length(x) > 1
+  if(is.v(d) || is.v(a) || is.v(b)) stop("Choose only 'one' prior knowledge base at a time.")
+  
+  eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
+  I <- eq(f, N, df1, df2) ; f <- I[[1]] ; N <- I[[2]] ; df1 <- I[[3]] ; df2 <- I[[4]] ;
+  loop <- length(f) 
+  
+  peta <- seq(0, .9999999, 1/tol)
+  prx <- get(d)(peta, a, b)*as.integer(peta >= lo)*as.integer(peta <= hi)
+  pr <- tol * prx / sum(prx)
+  
+  original.par = par(no.readonly = TRUE)
+  on.exit(par(original.par))
+  
+  par(mar = c(5, 6.8, 4, 2))
+  plot(pr~peta, ylim = c(0, top*loop), type = "n", yaxs = "i", ylab = NA, xlab = bquote(bold("Partial Eta.Sq"~(eta[p]^2))), font.lab = 2, axes = FALSE, mgp = c(2, .4, 0),main = if(pri) bquote(eta[p]^2*" ~ "*.(if(lo > 0 || hi < .9999999) "truncated-")*.(substring(d, 2))(.(round(a, 2)), .(round(b, 2)))) else NA)
+  axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
+  
+  if(!pri){  
+    abline(h = 1:loop+1, col = 8, lty = 3)
+    axis(2, at = 0:loop+1, lab = c("Base knowledge", paste0("Study ", 1:loop)), las = 1, font = 2, cex.axis = .9, mgp = c(2, .2, 0), tick = FALSE, xpd = NA)
+  }  
+  polygon(x = c(lo, peta, hi), y = prior.scale*c(0, pr, 0), col = adjustcolor(8, .8))
+  
+  
+  I = hdi(x = peta, y = pr, level = level)
+  
+  m = peta[which.max(pr)]
+  y = prior.scale*(pr[which.max(pr)])
+  segments(I[1], 0, I[2], 0, lend = 1, lwd = 4, xpd = NA)
+  points(m, 0, pch = 19, xpd = NA, cex = 1.4)
+  segments(m, 0, m, y, lty = 3)
+  text(c(.85*I[1], m, I[2]), 0, paste0(round(c(I[1], m, I[2])*1e2, 4), "%"), pos = 3, cex = .8, font = 2, xpd = NA)
+  
+  if(!pri){
+    for(i in 1:loop) {
+      
+      ps <- df(f[i], df1[i], df2[i], (peta * N[i]) / (1 - peta) ) * pr
+      ps <- tol * ps / sum(ps)
+      m = peta[which.max(ps)]
+      polygon(y = c(i+1, scale*ps+i+1, i+1), x = c(lo, peta, hi), col = adjustcolor(i+1, .5), border = NA, xpd = NA)
+      I = hdi(x = peta, y = ps, level = level)
+      
+      q = deci(I*1e2 , 2); 
+      o = deci(m*1e2, 2)
+      y = ps[which.max(ps)]*scale + (i+1)
+      segments(I[1], i+1, I[2], i+1, lend = 1, lwd = 3, col = i +1)
+      segments(m, i+1, m, y, lty = 3, xpd = NA)
+      text(m, i+1, paste0(q[1], "%", "     ", o, "%", "     ", q[2], "%"), pos = 3, cex = .7, font = 2)
+      points(m, i+1, pch = 21, bg = "cyan", col = "magenta")
+      
+      pr <- ps
+    }
+  }
+}
+
