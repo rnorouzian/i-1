@@ -616,7 +616,7 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
   if(is.infinite(hi)) hi <- 5
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
   is.v <- function(x) length(x) > 1
-  if(is.v(d)|| is.v(m) || is.v(s)) stop("Choose only 'one' prior knowledge base at a time.")
+  if(is.v(d) || is.v(m) || is.v(s)) stop("Choose only 'one' prior knowledge base at a time.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
