@@ -6,7 +6,6 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
   x <- formals(FUN)
   fun <- function(x) FUN(x)
 
-  lower = min(lower, upper) ; upper = max(lower, upper)
   posterior = function(x) fun(x)/integrate(fun, lower, upper)[[1]]
   mode = optimize(posterior, c(lower, upper), maximum = TRUE, tol = 1e-12)[[1]]
   inverse.posterior <- function(x, side = "left") {
