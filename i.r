@@ -39,6 +39,7 @@ hdi <- function(x, y, level = .95){
 if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
 x <- na.omit(x)
 y <- na.omit(y)
+  
   dx <- diff(x)
   areas <- dx * .5 * (head(y, -1) + tail(y, -1))
   peak <- which.max(areas)
