@@ -396,7 +396,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
       to[i] = mean + margin * sd
       mode[i] = optimize(posterior, c(from, to), maximum = TRUE, tol = 1e-10)[[1]]
       CI[i,] = HDI(posterior, LL, UL)
-      h[i] = list(curve(posterior, from, to, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 1e3))
+      h[i] = list(curve(posterior, from, to, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
     }
   }
   
