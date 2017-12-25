@@ -36,6 +36,7 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
 #==================================================================================================================
 
 hdi <- function(x, y, level = .95){
+  
 if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
 x <- na.omit(x)
 y <- na.omit(y)
