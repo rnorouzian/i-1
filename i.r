@@ -152,7 +152,7 @@ return(c(mode = parm[[1]], scale = parm[[2]]))
   
 #===============================================================================================
 
-normal.id <- Vectorize(function(Low, High, Cover = NA){
+norm.id <- Vectorize(function(Low, High, Cover = NA){
 
 options(warn = -1)
   
