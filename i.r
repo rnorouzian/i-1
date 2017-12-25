@@ -588,7 +588,7 @@ mode <- numeric(loop)
     for(i in 1:loop){
       polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .6), border = NA, xpd = NA)
     }
-    m = scale*sapply(h, function(x) max(x[[2]])) + 1:loop
+    m = scale*sapply(h, function(x) max(x[[2]], na.rm = TRUE)) + 1:loop
     segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
     points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.3, col = "magenta", xpd = NA)
     I = deci(CI*1e2 , 2); o = deci(mode*1e2, 2)
