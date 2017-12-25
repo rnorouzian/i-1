@@ -38,7 +38,6 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
 hdi <- function(x, y, level = .95){
   
 if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
-  
   dx <- diff(x)
   areas <- dx * .5 * (head(y, -1) + tail(y, -1))
   peak <- which.max(areas)
@@ -233,7 +232,7 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
     legend("topleft", rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5)
     box()
     for(i in 1:loop){
-      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .6), border = NA, xpd = NA)
+      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .55), border = NA, xpd = NA)
     }
     m = scale*sapply(h, function(x) max(x[[2]])) + 1:loop
     segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
@@ -411,7 +410,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
     axis(2, at = 1:loop, lab = d, font = 2, las = 1, cex.axis = .8, tick = FALSE, mgp = c(2, .5, 0))
     
     for(i in 1:loop){
-      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .6), border = NA, xpd = NA)
+      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .55), border = NA, xpd = NA)
     }
     a = scale*(f-1:loop)+1:loop
     segments(mode, 1:loop, mode, a, lty = 3, xpd = NA, lend = 1)
@@ -589,7 +588,7 @@ mode <- numeric(loop)
     legend("topleft", rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5)
     box()
     for(i in 1:loop){
-      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .6), border = NA, xpd = NA)
+      polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .55), border = NA, xpd = NA)
     }
     m = scale*sapply(h, function(x) max(x[[2]], na.rm = TRUE)) + 1:loop
     segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
