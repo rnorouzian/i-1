@@ -750,7 +750,9 @@ if(!pri){
   segments(I[1], 0, I[2], 0, lend = 1, lwd = 4, xpd = NA)
   points(m, 0, pch = 19, xpd = NA, cex = 1.4)
   segments(m, 0, m, y, lty = 3)
-  text(c(.85*I[1], m, I[2]), 0, paste0(round(c(I[1], m, I[2])*1e2, 4), "%"), pos = 3, cex = .8, font = 2, xpd = NA)
+  q <- deci(I*1e2, 2) 
+  o <- deci(m*1e2, 2)
+  text(c(I[1], m, I[2]), 0, c(paste0(q[1], "%"), paste0(o, "%"), paste0(q[2], "%") ), pos = 3, cex = .8, font = 2, xpd = NA)
 
 if(!pri){
   for(i in 1:loop) {
