@@ -715,7 +715,8 @@ prop.update <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, hi = 1, 
 
 pri <- show.prior
 s <- yes  
-d <- dist.name   
+d <- dist.name 
+if(d == "dbeta" & a == 1 & b == 1) a <- b <- 1.0000001;  
 if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
 is.v <- function(x) length(x) > 1
 if(is.v(d) || is.v(a) || is.v(b)) stop("Error: Choose only 'one' prior knowledge base at a time.")
