@@ -37,8 +37,7 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
 hdi <- function(x, y, level = .95){
   
 if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
-  dx <- diff(x)
-  areas <- dx * .5 * (head(y, -1) + tail(y, -1))
+  areas <- diff(x) * .5 * (head(y, -1) + tail(y, -1))
   peak <- which.max(areas)
   range <- c(peak, peak)
   found <- areas[peak]
@@ -51,7 +50,7 @@ if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
       found <- found + areas[range[2]+1]
     }
   }
-  val<-x[range]
+  val <- x[range]
   attr(val, "indexes") <- range
   attr(val, "area") <- found
   return(val)
