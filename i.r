@@ -792,7 +792,7 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
   n2 <- I[[3]] 
   loop <- length(t) 
   
-  ds <- seq(-4, 4, 1/tol)
+  ds <- seq(-5, 5, 1/tol)
   prx <- get(d)(ds, m, s)*as.integer(ds >= lo)*as.integer(ds <= hi)
   pr <- tol * prx / sum(prx)
   
