@@ -809,14 +809,14 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
 
   polygon(x = c(-margin, ds, margin), y = prior.scale*c(0, pr, 0), col = adjustcolor(8, .8))
   
-  I = hdi(x = ds, y = pr, level = level)
+  # I = hdi(x = ds, y = pr, level = level)
   
   mode = ds[which.max(pr)]
   y = prior.scale*(pr[which.max(pr)])
-  segments(I[1], 0, I[2], 0, lend = 1, lwd = 4, xpd = NA)
+  # segments(I[1], 0, I[2], 0, lend = 1, lwd = 4, xpd = NA)
   points(mode, 0, pch = 19, xpd = NA, cex = 1.4)
   segments(mode, 0, mode, y, lty = 3)
-  text(c(.85*I[1], mode, I[2]), 0, paste0(round(c(I[1], mode, I[2]), 3)), pos = 3, cex = .8, font = 2, xpd = NA)
+  # text(c(.85*I[1], mode, I[2]), 0, paste0(round(c(I[1], mode, I[2]), 3)), pos = 3, cex = .8, font = 2, xpd = NA)
   
   N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
   df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2) 
