@@ -375,7 +375,7 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
   to = numeric(loop) 
   h = list()
   
-  N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
+  N = ifelse(is.na(n2), n1, (n1 * n2) / (n1 + n2))
   df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2)   
   
   options(warn = -1)
@@ -432,7 +432,7 @@ d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -
   
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
-  N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
+  N = ifelse(is.na(n2), n1, (n1 * n2) / (n1 + n2))
   df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2)   
   
   options(warn = -1)
@@ -496,7 +496,7 @@ ms.d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add
 
   if(add & pr) message("\tNote: 'add' only works for overlying 'Credible Intervals' to compare them.")
 
-  N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
+  N = ifelse(is.na(n2), n1, (n1 * n2) / (n1 + n2))
   df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2)   
   
   options(warn = -1)
@@ -818,7 +818,7 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
   segments(mode, 0, mode, y, lty = 3)
   # text(c(.85*I[1], mode, I[2]), 0, paste0(round(c(I[1], mode, I[2]), 3)), pos = 3, cex = .8, font = 2, xpd = NA)
   
-  N = ifelse(is.na(n2), n1, n1 * n2 / (n1 + n2))
+  N = ifelse(is.na(n2), n1, (n1 * n2) / (n1 + n2))
   df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2) 
   
   options(warn = -1)
