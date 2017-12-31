@@ -11,7 +11,7 @@ CI.bi <- function(n, p, n.sim, ylabel = TRUE){
 capture = sim[ ,1] <= p & p <= sim[ ,2]
   
   par(mgp = c(2, .2, 0), tck = -.015)
-  plot(sim[, 1:2], rep(1:n.sim, 2), ty = "n", ylab = NA, yaxt = "n", xaxt = "n", xlab = "Proportion of (B)", font.lab = 2, bty = "n")
+  plot(sim[, 1:2], rep(1:n.sim, 2), type = "n", ylab = NA, yaxt = "n", xaxt = "n", xlab = "Proportion of (B)", font.lab = 2, bty = "n")
   
   abline(h = 1:n.sim, col = 8, lty = 3)
   abline(v = p, lty = 2, col = 2)
