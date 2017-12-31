@@ -1,4 +1,4 @@
-CI.bi = function(n, p, n.sim, ylabel = TRUE){
+CI.bi <- function(n, p, n.sim, ylabel = TRUE){
   
   fun = function(){
     x = rbinom(1, n, p)
