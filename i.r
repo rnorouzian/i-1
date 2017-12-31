@@ -1,4 +1,9 @@
-HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
+HDI <- function(FUN, ...)
+{
+  UseMethod("HDI")
+}
+
+HDIi <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
   
   if(!is.function(FUN)) stop("Error: 'FUN' must be a function.")
   if(length(formals(FUN)) > 1) stop("Error: 'FUN' must be a 'single-argument' function.")
@@ -34,7 +39,12 @@ HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
 
 #==================================================================================================================
 
-hdi <- function(x, y, level = .95){
+hdi <- function(x, ...)
+{
+  UseMethod("hdi")
+}
+
+hdii <- function(x, y, level = .95){
   
 if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
   areas <- diff(x) * .5 * (head(y, -1) + tail(y, -1))
@@ -58,7 +68,12 @@ if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
 
 #==================================================================================================================
 
-beta.id <- Vectorize(function(Low, High, Cover = NA){
+beta.id <- function(Low, ...)
+{
+  UseMethod("beta.id")
+}
+
+beta.idi <- Vectorize(function(Low, High, Cover = NA){
   
 options(warn = -1)
 L <- if(is.character(Low)) as.numeric(substr(Low, 1, nchar(Low)-1)) / 100 else Low
@@ -113,7 +128,12 @@ return(c(alpha = parm[[1]], beta = parm[[2]]))
   
 #===============================================================================================
 
-cauchy.id <- Vectorize(function(Low, High, Cover = NA){
+cauchy.id <- function(Low, ...)
+{
+  UseMethod("cauchy.id")
+}
+  
+cauchy.idi <- Vectorize(function(Low, High, Cover = NA){
 
 options(warn = -1)
 
@@ -151,7 +171,12 @@ return(c(mode = parm[[1]], scale = parm[[2]]))
   
 #===============================================================================================
 
-norm.id <- Vectorize(function(Low, High, Cover = NA){
+norm.id <- function(Low, ...)
+{
+  UseMethod("norm.id")
+}
+  
+norm.idi <- Vectorize(function(Low, High, Cover = NA){
 
 options(warn = -1)
   
@@ -189,8 +214,13 @@ if(is.df(Low, q[[1]]) || is.df(High, q[[2]])) {
 }, c("Low", "High", "Cover"))
   
 #===============================================================================================
+ 
+prop.priors <- function(a, ...)
+{
+  UseMethod("prop.priors")
+}  
   
-prop.priors <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
+prop.priorsi <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
   
 d = dist.name
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -245,7 +275,12 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
 
 #==========================================================================================================================
 
-prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.prior = FALSE, pos = 3, top = 1.01){
+prop.hyper <- function(a, ...)
+{
+  UseMethod("prop.hyper")
+}
+
+prop.hyperi <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.prior = FALSE, pos = 3, top = 1.01){
   
 d = dist.name
 Bi = yes
@@ -297,7 +332,12 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
 
 #===================================================================================================================
 
-ab.prop.hyper <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE, 
+ab.prop.hyper <- function(a, ...)
+{
+  UseMethod("ab.prop.hyper")
+}
+
+ab.prop.hyperi <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE, 
                           yes = 55, n = 1e2, col = 1, show.prior = FALSE){
   d = dist.name
   Bi = yes
@@ -353,7 +393,12 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
 
 #====================================================================================================================
 
-d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1){
+d.priors <- function(t, ...)
+{
+  UseMethod("d.priors")
+}
+
+d.priorsi <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1){
   
   d = dist.name 
   pr = show.prior
@@ -422,7 +467,12 @@ d.priors <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale
 
 #========================================================================================================================
 
-d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -3, UL = 3, pos = 3, show.prior = FALSE, top = 1.01, margin = 6){
+d.hyper <- function(t, ...)
+{
+  UseMethod("d.hyper")
+}
+
+d.hyperi <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -3, UL = 3, pos = 3, show.prior = FALSE, top = 1.01, margin = 6){
 
   d = dist.name 
  pr = show.prior
@@ -483,7 +533,12 @@ curve(prior, -6, 6, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(del
 
 #===================================================================================================================
 
-ms.d.hyper <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
+ms.d.hyper <- function(t, ...)
+{
+  UseMethod("ms.d.hyper")
+}
+
+ms.d.hyperi <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
                       col = 1, top = 6, margin = 1.01, LL = -3, UL = 3, show.prior = FALSE){
   
   d = dist.name 
@@ -546,7 +601,12 @@ if(!pr){
 
 #==================================================================================================================
 
-peta.priors <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
+peta.priors <- function(f, ...)
+{
+  UseMethod("peta.priors")
+}
+
+peta.priorsi <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
   
   d = dist.name
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -601,7 +661,12 @@ mode <- numeric(loop)
 
 #===================================================================================================================
 
-peta.hyper <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", show.prior = FALSE, pos = 3, top = 1.01){
+peta.hyper <- function(f, ...)
+{
+  UseMethod("peta.hyper")
+}
+
+peta.hyperi <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", show.prior = FALSE, pos = 3, top = 1.01){
   
   d <- dist.name
  pr <- show.prior
@@ -653,7 +718,12 @@ mode <- numeric(loop)
 
 #===================================================================================================================
 
-ab.peta.hyper <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", add = FALSE, 
+ab.peta.hyper <- function(f, ...)
+{
+  UseMethod("ab.peta.hyper")
+}
+
+ab.peta.hyperi <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", add = FALSE, 
                           col = 1, show.prior = FALSE){
    d <- dist.name
   pr <- show.prior    
@@ -710,7 +780,12 @@ is.v <- function(x) length(x) > 1
 
 #=================================================================================================================
 
-prop.update <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, hi = 1, a = 1.5, b = 1.5, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
+prop.update <- function(n, ...)
+{
+  UseMethod("prop.update")
+}
+
+prop.updatei <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, hi = 1, a = 1.5, b = 1.5, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
 
 pri <- show.prior
 s <- yes  
@@ -774,7 +849,12 @@ points(m, i+1, pch = 21, bg = "cyan", col = "magenta")
 
 #=======================================================================================================================
 
-d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.name, prior.scale = 1, level = .95, show.prior = FALSE, lo = -2, hi = 2, tol = 1e4, margin = hi){
+d.update <- function(t, ...)
+{
+  UseMethod("d.update")
+}
+
+d.updatei <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.name, prior.scale = 1, level = .95, show.prior = FALSE, lo = -2, hi = 2, tol = 1e4, margin = hi){
   
   pri <- show.prior
   d <- dist.name
@@ -844,7 +924,12 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
 
 #==================================================================================================================
 
-peta.update <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 2, lo = 0, hi = 1, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
+peta.update <- function(f, ...)
+{
+  UseMethod("peta.update")
+}
+
+peta.updatei <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 2, lo = 0, hi = 1, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
   
   pri <- show.prior
   d <- dist.name
