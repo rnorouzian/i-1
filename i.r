@@ -545,8 +545,6 @@ ms.d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.n
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
 
   if(add & pr) message("\tNote: 'add' only works for overlying 'Credible Intervals' to compare them.")
-
-    
   
   options(warn = -1)
   loop = length(m) 
@@ -579,9 +577,9 @@ if(!pr){
   if(!add & !pr){
     plot(rep(1:loop, 2), CI[, 1:2], type = "n", ylim = c(min(from), max(to)), xlim = c(1, margin*loop), xlab = "Prior Parameter 'M'", xaxt = "n", ylab = bquote(bold("Credible Interval "(delta))), font.lab = 2)
     abline(v = 1:loop, col = 8, lty = 3, mgp = c(2, .5, 0))
-    axis(3, at = 1:length(s), lab = round(s, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .2, 0))
+    axis(3, at = 1:length(s), lab = round(s, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .3, 0))
     text(mean(par('usr')[1:2]), 1.06*par('usr')[4], "Prior Parameter 'S'", pos = 3, cex = 1, xpd = NA, font = 2)
-    axis(1, at = 1:length(m), lab = round(m, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .5, 0))
+    axis(1, at = 1:length(m), lab = round(m, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .3, 0))
   }
   
   if(!pr){
