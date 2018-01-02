@@ -296,7 +296,6 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
   for(i in 1:loop){
     p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
     prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
-    if(!pr){
       likelihood = function(x) dbinom(Bi, n, x)
       k = integrate(function(x) prior(x)*likelihood(x), lo[i], hi[i])[[1]]
       posterior = function(x) prior(x)*likelihood(x) / k
