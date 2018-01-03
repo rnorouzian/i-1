@@ -982,3 +982,190 @@ peta.update.default <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 
   }
 }
 
+#===================================================================================================================
+
+eq.test <- function(t, ...)
+{
+  UseMethod("eq.test")
+}
+
+eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1, margin = 9, lo = -Inf, hi = Inf){
+  
+  d <- dist.name
+  
+  if(dL >= dU) stop("Your Upper value must be larger than your Lower value")
+  
+  if(abs(dL) != abs(dU))message("\n\tYou have an \"Unequal Equivalence Bound\", thus we can't provide an extra\n\t function showing the effect of choosing various Unequal bounds.")
+  
+  decimal <- function(x, k){
+    
+    if(typeof(x) == "character"){
+      return(x)
+    }
+    format(round(x, k), nsmall = k, scientific =
+             ifelse(x >= 1e5 || x <= -1e5 || x <= 1e-5 & x >= -1e-5, TRUE, FALSE) )
+  }
+ 
+  options(warn = -1)
+  
+   N <- ifelse(is.na(n2), n1, (n1 * n2) / (n1 + n2))
+  df <- ifelse(is.na(n2), n1 - 1, n1 + n2 - 2)
+  
+         p <- function(x) get(d)(x, m, s)*as.integer(x >= lo)*as.integer(x <= hi)
+     prior <- function(x) p(x)/integrate(p, lo, hi)[[1]]  
+likelihood <- function(x) dt(t, df, x*sqrt(N))
+         k <- integrate(function(x) prior(x)*likelihood(x), lo, hi)[[1]]
+ posterior <- function(x) prior(x)*likelihood(x)/k
+  
+  mean <- integrate(function(x) x*posterior(x), lo, hi)[[1]]
+    sd <- sqrt(integrate(function(x) x^2*posterior(x), lo, hi)[[1]] - mean^2)
+    
+  x.min.1 <- mean - margin * sd
+  x.max.1 <- mean + margin * sd
+  
+  ## The dL and dU may be different from x.min.1 and x.max.1 respectively, if so, adjust accordingly.
+  x.min <- if(dL < x.min.1) { dL + (.05*dL) } else { x.min.1 }
+  x.max <- if(dU > x.max.1) { dU + (.05*dU) } else { x.max.1 }
+  
+  CI <- HDI(posterior, x.min, x.max)
+  
+  cdf <- Vectorize(function(q){
+    integrate(posterior, lo, q)[[1]]
+  }, "q")
+  
+  inv.cdf <- Vectorize(function(p){
+    uniroot(function(q)cdf(q) - p, c(x.min, x.max))[[1]]
+  }, "p")
+  
+  mode <- optimize(posterior, c(x.min, x.max), maximum = TRUE)[[1]]
+  peak <- posterior(mode)
+  
+  original.par = par(no.readonly = TRUE)
+  on.exit(par(original.par))
+  
+  par(mar = c(.1, 4.1, 3.1, 2.1), mfcol = c(2, 1))
+  
+  cc = curve(posterior, from = x.min, to = x.max, type = "l", 
+             xlab = NA, font.lab = 2 ,las = 1, ylab = NA,
+             bty = "n", xlim = c(x.min, x.max), ylim = c(0, peak+(.1*peak)), 
+             xaxt = "n", mgp = c(2.3, .75, 0), n = 1e3, yaxt = "n")
+  
+  post.x = cc$x
+  post.y = cc$y
+  
+  XXX <- post.x >= CI[1] &  post.x <= CI[2]
+  
+  low.extreme <- par('usr')[3]
+  
+  polygon(c(CI[1], post.x[XXX], CI[2]), c(low.extreme, post.y[XXX], low.extreme), col = rgb(1, 1, 0, .5), border = NA)
+  
+  segments(mode, low.extreme, mode, peak, lty = 3)
+  
+  text(mode, peak/2, decimal(mode, 2), srt = 90, pos = 3, font = 2)
+  
+  lines(post.x, post.y, lwd = 2)
+  
+  segments(CI[1], low.extreme, CI[2], low.extreme, col = 2, lend = 1, lwd = 40)
+  
+  segments(dL, low.extreme, dU, low.extreme, col = adjustcolor(3, .5), lend = 1, lwd = 40)
+  
+  points(mode, low.extreme/5, pch = 21, col = 0, bg = 0, cex = 1.5)
+  
+  axis(side = 1, at = decimal(seq(x.min, x.max, len = 7), 2), mgp = c(3, .75, 0))
+  axis(side = 1, at = 0, mgp = c(3, 1.1, 0), col = 0, col.axis = "magenta", tick = FALSE, line = - 1.4, cex.axis = 1.4, font = 2)
+  
+  mtext(side = 1, bquote(bold("Population Effect Size"~(delta))), line = 3)
+  
+  x1 = dL
+  y1 = peak+.02*peak
+  x2 = dU
+  y2 = y1
+  x.text = (dL+dU)/2
+  y.text = peak+.05*peak
+  
+  segments(c(dL, dU), rep(low.extreme, 2), c(dL, dU), c(y1, y2), col = 'green2', lend = 1, lty = 2)
+  
+  segments(c(x1, x2), c(y1, y2), rep(x.text, 2), rep(y.text*1.023, 2), lwd = 2, col = 'magenta')
+  
+  text(x.text, y.text, "Practically Equivalent to ZERO", font = 2, pos = 3, col = 'darkgreen', cex = .7, xpd = TRUE)
+  
+  points(c(dL, dU), c(y1, y2), pch = 21, col = 'green3', bg = 'green3', cex = 1.1)
+  
+  ## How much is it probable that the equivalence be true in population:
+  
+  a = cdf(dL)
+  b = cdf(dU)
+  
+  Post.in.ROPE.Y = (b - a)
+  Post.in.ROPE.X = (dU - dL) / 2
+  
+  BB = decimal((b - a)*1e2, 2)
+  
+ # legend("top", legend = c("There is", paste0(BB, "%"), "probability that TRUE effect size is equivalent to ZERO"),
+  #       bty = "n", inset = c(-1, -.2), text.font = 2, cex = .8, xpd = TRUE, ncol = 3, text.col = c(1, 2, 1),
+   #     x.intersp = c(-49.5, -1.5, -19))
+  
+  title(main = paste0("There is ", "''", BB, "%", "''", " probability that TRUE effect size is equivalent to ZERO"), cex.main = .8)
+  
+  legend("topleft", legend = paste0("95% HDI: [",decimal(CI[1], 2), ", ", decimal(CI[2], 2),"]"),
+         bty = "n", inset = c(-.035,.1), text.font = 2, text.col = 'red4', cex = .8)
+  
+  if(CI[1] > dU || CI[2] < dL) {
+    
+    legend("topright", "NOT Practically equivalent to \"0\" ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2')
+    
+  } else
+    
+    if(CI[1] > dL & CI[2] < dU) {
+      
+      legend("topright", "Practically equivalent to \"0\" ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2')
+      
+    } else  {
+      
+      legend("topright", "No decision can be made ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2')
+    }
+  
+  ########################################################################################
+  ## How choice of ROPE can affect porortion of posterior that ROPE covers (make function):
+  ########################################################################################
+  
+  par(mar = c(3.1, 4.1, 6.1, 2.1), mgp = c(2.5, .5, 0))
+  
+  eq.low = ifelse(abs(dL) <= .3, 4, 2)*( - ((dU - dL) / 2) )
+  eq.upp = ifelse(abs(dL) <= .3, 4, 2)*(   ((dU - dL) / 2) )
+  
+  L = seq(eq.low, 0, length.out = 1e2)
+  U = seq(eq.upp, 0, length.out = 1e2)
+  
+  aa = sapply(L, function(x) cdf(x))
+  bb = sapply(U, function(x) cdf(x))
+  
+  Eq = (bb - aa)  # porortion of posterior that ROPE covers
+  half = (U - L)/2
+  
+  plot(half, Eq, type = ifelse(abs(dL) == abs(dU), 'l' ,'n'), lwd = 3, col = 'red4', axes = FALSE,
+       xlab = NA, ylab = paste0("%",'Posterior in ROPE'), font.lab = 2, cex.lab = .8)
+  
+  mtext(side = 1, "Half of ROPE", font = 2, line = 1.5, cex = .9)
+  
+  axis(1, at = decimal(seq(0, eq.upp[1], length.out = 7), 2), las = 1)
+  axis(2, at = seq(0, Eq[1], length.out = 5),
+       labels = paste0(1e2*round(seq(0, Eq[1], length.out = 5),
+                                2), "%"), las = 1)
+  
+  pars = par('usr')
+  
+  rect(pars[1], pars[3], pars[2], pars[4], col = adjustcolor("grey", .1), border = NA)
+   
+  rect(pars[1], pars[3], Post.in.ROPE.X, Post.in.ROPE.Y,
+       col = adjustcolor("yellow",
+                         alpha.f = ifelse(Post.in.ROPE.Y  <= .2, .1,
+                                          ifelse(Post.in.ROPE.Y > .2 & Post.in.ROPE.Y <= .3, .15,
+                                                 ifelse(Post.in.ROPE.Y > .3 & Post.in.ROPE.Y <= .4, .2, .3)))),
+       lty = 2 )
+   
+  points(Post.in.ROPE.X, Post.in.ROPE.Y,
+         pch = 21, cex = 2, bg = 'green')
+  
+  box()
+}
