@@ -30,7 +30,7 @@ HDI.default <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
   find.lims <- function(a) {
     ur <- uniroot(function(h) areafun(h) / post.area - a,
                   c(eps, posterior(mode) - eps))
-    return(ur$root)
+    return(ur[[1]])
   }
   f <- find.lims(level)
   return(c(inverse.posterior(f, "left"),
