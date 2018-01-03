@@ -19,7 +19,7 @@ HDI.default <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3){
                  left = try(uniroot(target, interval = c(lower, mode))),
                 right = try(uniroot(target, interval = c(mode, upper))))
     if(inherits(ur, "try-error")) stop("inverse.posterior failed: You may change prior hyperparameters or extend limit?")
-    return(ur$root)
+    return(ur[[1]])
   }
   areafun <- function(h) {
     i1 <- inverse.posterior(h, "left")
