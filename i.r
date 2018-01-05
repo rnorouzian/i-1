@@ -1130,8 +1130,11 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   eq.low = ifelse(abs(dL) <= .3, 4, 2)*( - ((dU - dL) / 2) )
   eq.upp = ifelse(abs(dL) <= .3, 4, 2)*(   ((dU - dL) / 2) )
 
-  aa = cdf(seq(eq.low, 0, length.out = 1e2))
-  bb = cdf(seq(eq.upp, 0, length.out = 1e2))
+  L = seq(eq.low, 0, length.out = 1e2)
+  U = seq(eq.upp, 0, length.out = 1e2)
+    
+  aa = cdf(L)
+  bb = cdf(U)
   
   Eq = (bb - aa)  # porortion of posterior that ROPE covers
   half = (U - L)/2
