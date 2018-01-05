@@ -1050,7 +1050,7 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   cc = curve(posterior, from = x.min, to = x.max, las = 1, type = "n",
              xlab = bquote(bold("Population Effect Size"~(delta))), 
              font.lab = 2, ylab = NA, bty = "n", ylim = c(0, 1.1*peak), 
-             xaxt = "n", mgp = c(2.5, .75, 0), n = 1e3, yaxt = "n")
+             xaxt = "n", mgp = c(2, .5, 0), n = 1e3, yaxt = "n")
   
   post.x = cc$x
   post.y = cc$y
@@ -1073,10 +1073,10 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   points(mode, low.extreme/5, pch = 21, col = 0, bg = 0, cex = 1.5)
   
-  axis(side = 1, at = decimal(seq(x.min, x.max, length.out = 7), 2), mgp = c(3, .75, 0))
+  axis(side = 1, at = decimal(seq(x.min, x.max, length.out = 7), 2), mgp = c(2, .5, 0))
   axis(side = 1, at = 0, mgp = c(3, 1.1, 0), col = 0, col.axis = "magenta", tick = FALSE, line = - 1.4, cex.axis = 1.4, font = 2)
   
- # mtext(side = 1, bquote(bold("Population Effect Size"~(delta))), line = 3)
+  mtext(side = 1, bquote(bold("Population Effect Size"~(delta))), line = 2.5)
   
   x1 = dL
   y1 = 1.02*peak
