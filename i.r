@@ -1063,7 +1063,7 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   text(mode, peak/2, decimal(mode, 2), srt = 90, pos = 3, font = 2)
   
-  lines(post.x, post.y, lwd = 2)
+  lines(cc, lwd = 2)
   
   segments(CI[1], low.extreme, CI[2], low.extreme, col = 2, lend = 1, lwd = 40)
   
