@@ -984,18 +984,18 @@ peta.update.default <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 
 
 #===================================================================================================================
 
-eq.test <- function(t, ...)
+d.eq.test <- function(t, ...)
 {
-  UseMethod("eq.test")
+  UseMethod("d.eq.test")
 }
 
-eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1, margin = 9, lo = -Inf, hi = Inf){
+d.eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1, margin = 9, lo = -Inf, hi = Inf){
   
   d <- dist.name
   
   if(dL >= dU) stop("Your Upper value must be larger than your Lower value")
   
-  if(abs(dL) != abs(dU))message("\n\tYou have an \"Unequal Equivalence Bound\", thus we can't provide an extra\n\t function showing the effect of choosing various Unequal bounds.")
+  if(abs(dL) != abs(dU)) message("\n\tYou have an \"Unequal Equivalence Bound\", thus we can't provide an extra\n\t function showing the effect of choosing various Unequal bounds.")
   
   decimal <- function(x, k){
     
@@ -1024,8 +1024,8 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   x.max.1 <- mean + margin * sd
   
   ## The dL and dU may be different from x.min.1 and x.max.1 respectively, if so, adjust accordingly.
-  x.min <- if(dL < x.min.1) { dL + (.05*dL) } else { x.min.1 }
-  x.max <- if(dU > x.max.1) { dU + (.05*dU) } else { x.max.1 }
+  x.min <- if(dL < x.min.1) { 1.05*dL } else { x.min.1 }
+  x.max <- if(dU > x.max.1) { 1.05*dU } else { x.max.1 }
   
   CI <- HDI(posterior, x.min, x.max)
   
@@ -1047,7 +1047,7 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   cc = curve(posterior, from = x.min, to = x.max, type = "l", 
              xlab = NA, font.lab = 2 ,las = 1, ylab = NA,
-             bty = "n", xlim = c(x.min, x.max), ylim = c(0, peak+(.1*peak)), 
+             bty = "n", ylim = c(0, 1.1*peak), 
              xaxt = "n", mgp = c(2.3, .75, 0), n = 1e3, yaxt = "n")
   
   post.x = cc$x
@@ -1071,17 +1071,17 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   points(mode, low.extreme/5, pch = 21, col = 0, bg = 0, cex = 1.5)
   
-  axis(side = 1, at = decimal(seq(x.min, x.max, len = 7), 2), mgp = c(3, .75, 0))
+  axis(side = 1, at = decimal(seq(x.min, x.max, length.out = 7), 2), mgp = c(3, .75, 0))
   axis(side = 1, at = 0, mgp = c(3, 1.1, 0), col = 0, col.axis = "magenta", tick = FALSE, line = - 1.4, cex.axis = 1.4, font = 2)
   
   mtext(side = 1, bquote(bold("Population Effect Size"~(delta))), line = 3)
   
   x1 = dL
-  y1 = peak+.02*peak
+  y1 = 1.02*peak
   x2 = dU
   y2 = y1
   x.text = (dL+dU)/2
-  y.text = peak+.05*peak
+  y.text = 1.05*peak
   
   segments(c(dL, dU), rep(low.extreme, 2), c(dL, dU), c(y1, y2), col = 'green2', lend = 1, lty = 2)
   
@@ -1100,10 +1100,6 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   Post.in.ROPE.X = (dU - dL) / 2
   
   BB = decimal((b - a)*1e2, 2)
-  
- # legend("top", legend = c("There is", paste0(BB, "%"), "probability that TRUE effect size is equivalent to ZERO"),
-  #       bty = "n", inset = c(-1, -.2), text.font = 2, cex = .8, xpd = TRUE, ncol = 3, text.col = c(1, 2, 1),
-   #     x.intersp = c(-49.5, -1.5, -19))
   
   title(main = paste0("There is ", "''", BB, "%", "''", " probability that TRUE effect size is equivalent to ZERO"), cex.main = .8)
   
@@ -1137,8 +1133,8 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   L = seq(eq.low, 0, length.out = 1e2)
   U = seq(eq.upp, 0, length.out = 1e2)
   
-  aa = sapply(L, function(x) cdf(x))
-  bb = sapply(U, function(x) cdf(x))
+  aa = cdf(L)
+  bb = cdf(U)
   
   Eq = (bb - aa)  # porortion of posterior that ROPE covers
   half = (U - L)/2
@@ -1156,16 +1152,16 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   pars = par('usr')
   
   rect(pars[1], pars[3], pars[2], pars[4], col = adjustcolor("grey", .1), border = NA)
-   
+    
   rect(pars[1], pars[3], Post.in.ROPE.X, Post.in.ROPE.Y,
        col = adjustcolor("yellow",
                          alpha.f = ifelse(Post.in.ROPE.Y  <= .2, .1,
                                           ifelse(Post.in.ROPE.Y > .2 & Post.in.ROPE.Y <= .3, .15,
                                                  ifelse(Post.in.ROPE.Y > .3 & Post.in.ROPE.Y <= .4, .2, .3)))),
        lty = 2 )
-   
+    
   points(Post.in.ROPE.X, Post.in.ROPE.Y,
          pch = 21, cex = 2, bg = 'green')
   
-  box()
+  box()  
 }
