@@ -1033,11 +1033,11 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   cdf <- Vectorize(function(q){
     integrate(posterior, lo, q)[[1]]
-  }, "q")
+  })
   
   inv.cdf <- Vectorize(function(p){
     uniroot(function(q)cdf(q) - p, c(x.min, x.max))[[1]]
-  }, "p")
+  })
   
   mode <- optimize(posterior, c(x.min, x.max), maximum = TRUE)[[1]]
   peak <- posterior(mode)
