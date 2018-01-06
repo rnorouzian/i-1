@@ -848,8 +848,8 @@ d.update.default <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, 
   
   pri <- show.prior
   d <- dist.name
-  if(is.infinite(lo)) lo <- -5
-  if(is.infinite(hi)) hi <- 5
+  if(is.infinite(lo)) lo <- -6
+  if(is.infinite(hi)) hi <- 6
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
   is.v <- function(...) lengths(list(...)) > 1
   if(is.v(m, s, d)) stop("Choose only 'one' prior knowledge base at a time.")
@@ -989,7 +989,7 @@ d.eq.test <- function(t, ...)
   UseMethod("d.eq.test")
 }
 
-d.eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1, margin = 9, lo = -Inf, hi = Inf){
+d.eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1, lo = -Inf, hi = Inf){
   
   d <- dist.name
   
@@ -1021,8 +1021,8 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   mean <- integrate(function(x) x*posterior(x), lo, hi)[[1]]
     sd <- sqrt(integrate(function(x) x^2*posterior(x), lo, hi)[[1]] - mean^2)
     
-  x.min.1 <- mean - margin * sd
-  x.max.1 <- mean + margin * sd
+  x.min.1 <- mean - 9 * sd
+  x.max.1 <- mean + 9 * sd
   
   ## The dL and dU may be different from x.min.1 and x.max.1 respectively, if so, adjust accordingly.
   x.min <- if(dL < x.min.1) { 1.05*dL } else { x.min.1 }
