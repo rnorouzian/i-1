@@ -1000,7 +1000,7 @@ d.eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1,
   
   decimal <- function(x, k){
     
-    if(typeof(x) == "character"){
+    if(is.character(x)){
       return(x)
     }
     format(round(x, k), nsmall = k, scientific =
@@ -1046,12 +1046,12 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   par(mar = c(.1, 4.1, 3.1, 2.1), mfcol = c(2, 1))
   
-  cc = curve(posterior, from = x.min, to = x.max, las = 1, type = "n",
+  h = curve(posterior, from = x.min, to = x.max, las = 1, type = "n",
              xlab = NA, ylab = NA, bty = "n", ylim = c(0, 1.1*peak), 
              xaxt = "n", yaxt = "n", mgp = c(2, .5, 0), n = 1e3)
   
-  post.x = cc$x
-  post.y = cc$y
+  post.x = h$x
+  post.y = h$y
   
   XXX <- post.x >= CI[1] &  post.x <= CI[2]
   
@@ -1063,7 +1063,7 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   text(mode, peak/2, decimal(mode, 2), srt = 90, pos = 3, font = 2)
   
-  lines(cc, lwd = 2)
+  lines(h, lwd = 2)
   
   segments(CI[1], low.extreme, CI[2], low.extreme, col = 2, lend = 1, lwd = 40)
   
@@ -1076,16 +1076,13 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   mtext(side = 1, bquote(bold("Population Effect Size"~(delta))), line = 2)
   
-  x1 = dL
-  y1 = 1.02*peak
-  x2 = dU
-  y2 = y1
+  y1 = y2 = 1.02*peak
   x.text = (dL+dU)/2
   y.text = 1.05*peak
   
   segments(c(dL, dU), rep(low.extreme, 2), c(dL, dU), c(y1, y2), col = 'green2', lend = 1, lty = 2)
   
-  segments(c(x1, x2), c(y1, y2), rep(x.text, 2), rep(y.text*1.023, 2), lwd = 2, col = 'magenta')
+  segments(c(dL, dU), c(y1, y2), rep(x.text, 2), rep(y.text*1.023, 2), lwd = 2, col = 'magenta')
   
   text(x.text, y.text, "Practically Equivalent to ZERO", font = 2, pos = 3, col = 'darkgreen', cex = .7, xpd = TRUE)
   
