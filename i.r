@@ -234,6 +234,7 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   loop = length(d)
   CI = matrix(NA, loop, 2)
   mode = numeric(loop)
+  peak = numeric(loop)
   h = list()
    
 if(!pr){   
@@ -246,6 +247,7 @@ if(!pr){
       h[i] = list(curve(posterior, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 1e3))
       mode[i] = optimize(posterior, c(lo[i], hi[i]), maximum = TRUE)[[1]]
       CI[i,] = HDI(posterior)
+      peak[i] = posterior(mode)
     }
     plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .3, 0))
     abline(h = 1:loop, col = 8, lty = 3)
@@ -257,7 +259,7 @@ if(!pr){
     for(i in 1:loop){
       polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .55), border = NA, xpd = NA)
     }
-    m = scale*sapply(h, function(x) max(x[[2]])) + 1:loop
+    m = scale*peak + 1:loop
     segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
     points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.3, col = "magenta", xpd = NA)
     I = deci(CI*1e2 , 2); o = deci(mode*1e2, 2)
@@ -409,6 +411,7 @@ d.priors.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.nam
   loop = length(d) 
   CI = matrix(NA, loop, 2)
   mode = numeric(loop)
+  peak = numeric(loop)
   mean = numeric(loop)
   sd = numeric(loop)
   from = numeric(loop)
@@ -432,11 +435,12 @@ d.priors.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.nam
       from[i] = mean - margin * sd
       to[i] = mean + margin * sd
       mode[i] = optimize(posterior, c(from, to), maximum = TRUE)[[1]]
+      peak[i] = posterior(mode)
       CI[i,] = HDI(posterior, LL, UL)
       h[i] = list(curve(posterior, from, to, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
     }
                              
-    f = sapply(h, function(x) max(x[[2]])) + 1:loop
+    f = peak + 1:loop
     plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
     legend("topleft", rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5)
@@ -609,6 +613,7 @@ peta.priors.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1
 loop <- length(a)
   CI <- matrix(NA, loop, 2)
 mode <- numeric(loop)
+peak <- numeric(loop)
    h <- list()
                               
 if(!pr){   
@@ -623,6 +628,7 @@ if(!pr){
       posterior = function(x) prior(x)*likelihood(x) / k
       h[i] = list(curve(posterior, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 1e3))
       mode[i] = optimize(posterior, c(lo[i], hi[i]), maximum = TRUE)[[1]]
+      peak[i] = posterior(mode)
       CI[i,] = HDI(posterior, 0, .9999999)
     } 
     
@@ -636,7 +642,7 @@ if(!pr){
     for(i in 1:loop){
       polygon(x = h[[i]]$x, y = scale*h[[i]]$y +i, col = adjustcolor(i, .55), border = NA, xpd = NA)
     }
-    m = scale*sapply(h, function(x) max(x[[2]], na.rm = TRUE)) + 1:loop
+    m = scale*peak + 1:loop
     segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
     points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.3, col = "magenta", xpd = NA)
     I = deci(CI*1e2 , 2); o = deci(mode*1e2, 2)
