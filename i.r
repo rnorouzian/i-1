@@ -1034,9 +1034,9 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
     integrate(posterior, lo, q)[[1]]
   })
   
-  inv.cdf <- Vectorize(function(p){
-    uniroot(function(q)cdf(q) - p, c(x.min, x.max))[[1]]
-  })
+#  inv.cdf <- Vectorize(function(p){
+#    uniroot(function(q)cdf(q) - p, c(x.min, x.max))[[1]]  # Not implemented #
+#  })
   
   mode <- optimize(posterior, c(x.min, x.max), maximum = TRUE)[[1]]
   peak <- posterior(mode)
