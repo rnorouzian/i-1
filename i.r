@@ -998,14 +998,14 @@ d.eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1,
   
   if(abs(dL) != abs(dU)) message("\n\tYou have an \"Unequal Equivalence Bound\", thus we can't provide an extra\n\t function showing the effect of choosing various Unequal bounds.")
   
-  decimal <- function(x, k){
-    
+  decimal <- function(x, k){   
     if(is.character(x)){
       return(x)
-    }
+    }else{
     format(round(x, k), nsmall = k, scientific =
-             ifelse(x >= 1e5 || x <= -1e5 || x <= 1e-5 & x >= -1e-5, TRUE, FALSE) )
-  }
+    ifelse(x >= 1e5 || x <= -1e5 || x <= 1e-5 & x >= -1e-5, TRUE, FALSE) )
+       }
+    }
  
   options(warn = -1)
   
