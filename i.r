@@ -1047,9 +1047,8 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   par(mar = c(.1, 4.1, 3.1, 2.1), mfcol = c(2, 1))
   
   cc = curve(posterior, from = x.min, to = x.max, las = 1, type = "n",
-             xlab = bquote(bold("Population Effect Size"~(delta))), 
-             font.lab = 2, ylab = NA, bty = "n", ylim = c(0, 1.1*peak), 
-             xaxt = "n", mgp = c(2, .5, 0), n = 1e3, yaxt = "n")
+             xlab = NA, ylab = NA, bty = "n", ylim = c(0, 1.1*peak), 
+             xaxt = "n", yaxt = "n", mgp = c(2, .5, 0), n = 1e3)
   
   post.x = cc$x
   post.y = cc$y
