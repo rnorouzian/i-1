@@ -782,8 +782,8 @@ s <- yes
 d <- dist.name 
 if(d == "dbeta" & a == 1 & b == 1) a <- b <- 1.0000001;  
 if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
-is.v <- function(x) length(x) > 1
-if(is.v(d) || is.v(a) || is.v(b)) stop("Error: Choose only 'one' prior knowledge base at a time.")
+is.v <- function(...) lengths(list(...)) > 1
+if(is.v(a, b, d)) stop("Error: Choose only 'one' prior knowledge base at a time.")
 
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
 deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
@@ -851,8 +851,8 @@ d.update.default <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, 
   if(is.infinite(lo)) lo <- -5
   if(is.infinite(hi)) hi <- 5
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
-  is.v <- function(x) length(x) > 1
-  if(is.v(d) || is.v(m) || is.v(s)) stop("Choose only 'one' prior knowledge base at a time.")
+  is.v <- function(...) lengths(list(...)) > 1
+  if(is.v(m, s, d)) stop("Choose only 'one' prior knowledge base at a time.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
@@ -925,8 +925,8 @@ peta.update.default <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 
   d <- dist.name
   if(hi == 1) hi <- .9999999 ;
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
-  is.v <- function(x) length(x) > 1
-  if(is.v(d) || is.v(a) || is.v(b)) stop("Choose only 'one' prior knowledge base at a time.")
+  is.v <- function(...) lengths(list(...)) > 1
+  if(is.v(a, b, d)) stop("Error: Choose only 'one' prior knowledge base at a time.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
