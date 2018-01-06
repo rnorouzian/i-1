@@ -993,7 +993,7 @@ d.eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1,
   
   d <- dist.name
   
-  if(lengths(list(get(formalArgs(d.eq.test)))) > 1) stop("Only 'one' equivalence testing at a time.")
+  if(lengths(list(get(formalArgs(d.eq.test)))) > 1) stop("Error: Only 'one' equivalence testing at a time is allowed.")
   if(dL >= dU) stop("Your Upper value must be larger than your Lower value")
   
   if(abs(dL) != abs(dU)) message("\n\tYou have an \"Unequal Equivalence Bound\", thus we can't provide an extra\n\t function showing the effect of choosing various Unequal bounds.")
@@ -1053,11 +1053,11 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   post.x = h$x
   post.y = h$y
   
-  XXX <- post.x >= CI[1] &  post.x <= CI[2]
+  X <- post.x >= CI[1] &  post.x <= CI[2]
   
   low.extreme <- par('usr')[3]
   
-  polygon(c(CI[1], post.x[XXX], CI[2]), c(low.extreme, post.y[XXX], low.extreme), col = rgb(1, 1, 0, .5), border = NA)
+  polygon(c(CI[1], post.x[X], CI[2]), c(low.extreme, post.y[X], low.extreme), col = rgb(1, 1, 0, .5), border = NA)
   
   segments(mode, low.extreme, mode, peak, lty = 3)
   
@@ -1084,7 +1084,7 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   segments(c(dL, dU), c(y1, y2), rep(x.text, 2), rep(y.text*1.023, 2), lwd = 2, col = 'magenta')
   
-  text(x.text, y.text, "Practically Equivalent to ZERO", font = 2, pos = 3, col = 'darkgreen', cex = .7, xpd = TRUE)
+  text(x.text, y.text, "Practically Equivalent to ZERO", font = 2, pos = 3, col = 'darkgreen', cex = .65, xpd = TRUE)
   
   points(c(dL, dU), c(y1, y2), pch = 21, col = 'green3', bg = 'green3', cex = 1.1)
   
@@ -1105,17 +1105,17 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   
   if(CI[1] > dU || CI[2] < dL) {
     
-    legend("topright", "NOT Practically equivalent to \"0\" ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2')
+    legend("topright", "NOT Practically equivalent to \"0\" ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2', title = "Decision:")
     
   } else
     
     if(CI[1] > dL & CI[2] < dU) {
       
-      legend("topright", "Practically equivalent to \"0\" ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2')
+      legend("topright", "Practically equivalent to \"0\" ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2', title = "Decision:")
       
     } else  {
       
-      legend("topright", "No decision can be made ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2')
+      legend("topright", "No decision can be made ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2', title = "Decision:")
     }
   
   ########################################################################################
