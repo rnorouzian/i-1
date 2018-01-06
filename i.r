@@ -1074,7 +1074,7 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   axis(side = 1, at = decimal(seq(x.min, x.max, length.out = 7), 2), mgp = c(2, .5, 0))
   axis(side = 1, at = 0, mgp = c(3, 1.1, 0), col = 0, col.axis = "magenta", tick = FALSE, line = - 1.4, cex.axis = 1.4, font = 2)
   
-  mtext(side = 1, bquote(bold("Population Effect Size"~(delta))), line = 2)
+  mtext(side = 1, bquote(bold("Population Effect Size"~(delta))), line = 2, cex = .95)
   
   y1 = y2 = 1.02*peak
   x.text = (dL+dU)/2
