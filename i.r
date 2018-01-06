@@ -992,8 +992,8 @@ d.eq.test <- function(t, ...)
 d.eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1, margin = 9, lo = -Inf, hi = Inf){
   
   d <- dist.name
-  is.v <- function(...) lengths(list(...)) > 1
-  if(is.v(t, n1, n2, m, s, d, dL, dU, lo, hi)) stop("Only 'one' equivalence testing at a time.")
+  
+  if(lengths(list(get(names(match.call()[-1])))) > 1) stop("Only 'one' equivalence testing at a time.")
   if(dL >= dU) stop("Your Upper value must be larger than your Lower value")
   
   if(abs(dL) != abs(dU)) message("\n\tYou have an \"Unequal Equivalence Bound\", thus we can't provide an extra\n\t function showing the effect of choosing various Unequal bounds.")
