@@ -1102,7 +1102,7 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
   Post.in.ROPE.Y = (b - a)
   Post.in.ROPE.X = (dU - dL) / 2
   
-  BB = decimal((b - a)*1e2, 2)
+  BB = decimal(Post.in.ROPE.Y*1e2, 2)
   
   title(main = paste0("There is ", "''", BB, "%", "''", " probability that TRUE effect size is equivalent to ZERO"), cex.main = .8)
   
