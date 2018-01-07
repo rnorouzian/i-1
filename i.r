@@ -995,7 +995,7 @@ d.eq.test <- function(t, ...)
   UseMethod("d.eq.test")
 }
 
-d.eq.test.default = function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1, lo = -Inf, hi = Inf){
+d.eq.test.default <- function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1, lo = -Inf, hi = Inf){
   
   d <- dist.name
   
