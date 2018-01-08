@@ -786,7 +786,9 @@ prop.update.default <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, 
 pri <- show.prior
 s <- yes  
 d <- dist.name 
-if(d == "dbeta" & a == 1 & b == 1) a <- b <- 1.0000001;  
+xcall <- match.call()$d
+if(class(xcall) == "call" && xcall[[1]] == "dunif") {d = 'dbeta'; a = 1; b = 1}
+if(d == "dbeta" & a == 1 & b == 1) a <- b <- 1.0000001;    
 if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
 is.v <- function(...) lengths(list(...)) > 1
 if(is.v(a, b, d)) stop("Error: Choose only 'one' prior knowledge base at a time.")
