@@ -17,7 +17,7 @@ CI = matrix(NA, length(a), 2)
     
 for(i in 1:length(a)){    
 CI[i,] = sapply(c(alpha, 1-alpha),
-function(x) optimize(f, interval = a[[i]], alpha = x, q = t, df = df, tol = 1e-12)[[1]]*d.SE)
+function(x) optimize(f, interval = a[[i]], alpha = x, q = t, df = df)[[1]]*d.SE)
   }  
     
 CI[which.max(ave(1:nrow(CI), do.call(paste, round(data.frame(CI), 3)), FUN = seq_along)), ]
