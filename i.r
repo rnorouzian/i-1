@@ -124,7 +124,7 @@ stop("Error: \n\tUnable to find such a prior, make sure you have selected the co
 return(c(alpha = parm[[1]], beta = parm[[2]]))    
     }
   } 
-}, c("Low", "High", "Cover"))
+})
   
 #===============================================================================================
 
@@ -167,7 +167,7 @@ stop("\n\tUnable to find such a prior, make sure you have selected the correct v
   
 return(c(mode = parm[[1]], scale = parm[[2]])) 
   }
-}, c("Low", "High", "Cover"))    
+})    
   
 #===============================================================================================
 
@@ -211,7 +211,7 @@ if(is.df(Low, q[[1]]) || is.df(High, q[[2]])) {
   return(c(mean = parm[[1]], sd = parm[[2]]))
   
   }
-}, c("Low", "High", "Cover"))
+})
   
 #===============================================================================================
  
