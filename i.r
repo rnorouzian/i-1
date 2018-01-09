@@ -75,6 +75,7 @@ hdir <- function(sample, ...)
 
 hdir.default <- function(sample, level = .95){
 
+if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
   sorted <- sort(sample)
    index <- ceiling(level*length(sorted))
        n <- length(sorted)- index
