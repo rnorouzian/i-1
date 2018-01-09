@@ -1058,9 +1058,6 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
              xlab = NA, ylab = NA, bty = "n", ylim = c(0, 1.1*peak), 
              xaxt = "n", yaxt = "n", mgp = c(2, .5, 0), n = 1e3)
   
-#  post.x = h$x
-#  post.y = h$y
-  
   X <- h$x >= CI[1] &  h$x <= CI[2]
   
   low.extreme <- par('usr')[3]
@@ -1126,9 +1123,9 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
       legend("topright", "No decision can be made ", bty = 'n', inset = c(-.01, .1), cex = .75, text.font = 4, text.col = 'magenta2', title = "Decision:")
     }
   
-  ########################################################################################
-  ## How choice of ROPE can affect porortion of posterior that ROPE covers (make function):
-  ########################################################################################
+  #########################################################################
+  ## How choice of ROPE can affect porortion of posterior that ROPE covers:
+  #########################################################################
   
   par(mar = c(3.1, 4.1, 6.1, 2.1), mgp = c(2.5, .5, 0))
   
