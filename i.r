@@ -888,12 +888,14 @@ d.update.default <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, 
   
   # I = hdi(x = ds, y = pr, level = level)
   
+  if(d != "dunif"){
   mode = ds[which.max(pr)]
   y = prior.scale*(pr[which.max(pr)])
   # segments(I[1], 0, I[2], 0, lend = 1, lwd = 4, xpd = NA)
   points(mode, 0, pch = 19, xpd = NA, cex = 1.4)
   segments(mode, 0, mode, y, lty = 3)
   # text(c(.85*I[1], mode, I[2]), 0, paste0(round(c(I[1], mode, I[2]), 3)), pos = 3, cex = .8, font = 2, xpd = NA)
+  }
   
   N = ifelse(is.na(n2), n1, (n1 * n2) / (n1 + n2))
   df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2) 
@@ -956,7 +958,6 @@ peta.update.default <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 
     axis(2, at = 0:loop+1, lab = c("Base knowledge", paste0("Study ", 1:loop)), las = 1, font = 2, cex.axis = .9, mgp = c(2, .2, 0), tick = FALSE, xpd = NA)
   }  
   polygon(x = c(lo, peta, hi), y = prior.scale*c(0, pr, 0), col = adjustcolor(8, .8))
-  
   
   I = hdi(x = peta, y = pr, level = level)
   
