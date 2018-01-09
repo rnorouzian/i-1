@@ -68,6 +68,27 @@ if(1 <= level || level <= 0) stop("Error: 'level' must be between '0' and '1'.")
 
 #==================================================================================================================
 
+hdir <- function(sample, ...)
+{
+  UseMethod("hdir")
+}
+
+hdir.default <- function(sample, level = .95){
+
+  sorted <- sort(sample)
+   index <- ceiling(level*length(sorted))
+       n <- length(sorted)- index
+   width <- numeric(n)
+  for(i in 1:n){
+    width[i] <- sorted[i+ index]- sorted[i]
+  }
+  lower <- sorted[which.min(width)]
+  upper <- sorted[which.min(width)+ index]
+  return(c(lower, upper))
+}
+
+#==================================================================================================================
+
 beta.id <- function(Low, ...)
 {
   UseMethod("beta.id")
