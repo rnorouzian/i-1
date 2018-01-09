@@ -1058,14 +1058,14 @@ likelihood <- function(x) dt(t, df, x*sqrt(N))
              xlab = NA, ylab = NA, bty = "n", ylim = c(0, 1.1*peak), 
              xaxt = "n", yaxt = "n", mgp = c(2, .5, 0), n = 1e3)
   
-  post.x = h$x
-  post.y = h$y
+#  post.x = h$x
+#  post.y = h$y
   
-  X <- post.x >= CI[1] &  post.x <= CI[2]
+  X <- h$x >= CI[1] &  h$x <= CI[2]
   
   low.extreme <- par('usr')[3]
   
-  polygon(c(CI[1], post.x[X], CI[2]), c(low.extreme, post.y[X], low.extreme), col = rgb(1, 1, 0, .5), border = NA)
+  polygon(c(CI[1], h$x[X], CI[2]), c(low.extreme, h$y[X], low.extreme), col = rgb(1, 1, 0, .5), border = NA)
   
   segments(mode, low.extreme, mode, peak, lty = 3)
   
