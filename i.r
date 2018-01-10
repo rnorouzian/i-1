@@ -412,6 +412,53 @@ if(!pr){
 
 #====================================================================================================================
 
+prop.diff <- function(n1, ...)
+{
+  UseMethod("prop.diff")
+}
+
+prop.diff.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1, b2 = b1, how = c("two.one", "one.two")){
+  
+  if(lengths(list(get(formalArgs(prop.diff)))) > 1) stop("Error: Only 'one' comparison is allowed at a time.")
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
+  
+  post.p1 <- rbeta(1e6, a1 + yes1, b1 + (n1 - yes1))
+  post.p2 <- rbeta(1e6, a2 + yes2, b2 + (n2 - yes2))
+  
+  how <- match.arg(how)
+  
+  delta.p <- switch(how, one.two = post.p1 - post.p2, two.one = post.p2 - post.p1) 
+
+  original.par = par(no.readonly = TRUE)
+  on.exit(par(original.par))
+  
+  par(xpd = NA)
+  
+  hist(delta.p, las = 1, col = 0, freq = FALSE, border = NA, main = "Difference Between Two Proportions",
+       xlab = if(how == "one.two") bquote(Delta[~(p[1]-p[2])]) else bquote(Delta[~(p[2]-p[1])]), 
+       cex.lab = 2, ylab = NA, axes = FALSE, yaxs = "i", cex.main = .8)
+  
+  CI <- hdir(delta.p)
+   d <- density(delta.p, adjust = 2)
+axis(1, at = deci(seq(min(d$x), max(d$x), length.out = 7), 2))
+lines(d, col = 4, lwd = 2)
+
+legend("topleft", c(paste0("group 1: ", "beta", "(", round(a1, 2), ", ", round(b1, 2), ")"), paste0("group 2: ", "beta", "(", round(a2, 2), ", ", round(b2, 2), ")")), title = "Priors", 
+       pch = 22, col = 2, cex = .7, pt.cex = .6, pt.bg = 2, bty = "n", x.intersp = .5, title.adj = .4)
+
+ mode <- d$x[which.max(d$y)]
+ peak <- d$y[which.max(d$y)]
+ 
+  segments(CI[1], 0, CI[2], 0, lend = 1, lwd = 4)
+  segments(mode, 0, mode, peak, lty = 3)
+  
+  points(mode, 0, pch = 19, cex = 1.5)
+  
+  text(c(CI[1], mode, CI[2]), 0, c(deci(CI[1],3), deci(mode, 3), deci(CI[2], 3)), pos = 3, 
+       font = 2, col = "magenta")
+}
+
+#====================================================================================================================
 d.priors <- function(t, ...)
 {
   UseMethod("d.priors")
