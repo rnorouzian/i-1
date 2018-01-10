@@ -441,7 +441,7 @@ prop.diff.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1, b
   CI <- hdir(delta.p)
    d <- density(delta.p, adjust = 2)
 axis(1, at = deci(seq(min(d$x), max(d$x), length.out = 7), 2))
-lines(d, col = 4, lwd = 2)
+polygon(d, border = NA, col = adjustcolor(4, .3))
 
 legend("topleft", c(paste0("group 1: ", "beta", "(", round(a1, 2), ", ", round(b1, 2), ")"), paste0("group 2: ", "beta", "(", round(a2, 2), ", ", round(b2, 2), ")")), title = "Priors", 
        pch = 22, col = 2, cex = .7, pt.cex = .6, pt.bg = 2, bty = "n", x.intersp = .5, title.adj = .4)
