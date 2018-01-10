@@ -429,17 +429,18 @@ prop.diff.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1, b
   
   delta.p <- switch(how, one.two = post.p1 - post.p2, two.one = post.p2 - post.p1) 
 
+  d <- density(delta.p, adjust = 2)
+  
   original.par = par(no.readonly = TRUE)
   on.exit(par(original.par))
   
   par(xpd = NA)
   
-  hist(delta.p, las = 1, col = 0, freq = FALSE, border = NA, main = "Difference Between Two Proportions",
-       xlab = if(how == "one.two") bquote(Delta[~(p[1]-p[2])]) else bquote(Delta[~(p[2]-p[1])]), 
-       cex.lab = 2, ylab = NA, axes = FALSE, yaxs = "i", cex.main = .8)
+plot(d, las = 1, type = "n", col = 0, freq = FALSE, main = "Difference Between Two Proportions",
+     xlab = if(how == "one.two") bquote(Delta[~(p[1]-p[2])]) else bquote(Delta[~(p[2]-p[1])]), 
+     cex.lab = 2, ylab = NA, axes = FALSE, yaxs = "i", cex.main = .8, zero.line = FALSE)
   
   CI <- hdir(delta.p)
-   d <- density(delta.p, adjust = 2)
 axis(1, at = deci(seq(min(d$x), max(d$x), length.out = 7), 2))
 polygon(d, border = NA, col = adjustcolor(4, .3))
 
@@ -459,6 +460,7 @@ legend("topleft", c(paste0("group 1: ", "beta", "(", round(a1, 2), ", ", round(b
 }
 
 #====================================================================================================================
+
 d.priors <- function(t, ...)
 {
   UseMethod("d.priors")
