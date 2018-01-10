@@ -452,7 +452,7 @@ legend("topleft", c(paste0("group 1: ", "beta", "(", round(a1, 2), ", ", round(b
   segments(CI[1], 0, CI[2], 0, lend = 1, lwd = 4)
   segments(mode, 0, mode, peak, lty = 3)
   
-  points(mode, 0, pch = 19, cex = 1.5)
+  points(mode, 0, pch = 21, cex = 1.5, bg = "cyan")
   
   text(c(CI[1], mode, CI[2]), 0, c(deci(CI[1],3), deci(mode, 3), deci(CI[2], 3)), pos = 3, 
        font = 2, col = "magenta")
