@@ -436,7 +436,7 @@ prop.diff.default <- function(n, yes, a = 1.2, b = a, how = c("two.one", "one.tw
   is.s <- function(...)lengths(list(...)) < 2 
   
   if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.") 
-  if(is.s(n) || is.s(yes)) stop("Error: 'yes' & 'n' must each have a length of '2' or larger.")
+  if(any(is.s(n, yes))) stop("Error: 'yes' & 'n' must each have a length of '2' or larger.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(n, yes, a, b)   
