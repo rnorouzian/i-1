@@ -372,7 +372,6 @@ ab.prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE,
   Bi = round(yes)
   n = round(n) 
   pr = show.prior    
-  is.v = function(x) length(x) > 1
   d = dist.name
   
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -854,7 +853,6 @@ ab.peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi =
   if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.") 
   d <- dist.name
   pr <- show.prior    
-is.v <- function(x) length(x) > 1
    d <- dist.name
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -920,11 +918,11 @@ prop.update.default <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, 
 pri <- show.prior
 s <- yes  
 d <- dist.name 
-if(d == "dunif") {d = 'dbeta'; a <- b <- 1.0000001}
+is.v <- function(...) lengths(list(...)) > 1
+if(any(is.v(a, b, d))) stop("Error: Choose only 'one' prior knowledge base at a time.")  
+if(d == "dunif" & a == 0 & b == 1) {d = 'dbeta'; a <- b <- 1.0000001}
 if(d == "dbeta" & a == 1 & b == 1) a <- b <- 1.0000001;    
 if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
-is.v <- function(...) lengths(list(...)) > 1
-if(any(is.v(a, b, d))) stop("Error: Choose only 'one' prior knowledge base at a time.")
 
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
 deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
