@@ -252,7 +252,8 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
                            
 deci <- function(x, k = 3) format(round(x, k), nsmall = k)                                                                                                                           
   
-  Bi = yes
+  Bi = round(yes)
+  n = round(n)                          
   pr = show.prior
   loop = length(d)
   CI = matrix(NA, loop, 2)
@@ -304,7 +305,8 @@ prop.hyper <- function(a, ...)
 prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.prior = FALSE, pos = 3, top = 1.01){
   
 d = dist.name
-Bi = yes
+Bi = round(yes)
+n = round(n) 
 pr = show.prior
   
 eq <- function(...) { lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -359,7 +361,8 @@ ab.prop.hyper <- function(a, ...)
 ab.prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE, 
                           yes = 55, n = 1e2, col = 1, show.prior = FALSE){
   d = dist.name
-  Bi = yes
+  Bi = round(yes)
+  n = round(n) 
   pr = show.prior    
   is.v = function(x) length(x) > 1
   d = dist.name
