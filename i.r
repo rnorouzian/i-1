@@ -461,6 +461,93 @@ legend("topleft", c(paste0("group 1: ", "beta", "(", round(a1, 2), ", ", round(b
 }
 
 #====================================================================================================================
+     
+prop.diff <- function(n, ...)
+{
+  UseMethod("prop.diff")
+}
+
+prop.diff.default <- function(n, yes, a = 1.2, b = a, how = c("two.one", "one.two"), level = .95, top = 1, bottom = 1, scale = .1, margin = 6){
+  
+    n <- round(n)
+  yes <- round(yes)
+  
+  is.s <- function(...)lengths(list(...)) < 2 
+  
+  if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.") 
+  if(is.s(n) || is.s(yes)) stop("Error: 'yes' & 'n' must each have a length of '2' or larger.")
+  
+  eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+  I = eq(n, yes, a, b)   
+  n = I[[1]] ; yes = I[[2]] ; a = I[[3]] ; b = I[[4]]  
+  
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
+  
+  loop <- length(n)
+  
+  how <- match.arg(how)
+  
+  delta <- switch(how,
+                  one.two = function(x) x[[1]] - x[[2]], 
+                  two.one = function(x) x[[2]] - x[[1]])
+  
+   p <- list()
+for(i in 1:loop){
+   p[[i]] <- rbeta(1e6, a[i] + yes[i], b[i] + (n[i] - yes[i]))
+  }
+  
+  ps <- combn(p, 2, FUN = delta)
+  
+  loop <- ncol(ps)
+  
+  CI <- matrix(NA, loop, 2)
+ den <- list()
+mode <- numeric(loop)
+peak <- numeric(loop)
+mean <- numeric(loop)
+  sd <- numeric(loop)
+  to <- numeric(loop)
+from <- numeric(loop)
+
+for(i in 1:loop){
+    CI[i, ] <- hdir(ps[, i], level = level)
+    den[i] <- list(density(ps[, i], adjust = 2))
+    mode[i] <- den[[i]]$x[which.max(den[[i]]$y)]
+    peak[i] <- den[[i]]$y[which.max(den[[i]]$y)]
+    mean[i] <- mean(ps[, i])
+    sd[i] <- sd(ps[, i])
+    from[i] <- mean[i] - margin *sd[i]
+    to[i] <- mean[i] + margin *sd[i]
+ }
+  
+  np <- combn(seq_along(p), 2, FUN = function(x){if(how == "one.two") paste0('p', x[1], ' - p', x[2]) else paste0('p', x[2], ' - p', x[1])})
+  
+  leg <- if(length(n) == 2) loop else 2
+  
+  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xlab = "Credible Interval (Proportion Differences)", font.lab = 2, mgp = c(2, .3, 0))
+  abline(h = 1:loop, col = 8, lty = 3)
+  segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
+  axis(2, at = 1:loop, labels = np, font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
+  legend("topleft", rep(rev(paste0("beta", "(", round(a, 2), ", ", round(b, 2), ")")), leg), pch = 22, title = "Priors", pt.bg = rep(loop:1, each = leg), col = rep(loop:1, each = leg), cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+  box()
+  
+  for(i in 1:loop){
+    polygon(x = den[[i]]$x, y = scale*den[[i]]$y +i, col = adjustcolor(i, .55), border = NA, xpd = NA)
+  }
+  
+  m = scale*peak + 1:loop
+  segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
+  points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.3, col = "magenta", xpd = NA)
+  I = deci(CI); o = deci(mode)
+  text(mode, 1:loop, paste0(I[,1], "       ", o, "       ", I[,2]), cex = .75, pos = 3, font = 2, xpd = NA)
+  
+  cat(paste0("\n", level*1e2, "% Credible Interval for diff. bet. proportions:"), "\n")
+  rownames(CI) <- paste0(np, ":")
+  colnames(CI) <- c("Lower", "Upper")
+  return(CI)
+}     
+     
+#====================================================================================================================
 
 d.priors <- function(t, ...)
 {
