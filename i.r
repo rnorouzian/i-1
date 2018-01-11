@@ -431,7 +431,8 @@ prop.diff <- function(n, ...)
 prop.diff.default <- function(n, yes, a = 1.2, b = a, how = c("two.one", "one.two"), level = .95, top = 1, bottom = 1, scale = .1, margin = 6){
   
     n <- round(n)
-  yes <- round(yes)
+  yes <- round(yes)  
+  loop <- length(n)
   
   is.s <- function(...)lengths(list(...)) < 2 
   
@@ -439,12 +440,18 @@ prop.diff.default <- function(n, yes, a = 1.2, b = a, how = c("two.one", "one.tw
   if(any(is.s(n, yes))) stop("Error: 'yes' & 'n' must each have a length of '2' or larger.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
-  I = eq(n, yes, a, b)   
+  I = eq(n, yes)   
   n = I[[1]] ; yes = I[[2]] ; a = I[[3]] ; b = I[[4]]  
   
-  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
+  comp <- ncol(combn(loop, 2))
+  eq <- function(x) c(x, rep(rev(x)[1], comp - length(x)))
   
-  loop <- length(n)
+  if(length(a) < comp) a = eq(a)
+  if(length(b) < comp) b = eq(b)
+  
+  message(paste0("\n WARNING: Check to see if you have provided your desired ", "\"", comp, "\"", " pairs of 'a' and 'b'."))
+                              
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
   how <- match.arg(how)
   
