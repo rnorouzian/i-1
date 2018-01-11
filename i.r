@@ -473,9 +473,11 @@ for(i in 1:loop){
 mode <- numeric(loop)
 peak <- numeric(loop)
 mean <- numeric(loop)
+median <- numeric(loop)                  
   sd <- numeric(loop)
+from <- numeric(loop)                  
   to <- numeric(loop)
-from <- numeric(loop)
+
 
 for(i in 1:loop){
     CI[i, ] <- hdir(ps[, i], level = level)
@@ -483,6 +485,7 @@ for(i in 1:loop){
     mode[i] <- den[[i]]$x[which.max(den[[i]]$y)]
     peak[i] <- den[[i]]$y[which.max(den[[i]]$y)]
     mean[i] <- mean(ps[, i])
+  median[i] <- median(ps[, i])
     sd[i] <- sd(ps[, i])
     from[i] <- mean[i] - margin *sd[i]
     to[i] <- mean[i] + margin *sd[i]
@@ -508,11 +511,10 @@ for(i in 1:loop){
   points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.3, col = "magenta", xpd = NA)
   I = deci(CI); o = deci(mode)
   text(mode, 1:loop, paste0(I[,1], "       ", o, "       ", I[,2]), cex = .75, pos = 3, font = 2, xpd = NA)
-  
-  cat(paste0("\n", level*1e2, "% Credible Interval for diff. bet. proportions:"), "\n")
+                                                 
   rownames(CI) <- paste0(np, ":")
   colnames(CI) <- c("Lower", "Upper")
-  return(CI)
+  return(data.frame(mean = mean,  mode = mode, median = median, sd = sd, CI = CI))
 }     
      
 #====================================================================================================================
