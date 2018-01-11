@@ -495,7 +495,8 @@ for(i in 1:loop){
   
   leg <- if(length(n) == 2) loop else 2
   
-  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xlab = "Credible Interval (Proportion Differences)", font.lab = 2, mgp = c(2, .3, 0))
+  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, xaxt = "n", yaxt = "n", xlab = "Credible Interval (Proportion Differences)", font.lab = 2, mgp = c(2, .3, 0))
+  axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
   abline(h = 1:loop, col = 8, lty = 3)
   segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
   axis(2, at = 1:loop, labels = np, font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
@@ -509,8 +510,8 @@ for(i in 1:loop){
   m = scale*peak + 1:loop
   segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
   points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.3, col = "magenta", xpd = NA)
-  I = deci(CI); o = deci(mode)
-  text(mode, 1:loop, paste0(I[,1], "       ", o, "       ", I[,2]), cex = .75, pos = 3, font = 2, xpd = NA)
+  I = deci(CI*1e2 , 2); o = deci(mode*1e2, 2)
+  text(mode, 1:loop, paste0(I[,1], "%", "       ", o, "%", "       ", I[,2], "%"), cex = .75, pos = 3, font = 2, xpd = NA)
                                                  
   rownames(CI) <- paste0(np, ":")
   colnames(CI) <- c("Lower", "Upper")
