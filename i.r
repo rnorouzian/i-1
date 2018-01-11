@@ -448,8 +448,8 @@ prop.diff.default <- function(n, yes, a = 1.2, b = a, how = c("two.one", "one.tw
   
   if(length(a) < comp) a = eq(a)
   if(length(b) < comp) b = eq(b)
-  
-  message(paste0("\n WARNING: Check to see if you have provided your desired ", "\"", comp, "\"", " pairs of 'a' and 'b'."))
+                     
+  message(paste0("\n CAUTION: Check to see if you have provided your desired ", "\"", comp, "\"", " pairs of 'a' and 'b'."))
                               
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
