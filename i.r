@@ -441,7 +441,7 @@ prop.diff.default <- function(n, yes, a = 1.2, b = a, how = c("two.one", "one.tw
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(n, yes)   
-  n = I[[1]] ; yes = I[[2]] ; a = I[[3]] ; b = I[[4]]  
+  n = I[[1]] ; yes = I[[2]] 
   
   comp <- ncol(combn(loop, 2))
   eq <- function(x) c(x, rep(rev(x)[1], comp - length(x)))
