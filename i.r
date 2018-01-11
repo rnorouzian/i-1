@@ -246,6 +246,9 @@ prop.priors <- function(a, ...)
 prop.priors.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
   
 d = dist.name
+is.v <- function(...) lengths(list(...)) > 1
+if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")  
+if(yes > n) stop("Error: 'yes' cannot be larger than 'n'.")  
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
 I = eq(a, b, d, lo, hi)
 a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
@@ -303,7 +306,9 @@ prop.hyper <- function(a, ...)
 }
 
 prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.prior = FALSE, pos = 3, top = 1.01){
-  
+ 
+is.v <- function(...) lengths(list(...)) > 1
+if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")  
 d = dist.name
 Bi = round(yes)
 n = round(n) 
@@ -360,6 +365,9 @@ ab.prop.hyper <- function(a, ...)
 
 ab.prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE, 
                           yes = 55, n = 1e2, col = 1, show.prior = FALSE){
+  
+  is.v <- function(...) lengths(list(...)) > 1
+  if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")
   d = dist.name
   Bi = round(yes)
   n = round(n) 
@@ -510,6 +518,8 @@ d.priors <- function(t, ...)
 
 d.priors.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6){
   
+  is.v <- function(...) lengths(list(...)) > 1
+  if(any(is.v(t, n1, n2))) stop("Error: 't' & 'n1' & 'n2' must each have a length of '1'.")
   d = dist.name 
   pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -584,6 +594,8 @@ d.hyper <- function(t, ...)
 
 d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -3, UL = 3, pos = 3, show.prior = FALSE, top = 1.01, margin = 6, prior.left = -6, prior.right = 6){
 
+  is.v <- function(...) lengths(list(...)) > 1
+  if(any(is.v(t, n1, n2))) stop("Error: 't' & 'n1' & 'n2' must each have a length of '1'.")
   d = dist.name 
  pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -648,6 +660,8 @@ ms.d.hyper <- function(t, ...)
 ms.d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
                       col = 1, top = 6, margin = 1.01, LL = -3, UL = 3, show.prior = FALSE, prior.left = -6, prior.right = 6){
   
+  is.v <- function(...) lengths(list(...)) > 1
+  if(any(is.v(t, n1, n2))) stop("Error: 't' & 'n1' & 'n2' must each have a length of '1'.")
   d = dist.name 
   pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -715,6 +729,8 @@ peta.priors <- function(f, ...)
 
 peta.priors.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
   
+  is.v <- function(...) lengths(list(...)) > 1
+  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")
   d <- dist.name  
   pr <- show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -776,6 +792,8 @@ peta.hyper <- function(f, ...)
 
 peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", show.prior = FALSE, pos = 3, top = 1.01){
   
+  is.v <- function(...) lengths(list(...)) > 1
+  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")
   d <- dist.name
  pr <- show.prior
   
@@ -831,7 +849,10 @@ ab.peta.hyper <- function(f, ...)
 
 ab.peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", add = FALSE, 
                           col = 1, show.prior = FALSE){
-   d <- dist.name
+   
+  is.v <- function(...) lengths(list(...)) > 1
+  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.") 
+  d <- dist.name
   pr <- show.prior    
 is.v <- function(x) length(x) > 1
    d <- dist.name
@@ -903,7 +924,7 @@ if(d == "dunif") {d = 'dbeta'; a <- b <- 1.0000001}
 if(d == "dbeta" & a == 1 & b == 1) a <- b <- 1.0000001;    
 if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
 is.v <- function(...) lengths(list(...)) > 1
-if(is.v(a, b, d)) stop("Error: Choose only 'one' prior knowledge base at a time.")
+if(any(is.v(a, b, d))) stop("Error: Choose only 'one' prior knowledge base at a time.")
 
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
 deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
@@ -972,7 +993,7 @@ d.update.default <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, 
   if(is.infinite(hi)) hi <- 6
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
   is.v <- function(...) lengths(list(...)) > 1
-  if(is.v(m, s, d)) stop("Choose only 'one' prior knowledge base at a time.")
+  if(any(is.v(m, s, d))) stop("Choose only 'one' prior knowledge base at a time.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
@@ -1048,7 +1069,7 @@ peta.update.default <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 
   if(hi == 1) hi <- .9999999 ;
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
   is.v <- function(...) lengths(list(...)) > 1
-  if(is.v(a, b, d)) stop("Error: Choose only 'one' prior knowledge base at a time.")
+  if(any(is.v(a, b, d))) stop("Error: Choose only 'one' prior knowledge base at a time.")
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   deci <- function(x, k = 3) format(round(x, k), nsmall = k) 
@@ -1114,7 +1135,7 @@ d.eq.test.default <- function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1
   
   d <- dist.name
   
-  if(lengths(list(get(formalArgs(d.eq.test)))) > 1) stop("Error: Only 'one' equivalence testing at a time is allowed.")
+  if(any(lengths(list(get(formalArgs(d.eq.test))))) > 1) stop("Error: Only 'one' equivalence testing at a time is allowed.")
   if(dL >= dU) stop("Your Upper value must be larger than your Lower value")
   
   if(abs(dL) != abs(dU)) message("\n\tYou have an \"Unequal Equivalence Bound\", thus we can't provide an extra\n\t function showing the effect of choosing various Unequal bounds.")
