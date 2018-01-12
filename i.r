@@ -594,7 +594,7 @@ prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1
   
   segments(c(pL, pU), rep(low.extreme, 2), c(pL, pU), c(y1, y2), col = 'green2', lend = 1, lty = 2)
   
-  segments(pL, 0, pU, 0, col = adjustcolor(3, .5), lend = 1, lwd = 40, xpd = NA) 
+  segments(pL, 0, pU, 0, col = adjustcolor(3, .5), lend = 1, lwd = 80) 
        
   segments(c(pL, pU), c(y1, y2), rep(x.text, 2), rep(y.text*1.015, 2), lwd = 2, col = 'magenta')
   
