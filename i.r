@@ -573,7 +573,7 @@ prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1
   axis(side = 1, at = 0, mgp = c(3, 1.1, 0), col = 0, col.axis = "magenta", tick = FALSE, line = - 1.4, cex.axis = 1.4, font = 2)
   
   text(c(CI[1], mode, CI[2]), 0, paste0(c(deci(CI[1]*1e2, 2), deci(mode*1e2, 2), deci(CI[2]*1e2, 2)), "%"), pos = 3, 
-       font = 2, col = "magenta")
+       font = 2, col = "magenta", cex = .85)
   
   f <- approxfun(d$x, d$y, yleft = 0, yright = 0)
   
