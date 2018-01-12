@@ -592,13 +592,14 @@ prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1
   
   segments(c(pL, pU), rep(low.extreme, 2), c(pL, pU), c(y1, y2), col = 'green2', lend = 1, lty = 2)
   
+  segments(pL, low.extreme, pU, low.extreme, col = adjustcolor(3, .5), lend = 1, lwd = 40, xpd = NA) 
+       
   segments(c(pL, pU), c(y1, y2), rep(x.text, 2), rep(y.text*1.015, 2), lwd = 2, col = 'magenta')
   
   text(x.text, y.text, "Practically Equivalent to ZERO", font = 2, pos = 3, col = 'darkgreen', cex = .65, xpd = TRUE)
   
   points(c(pL, pU), c(y1, y2), pch = 21, col = 'green3', bg = 'green3', cex = 1.1)
-  
-  segments(pL, low.extreme, pU, low.extreme, col = adjustcolor(3, .5), lend = 1, lwd = 40)     
+      
   ## How much is it probable that the equivalence be true in population:
 
   a = cdf(pL)
