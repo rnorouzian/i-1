@@ -246,15 +246,14 @@ prop.priors <- function(a, ...)
 prop.priors.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
   
 d = dist.name
-is.v <- function(...) lengths(list(...)) > 1
-if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")  
-if(yes > n) stop("Error: 'yes' cannot be larger than 'n'.")  
+is.v <- function(...) lengths(list(...)) > 1  
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
 I = eq(a, b, d, lo, hi)
 a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
                            
-deci <- function(x, k = 3) format(round(x, k), nsmall = k)                                                                                                                           
-  
+deci <- function(x, k = 3) format(round(x, k), nsmall = k)     
+                            
+if(!pr){   
   Bi = round(yes)
   n = round(n)                          
   pr = show.prior
@@ -264,7 +263,9 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   peak = numeric(loop)
   h = list()
    
-if(!pr){   
+  
+if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")  
+if(yes > n) stop("Error: 'yes' cannot be larger than 'n'.")
   for(i in 1:loop){
     p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
     prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
@@ -308,12 +309,9 @@ prop.hyper <- function(a, ...)
 prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.prior = FALSE, pos = 3, top = 1.01){
  
 is.v <- function(...) lengths(list(...)) > 1
-if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")  
-d = dist.name
-Bi = round(yes)
-n = round(n) 
+
 pr = show.prior
-  
+d = dist.name  
 eq <- function(...) { lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
 I = eq(a, b, d, lo, hi)
 a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
@@ -324,7 +322,10 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
   CI = matrix(NA, loop, 2)
   mode = numeric(loop)
                              
- if(!pr){    
+if(!pr){  
+if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")  
+Bi = round(yes)
+n = round(n)   
   for(i in 1:loop){
     p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
     prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
@@ -367,10 +368,6 @@ ab.prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE,
                           yes = 55, n = 1e2, col = 1, show.prior = FALSE){
   
   is.v <- function(...) lengths(list(...)) > 1
-  if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")
-  d = dist.name
-  Bi = round(yes)
-  n = round(n) 
   pr = show.prior    
   d = dist.name
   
@@ -388,6 +385,9 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
   mode = numeric(loop)
                             
 if(!pr){   
+if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")
+Bi = round(yes)
+n = round(n)   
   for(i in 1:loop){
     p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
     prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]] 
@@ -551,9 +551,9 @@ prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1
   
   d <- density(delta, adjust = 2, n = 1e5)
   
-  plot(d, las = 1, type = "n", col = 0, main = NA,
+  plot(d, las = 1, type = "n", col = 0, main = NA, bty = "n", zero.line = FALSE,
        xlab = if(how == "one.two") bquote(Delta[~(p[1]-p[2])]) else bquote(Delta[~(p[2]-p[1])]), 
-       cex.lab = 2, ylab = NA, axes = FALSE, yaxs = "i", cex.main = .8, bty = "n", zero.line = FALSE)
+       cex.lab = 2, ylab = NA, axes = FALSE, yaxs = "i")
   
   axis(1, at = seq(min(d$x), max(d$x), length.out = 7), labels = paste0(deci(seq(min(d$x)*1e2, max(d$x)*1e2, length.out = 7), 2), "%"), mgp = c(2, .5, 0))
   
@@ -636,7 +636,6 @@ d.priors <- function(t, ...)
 d.priors.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = 1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6){
   
   is.v <- function(...) lengths(list(...)) > 1
-  if(any(is.v(t, n1, n2))) stop("Error: 't' & 'n1' & 'n2' must each have a length of '1'.")
   d = dist.name 
   pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -658,7 +657,8 @@ d.priors.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.nam
   to = numeric(loop) 
   h = list()
   
- if(!pr){                            
+ if(!pr){    
+  if(any(is.v(t, n1, n2))) stop("Error: 't' & 'n1' & 'n2' must each have a length of '1'.") 
   N = ifelse(is.na(n2), n1, (n1 * n2) / (n1 + n2))
   df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2)   
   
@@ -712,7 +712,7 @@ d.hyper <- function(t, ...)
 d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -3, UL = 3, pos = 3, show.prior = FALSE, top = 1.01, margin = 6, prior.left = -6, prior.right = 6){
 
   is.v <- function(...) lengths(list(...)) > 1
-  if(any(is.v(t, n1, n2))) stop("Error: 't' & 'n1' & 'n2' must each have a length of '1'.")
+  
   d = dist.name 
  pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -733,7 +733,8 @@ d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name
   from = numeric(loop)
   to = numeric(loop)
   
-if(!pr){                              
+if(!pr){
+  if(any(is.v(t, n1, n2))) stop("Error: 't' & 'n1' & 'n2' must each have a length of '1'.")
   N = ifelse(is.na(n2), n1, (n1 * n2) / (n1 + n2))
  df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2) 
                               
@@ -778,7 +779,7 @@ ms.d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.n
                       col = 1, top = 6, margin = 1.01, LL = -3, UL = 3, show.prior = FALSE, prior.left = -6, prior.right = 6){
   
   is.v <- function(...) lengths(list(...)) > 1
-  if(any(is.v(t, n1, n2))) stop("Error: 't' & 'n1' & 'n2' must each have a length of '1'.")
+  
   d = dist.name 
   pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -799,7 +800,7 @@ ms.d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.n
   to = numeric(loop)
                               
 if(!pr){   
-  
+  if(any(is.v(t, n1, n2))) stop("Error: 't' & 'n1' & 'n2' must each have a length of '1'.")
   N = ifelse(is.na(n2), n1, (n1 * n2) / (n1 + n2))
   df = ifelse(is.na(n2), n1 - 1, n1 + n2 - 2) 
   for(i in 1:loop){
@@ -847,7 +848,7 @@ peta.priors <- function(f, ...)
 peta.priors.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
   
   is.v <- function(...) lengths(list(...)) > 1
-  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")
+  
   d <- dist.name  
   pr <- show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -862,8 +863,9 @@ mode <- numeric(loop)
 peak <- numeric(loop)
    h <- list()
                               
-if(!pr){   
-   
+if(!pr){  
+  
+ if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")  
  options(warn = -1)
                               
   for(i in 1:loop){
@@ -910,7 +912,7 @@ peta.hyper <- function(f, ...)
 peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", show.prior = FALSE, pos = 3, top = 1.01){
   
   is.v <- function(...) lengths(list(...)) > 1
-  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")
+ 
   d <- dist.name
  pr <- show.prior
   
@@ -923,7 +925,9 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
 loop <- length(a)
   CI <- matrix(NA, loop, 2)
 mode <- numeric(loop)
+                               
 if(!pr){  
+  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")
   options(warn = -1)
                                
   for(i in 1:loop){
@@ -968,7 +972,7 @@ ab.peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi =
                           col = 1, show.prior = FALSE){
    
   is.v <- function(...) lengths(list(...)) > 1
-  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.") 
+   
   d <- dist.name
   pr <- show.prior    
    d <- dist.name
@@ -989,7 +993,7 @@ ab.peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi =
  options(warn = -1)
          
  if(!pr){    
-                         
+  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")                       
   for(i in 1:loop){
     p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
     prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
