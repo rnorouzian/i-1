@@ -551,7 +551,7 @@ prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1
   
   d <- density(delta, adjust = 2, n = 1e5)
   
-  plot(d, las = 1, type = "n", col = 0, freq = FALSE, main = NA,
+  plot(d, las = 1, type = "n", col = 0, main = NA,
        xlab = if(how == "one.two") bquote(Delta[~(p[1]-p[2])]) else bquote(Delta[~(p[2]-p[1])]), 
        cex.lab = 2, ylab = NA, axes = FALSE, yaxs = "i", cex.main = .8, bty = "n", zero.line = FALSE)
   
