@@ -511,7 +511,7 @@ for(i in 1:loop){
   segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
   points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.3, col = "magenta", xpd = NA)
   I = deci(CI*1e2 , 2); o = deci(mode*1e2, 2)
-  text(mode, 1:loop, paste0(I[,1], "%", "       ", o, "%", "       ", I[,2], "%"), cex = .75, pos = 3, font = 2, xpd = NA)
+  text(mode, 1:loop, paste0(I[,1], "%", "      ", o, "%", "      ", I[,2], "%"), cex = .75, pos = 3, font = 2, xpd = NA)
                                                  
   rownames(CI) <- paste0(np, ":")
   colnames(CI) <- c("Lower", "Upper")
