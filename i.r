@@ -481,7 +481,7 @@ from <- numeric(loop)
 
 for(i in 1:loop){
     CI[i, ] <- hdir(ps[, i], level = level)
-    den[i] <- list(density(ps[, i], adjust = 2, n = 1e3))
+    den[i] <- list(density(ps[, i], adjust = 2, n = 1e4))
     mode[i] <- den[[i]]$x[which.max(den[[i]]$y)]
     peak[i] <- den[[i]]$y[which.max(den[[i]]$y)]
     mean[i] <- mean(ps[, i])
