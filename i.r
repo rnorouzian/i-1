@@ -559,7 +559,7 @@ prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1
   
   polygon(x = d$x, y = scale*d$y, border = NA, col = rgb(1, 1, 0, .5)) # adjustcolor(4, .3)
   
-  lines(d, lwd = 2)     
+  lines(d$x, scale*d$y, lwd = 2)     
        
   legend("topleft", c(paste0("group 1: ", "beta", "(", round(a1, 2), ", ", round(b1, 2), ")"), paste0("group 2: ", "beta", "(", round(a2, 2), ", ", round(b2, 2), ")")), title = "Priors", 
          pch = 22, col = 2, cex = .7, pt.cex = .6, pt.bg = 2, bty = "n", x.intersp = .5, title.adj = .4)
@@ -594,7 +594,7 @@ prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1
   
   segments(c(pL, pU), rep(low.extreme, 2), c(pL, pU), c(y1, y2), col = 'green2', lend = 1, lty = 2)
   
-  segments(pL, low.extreme, pU, low.extreme, col = adjustcolor(3, .5), lend = 1, lwd = 40, xpd = NA) 
+  segments(pL, 0, pU, 0, col = adjustcolor(3, .5), lend = 1, lwd = 40, xpd = NA) 
        
   segments(c(pL, pU), c(y1, y2), rep(x.text, 2), rep(y.text*1.015, 2), lwd = 2, col = 'magenta')
   
