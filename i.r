@@ -246,6 +246,7 @@ prop.priors <- function(a, ...)
 prop.priors.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1){
   
 d = dist.name
+pr = show.prior
 is.v <- function(...) lengths(list(...)) > 1  
 eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
 I = eq(a, b, d, lo, hi)
@@ -256,7 +257,6 @@ deci <- function(x, k = 3) format(round(x, k), nsmall = k)
 if(!pr){   
   Bi = round(yes)
   n = round(n)                          
-  pr = show.prior
   loop = length(d)
   CI = matrix(NA, loop, 2)
   mode = numeric(loop)
@@ -464,9 +464,9 @@ for(i in 1:loop){
    p[[i]] <- rbeta(1e6, a[i] + yes[i], b[i] + (n[i] - yes[i]))
   }
   
-  ps <- combn(p, 2, FUN = delta)
-  
-  loop <- ncol(ps)
+   ps <- combn(p, 2, FUN = delta)
+                  
+ loop <- ncol(ps)
   
   CI <- matrix(NA, loop, 2)
  den <- list()
@@ -480,15 +480,15 @@ from <- numeric(loop)
 
 
 for(i in 1:loop){
-    CI[i, ] <- hdir(ps[, i], level = level)
-    den[i] <- list(density(ps[, i], adjust = 2, n = 1e3))
+     CI[i,] <- hdir(ps[, i], level = level)
+     den[i] <- list(density(ps[, i], adjust = 2, n = 1e3))
     mode[i] <- den[[i]]$x[which.max(den[[i]]$y)]
     peak[i] <- den[[i]]$y[which.max(den[[i]]$y)]
     mean[i] <- mean(ps[, i])
   median[i] <- median(ps[, i])
-    sd[i] <- sd(ps[, i])
+      sd[i] <- sd(ps[, i])
     from[i] <- mean[i] - margin *sd[i]
-    to[i] <- mean[i] + margin *sd[i]
+      to[i] <- mean[i] + margin *sd[i]
  }
   
   np <- combn(seq_along(p), 2, FUN = function(x){if(how == "one.two") paste0('p', x[1], ' - p', x[2]) else paste0('p', x[2], ' - p', x[1])})
@@ -975,7 +975,6 @@ ab.peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi =
    
   d <- dist.name
   pr <- show.prior    
-   d <- dist.name
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
    I <- eq(a, b, d, lo, hi)
