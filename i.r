@@ -598,6 +598,7 @@ prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1
   
   points(c(pL, pU), c(y1, y2), pch = 21, col = 'green3', bg = 'green3', cex = 1.1)
   
+  segments(pL, low.extreme, pU, low.extreme, col = adjustcolor(3, .5), lend = 1, lwd = 40)     
   ## How much is it probable that the equivalence be true in population:
 
   a = cdf(pL)
