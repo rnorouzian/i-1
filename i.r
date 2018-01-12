@@ -520,6 +520,114 @@ for(i in 1:loop){
      
 #====================================================================================================================
 
+ prop.diff.eq <- function(n1, ...)
+{
+  UseMethod("prop.diff.eq")
+}
+
+prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1, b2 = b1, how = c("two.one", "one.two"), pL = -.025, pU = .025, level = .95, scale = .1){
+  
+  ro <- function(...){ lapply(list(...), function(x) round(x))}
+  I <- ro(n1, n2, yes1, yes2)
+  n1 <- I[[1]] ; n2 <- I[[2]] ; yes1 <- I[[3]] ; yes2 <- I[[4]]
+  
+  if(any(lengths(list(get(formalArgs(prop.diff.eq))))) > 1) stop("Error: Only 'one' comparison is allowed at a time.")
+  if(yes1 > n1 || yes2 > n2) stop("Error: 'yes' cannot be larger than 'n'.")
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
+  
+  p1 <- rbeta(1e6, a1 + yes1, b1 + (n1 - yes1))
+  p2 <- rbeta(1e6, a2 + yes2, b2 + (n2 - yes2))
+  
+  how <- match.arg(how)
+  
+  delta <- switch(how, 
+                    one.two = p1 - p2, 
+                    two.one = p2 - p1) 
+  
+  original.par = par(no.readonly = TRUE)
+  on.exit(par(original.par))
+  
+  par(xpd = NA)
+  
+  d <- density(delta, adjust = 2, n = 1e5)
+  
+  plot(d, las = 1, type = "n", col = 0, freq = FALSE, main = NA,
+       xlab = if(how == "one.two") bquote(Delta[~(p[1]-p[2])]) else bquote(Delta[~(p[2]-p[1])]), 
+       cex.lab = 2, ylab = NA, axes = FALSE, yaxs = "i", cex.main = .8, bty = "n", zero.line = FALSE)
+  
+  axis(1, at = seq(min(d$x), max(d$x), length.out = 7), labels = paste0(deci(seq(min(d$x)*1e2, max(d$x)*1e2, length.out = 7), 2), "%"), mgp = c(2, .5, 0))
+  
+  polygon(x = d$x, y = scale*d$y, border = NA, col = adjustcolor(4, .3))
+  
+  legend("topleft", c(paste0("group 1: ", "beta", "(", round(a1, 2), ", ", round(b1, 2), ")"), paste0("group 2: ", "beta", "(", round(a2, 2), ", ", round(b2, 2), ")")), title = "Priors", 
+         pch = 22, col = 2, cex = .7, pt.cex = .6, pt.bg = 2, bty = "n", x.intersp = .5, title.adj = .4)
+  
+  mode <- d$x[which.max(d$y)]
+  peak <- d$y[which.max(d$y)]*scale
+  
+  CI <- hdir(delta, level = level)
+  segments(CI[1], 0, CI[2], 0, lend = 1, lwd = 4)
+  segments(mode, 0, mode, peak, lend = 1, lty = 3)
+  points(mode, 0, pch = 21, cex = 1.5, bg = "cyan")
+  
+  axis(side = 1, at = 0, mgp = c(3, 1.1, 0), col = 0, col.axis = "magenta", tick = FALSE, line = - 1.4, cex.axis = 1.4, font = 2)
+  
+  text(c(CI[1], mode, CI[2]), 0, paste0(c(deci(CI[1]*1e2, 2), deci(mode*1e2, 2), deci(CI[2]*1e2, 2)), "%"), pos = 3, 
+       font = 2, col = "magenta")
+  
+  f <- approxfun(d$x, d$y, yleft = 0, yright = 0)
+  
+  cdf <- Vectorize(function(q){
+    integrate(f, -1, q)[[1]]
+  })
+  
+# invcdf <- function(p){
+#  uniroot(function(q)cdf(q) - p, range(delta))[[1]]  # Not implemented # 
+# }
+  
+  y1 = y2 = 1.02*peak
+  x.text = (pL+pU)/2
+  y.text = 1.05*peak
+  low.extreme <- par('usr')[3]
+  
+  segments(c(pL, pU), rep(low.extreme, 2), c(pL, pU), c(y1, y2), col = 'green2', lend = 1, lty = 2)
+  
+  segments(c(pL, pU), c(y1, y2), rep(x.text, 2), rep(y.text*1.015, 2), lwd = 2, col = 'magenta')
+  
+  text(x.text, y.text, "Practically Equivalent to ZERO", font = 2, pos = 3, col = 'darkgreen', cex = .65, xpd = TRUE)
+  
+  points(c(pL, pU), c(y1, y2), pch = 21, col = 'green3', bg = 'green3', cex = 1.1)
+  
+  ## How much is it probable that the equivalence be true in population:
+
+  a = cdf(pL)
+  b = cdf(pU)
+  
+  Post.in.ROPE.Y = (b - a)
+  Post.in.ROPE.X = (pU - pL) / 2
+  
+  BB = deci(Post.in.ROPE.Y*1e2, 2)
+  
+  title(main = paste0("There is ", "''", BB, "%", "''", " probability that TRUE diff. is equivalent to ZERO"), cex.main = .8)
+  
+  if(CI[1] > pU || CI[2] < pL) {
+    
+    legend("topright", "NOT Practically equivalent to \"0\" ", bty = 'n', cex = .75, text.font = 4, text.col = 'magenta2', title = "Decision:")
+    
+  } else
+    
+    if(CI[1] > pL & CI[2] < pU) {
+      
+      legend("topright", "Practically equivalent to \"0\" ", bty = 'n', cex = .75, text.font = 4, text.col = 'magenta2', title = "Decision:")
+      
+    } else {
+      
+      legend("topright", "No decision can be made ", bty = 'n', cex = .75, text.font = 4, text.col = 'magenta2', title = "Decision:")
+    }
+}             
+              
+#====================================================================================================================              
+
 d.priors <- function(t, ...)
 {
   UseMethod("d.priors")
