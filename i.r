@@ -277,7 +277,7 @@ if(yes > n) stop("Error: 'yes' cannot be larger than 'n'.")
       CI[i,] = HDI(posterior)
       peak[i] = posterior(mode)
     }
-    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .3, 0))
+    plot(CI, rep(1:loop, 2), type = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .3, 0))
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
@@ -340,7 +340,7 @@ n = round(n)
  on.exit(par(original.par))
     
     par(mgp = c(2.2, .3, 0), mar = c(5.1, 4.1, 4.1, 3))   
-    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(0, 1), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2)
+    plot(CI, rep(1:loop, 2), type = "n", xlim = c(0, 1), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2)
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4", xpd = NA)
@@ -400,7 +400,7 @@ n = round(n)
   }
   
   if(!add & !pr){
-    plot(rep(1:loop, 2), CI[, 1:2], type = "n", ylim = 0:1, xlim = c(1, loop), xlab = "Prior Parameter 'A'", xaxt = "n", yaxt = "n", ylab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2.3, .3, 0), cex.lab = 1.2)
+    plot(rep(1:loop, 2), CI, type = "n", ylim = 0:1, xlim = c(1, loop), xlab = "Prior Parameter 'A'", xaxt = "n", yaxt = "n", ylab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2.3, .3, 0), cex.lab = 1.2)
     abline(v = 1:loop, col = 8, lty = 3)
     axis(2, at = axTicks(2), lab = paste0(axTicks(2)*1e2, "%"), mgp = c(2, .4, 0), las = 1)
     axis(3, at = 1:length(b), lab = deci(b), font = 2, las = 1, cex.axis = .8, mgp = c(2, .2, 0))
@@ -498,7 +498,7 @@ for(i in 1:loop){
   
   leg <- if(length(n) == 2) loop else 2
   
-  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, xaxt = "n", yaxt = "n", xlab = "Credible Interval (Proportion Differences)", font.lab = 2, mgp = c(2, .3, 0))
+  plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, xaxt = "n", yaxt = "n", xlab = "Credible Interval (Proportion Differences)", font.lab = 2, mgp = c(2, .3, 0))
   axis(1, at = axTicks(1), labels = paste0(round(axTicks(1), 2)*1e2, "%"), mgp = c(2, .3, 0))
   abline(h = 1:loop, col = 8, lty = 3)
   axis(2, at = 1:loop, labels = np, font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
@@ -688,7 +688,7 @@ d.priors.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.nam
     }
                              
     f = peak + 1:loop
-    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
+    plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
     legend(legend, rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
     box()
@@ -760,7 +760,7 @@ if(!pr){
     }
     
   par(mgp = c(2, .5, 0), mar = c(5.1, 4.1, 4.1, 3))   
-  plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2)
+  plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2)
   abline(h = 1:loop, col = 8, lty = 3)
   segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4")  
   points(mode, 1:loop, pch = 21, bg = "red4", cex = .8, col = "red4", xpd = NA)
@@ -826,7 +826,7 @@ if(!pr){
   }
   
   if(!add & !pr){
-    plot(rep(1:loop, 2), CI[, 1:2], type = "n", ylim = c(min(from), max(to)), xlim = c(1, margin*loop), xlab = "Prior Parameter 'M'", xaxt = "n", ylab = bquote(bold("Credible Interval "(delta))), font.lab = 2)
+    plot(rep(1:loop, 2), CI, type = "n", ylim = c(min(from), max(to)), xlim = c(1, margin*loop), xlab = "Prior Parameter 'M'", xaxt = "n", ylab = bquote(bold("Credible Interval "(delta))), font.lab = 2)
     abline(v = 1:loop, col = 8, lty = 3, mgp = c(2, .5, 0))
     axis(3, at = 1:length(s), lab = round(s, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .4, 0))
     text(mean(par('usr')[1:2]), 1.06*par('usr')[4], "Prior Parameter 'S'", pos = 3, cex = 1, xpd = NA, font = 2)
@@ -887,7 +887,7 @@ if(!pr){
       CI[i,] = HDI(posterior, 0, .9999999)
     } 
     
-    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = bquote(bold("Credible Interval"~(eta[p]^2))), font.lab = 2, mgp = c(2, .5, 0))
+    plot(CI, rep(1:loop, 2), type = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = bquote(bold("Credible Interval"~(eta[p]^2))), font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0)) 
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
@@ -951,7 +951,7 @@ if(!pr){
     on.exit(par(original.par))
     
     par(mgp = c(2.2, .3, 0), mar = c(5.1, 4.1, 4.1, 3))   
-    plot(CI[, 1:2], rep(1:loop, 2), type = "n", xlim = c(0, 1), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = bquote(bold("Credible Interval"~(eta[p]^2))), font.lab = 2)
+    plot(CI, rep(1:loop, 2), type = "n", xlim = c(0, 1), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = bquote(bold("Credible Interval"~(eta[p]^2))), font.lab = 2)
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4", xpd = NA)
@@ -1012,7 +1012,7 @@ ab.peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi =
   }
   
   if(!add & !pr){
-    plot(rep(1:loop, 2), CI[, 1:2], type = "n", ylim = 0:1, xlim = c(1, loop), xlab = "Prior Parameter 'A'", xaxt = "n", yaxt = "n", ylab = bquote(bold("Credible Interval"~(eta[p]^2))), font.lab = 2, mgp = c(2.3, .3, 0), cex.lab = 1.2)
+    plot(rep(1:loop, 2), CI, type = "n", ylim = 0:1, xlim = c(1, loop), xlab = "Prior Parameter 'A'", xaxt = "n", yaxt = "n", ylab = bquote(bold("Credible Interval"~(eta[p]^2))), font.lab = 2, mgp = c(2.3, .3, 0), cex.lab = 1.2)
     abline(v = 1:loop, col = 8, lty = 3)
     axis(2, at = axTicks(2), lab = paste0(axTicks(2)*1e2, "%"), mgp = c(2, .4, 0), las = 1)
     axis(3, at = 1:length(b), lab = round(b, 3), font = 2, las = 1, cex.axis = .8, mgp = c(2, .2, 0))
