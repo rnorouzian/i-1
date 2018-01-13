@@ -464,7 +464,10 @@ for(i in 1:loop){
    p[[i]] <- rbeta(1e6, a[i] + yes[i], b[i] + (n[i] - yes[i]))
   }
   
-   ps <- combn(p, 2, FUN = delta)
+ pi <- yes/n
+ estimate <- combn(pi, 2, FUN = delta) 
+                  
+ ps <- combn(p, 2, FUN = delta)
                   
  loop <- ncol(ps)
   
@@ -515,7 +518,7 @@ for(i in 1:loop){
                                                  
   rownames(CI) <- paste0(np, ":")
   colnames(CI) <- c("Lower", "Upper")
-  return(data.frame(mean = mean,  mode = mode, median = median, sd = sd, CI = CI))
+  return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI))
 }     
      
 #====================================================================================================================
