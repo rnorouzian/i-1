@@ -449,7 +449,7 @@ prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.tw
   eq <- function(x) c(x, rep(rev(x)[1], ifelse(comp == 1, 1, comp - length(x))))
   
   a = eq(a)
-  b = eq(b)
+  b = eq(b)[-length(b)]
                               
   message(paste0("\n CAUTION: Check to see if you have chosen your desired ", "\"", 2*comp, "\"", " pairs of 'a' and 'b'."))
                               
