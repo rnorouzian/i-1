@@ -275,7 +275,7 @@ if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.")
       h[i] = list(curve(posterior, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 1e3))
       mode[i] = optimize(posterior, c(lo[i], hi[i]), maximum = TRUE)[[1]]
       CI[i,] = HDI(posterior)
-      peak[i] = posterior(mode)
+      peak[i] = posterior(mode[i])
     }
     plot(CI, rep(1:loop, 2), type = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .3, 0))
     abline(h = 1:loop, col = 8, lty = 3)
@@ -684,7 +684,7 @@ d.priors.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.nam
       from[i] = mean - margin * sd
       to[i] = mean + margin * sd
       mode[i] = optimize(posterior, c(from, to), maximum = TRUE)[[1]]
-      peak[i] = posterior(mode)
+      peak[i] = posterior(mode[i])
       CI[i,] = HDI(posterior, LL, UL)
       h[i] = list(curve(posterior, from, to, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
     }
@@ -885,7 +885,7 @@ if(!pr){
       posterior = function(x) prior(x)*likelihood(x) / k
       h[i] = list(curve(posterior, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 1e3))
       mode[i] = optimize(posterior, c(lo[i], hi[i]), maximum = TRUE)[[1]]
-      peak[i] = posterior(mode)
+      peak[i] = posterior(mode[i])
       CI[i,] = HDI(posterior, 0, .9999999)
     } 
     
