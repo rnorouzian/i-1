@@ -265,7 +265,7 @@ if(!pr){
    
   
 if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")  
-if(yes > n) stop("Error: 'yes' cannot be larger than 'n'.")
+if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.")
   for(i in 1:loop){
     p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
     prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
@@ -323,7 +323,8 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
   mode = numeric(loop)
                              
 if(!pr){  
-if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")  
+if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")
+if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.")  
 Bi = round(yes)
 n = round(n)   
   for(i in 1:loop){
@@ -386,6 +387,7 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
                             
 if(!pr){   
 if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")
+if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.")  
 Bi = round(yes)
 n = round(n)   
   for(i in 1:loop){
@@ -872,7 +874,7 @@ peak <- numeric(loop)
                               
 if(!pr){  
   
- if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")  
+ if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2' must each have a length of '1'.")  
  options(warn = -1)
                               
   for(i in 1:loop){
@@ -934,7 +936,7 @@ loop <- length(a)
 mode <- numeric(loop)
                                
 if(!pr){  
-  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")
+  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2' must each have a length of '1'.")
   options(warn = -1)
                                
   for(i in 1:loop){
@@ -999,7 +1001,7 @@ ab.peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi =
  options(warn = -1)
          
  if(!pr){    
-  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2'  must each have a length of '1'.")                       
+  if(any(is.v(f, N, df1, df2))) stop("Error: 'f' & 'N' & 'df1' & 'df2' must each have a length of '1'.")                       
   for(i in 1:loop){
     p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
     prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
@@ -1044,10 +1046,12 @@ prop.update <- function(n, ...)
 prop.update.default <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, hi = 1, a = 1.5, b = 1.5, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
 
 pri <- show.prior
-s <- yes  
-d <- dist.name 
+  s <- round(yes)
+  n <- round(n)  
+  d <- dist.name 
 is.v <- function(...) lengths(list(...)) > 1
-if(any(is.v(a, b, d))) stop("Error: Choose only 'one' prior knowledge base at a time.")  
+if(any(is.v(a, b, d))) stop("Error: Choose only 'one' prior knowledge base at a time.")
+if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.")  
 if(d == "dunif" & a == 0 & b == 1) {d = 'dbeta'; a <- b <- 1.0000001}
 if(d == "dbeta" & a == 1 & b == 1) a <- b <- 1.0000001;    
 if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
