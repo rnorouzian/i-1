@@ -519,7 +519,7 @@ for(i in 1:loop){
   text(mode, 1:loop, paste0(I[,1], "%", "      ", o, "%", "      ", I[,2], "%"), cex = .75, pos = 3, font = 2, xpd = NA)
                                                  
   rownames(CI) <- paste0(np, ":")
-  colnames(CI) <- c("Lower", "Upper")
+  colnames(CI) <- c("lower", "upper")
   return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI))
 }     
      
