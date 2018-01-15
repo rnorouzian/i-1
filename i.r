@@ -446,11 +446,11 @@ prop.diff.default <- function(n, yes, a = 1.2, b = a, how = c("two.one", "one.tw
   n = I[[1]] ; yes = I[[2]] 
   
   comp <- ncol(combn(loop, 2))
-  eq <- function(x) c(x, rep(rev(x)[1], comp - length(x)))
+  eq <- function(x) c(x, rep(rev(x)[1], ifelse(comp == 1, 1, comp - length(x))))
   
-  if(length(a) < comp) a = eq(a)
-  if(length(b) < comp) b = eq(b)
-                     
+  a = eq(a)
+  b = eq(b)
+                              
   message(paste0("\n CAUTION: Check to see if you have chosen your desired ", "\"", 2*comp, "\"", " pairs of 'a' and 'b'."))
                               
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
@@ -498,7 +498,7 @@ for(i in 1:loop){
   
   np <- combn(seq_along(p), 2, FUN = function(x){if(how == "one.two") paste0('p', x[1], ' - p', x[2]) else paste0('p', x[2], ' - p', x[1])})
   
-  leg <- if(length(n) == 2) loop else 2
+  leg <- if(comp == 1) loop else 2
   
   plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, xaxt = "n", yaxt = "n", xlab = "Credible Interval (Proportion Differences)", font.lab = 2, mgp = c(2, .3, 0))
   axis(1, at = axTicks(1), labels = paste0(round(axTicks(1), 2)*1e2, "%"), mgp = c(2, .3, 0))
