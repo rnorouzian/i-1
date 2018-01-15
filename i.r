@@ -265,7 +265,7 @@ if(!pr){
    
   
 if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")  
-if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.")
+if(yes > n) stop("Error: 'yes' cannot be larger than 'n'.")
   for(i in 1:loop){
     p = function(x) get(d[i])(x, a[i], b[i])*as.integer(x >= lo[i])*as.integer(x <= hi[i])
     prior = function(x) p(x)/integrate(p, lo[i], hi[i])[[1]]
@@ -324,7 +324,7 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
                              
 if(!pr){  
 if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")
-if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.")  
+if(yes > n) stop("Error: 'yes' cannot be larger than 'n'.")  
 Bi = round(yes)
 n = round(n)   
   for(i in 1:loop){
@@ -387,7 +387,7 @@ a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
                             
 if(!pr){   
 if(any(is.v(yes, n))) stop("Error: 'yes' & 'n' must each have a length of '1'.")
-if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.")  
+if(yes > n) stop("Error: 'yes' cannot be larger than 'n'.")  
 Bi = round(yes)
 n = round(n)   
   for(i in 1:loop){
