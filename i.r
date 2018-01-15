@@ -425,12 +425,12 @@ n = round(n)
 
 #====================================================================================================================
      
-prop.diff <- function(n, ...)
+prop.diff <- function(yes, ...)
 {
   UseMethod("prop.diff")
 }
 
-prop.diff.default <- function(n, yes, a = 1.2, b = a, how = c("two.one", "one.two"), level = .95, top = 1, bottom = 1, scale = .1, margin = 6, legend = "topleft"){
+prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.two"), level = .95, top = 1, bottom = 1, scale = .1, margin = 6, legend = "topleft"){
   
     n <- round(n)
   yes <- round(yes)  
