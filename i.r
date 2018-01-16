@@ -430,7 +430,7 @@ prop.diff <- function(yes, ...)
   UseMethod("prop.diff")
 }
 
-prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.two"), level = .95, pL = -.05, pU = .05, top = 1, bottom = 1, scale = .1, margin = 6, legend = "topleft"){
+prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.two"), level = .95, top = 1, bottom = 1, scale = .1, margin = 6, legend = "topleft", eq.level = "2.5%"){
   
     n <- round(n)
   yes <- round(yes)  
@@ -440,6 +440,9 @@ prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.tw
   
   if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.") 
   if(any(is.s(n, yes))) stop("Error: 'yes' & 'n' must each have a length of '2' or larger.")
+  eq.b <- if(is.character(eq.level)) as.numeric(substr(eq.level, 1, nchar(eq.level)-1)) / 1e2 else eq.level
+  pL <- -eq.b
+  pU <-  eq.b
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(n, yes)   
@@ -503,7 +506,7 @@ for(i in 1:loop){
       to[i] <- mean[i] + margin *sd[i]
  }
   
-  np <- combn(seq_along(p), 2, FUN = function(x){if(how == "one.two") paste0('p', x[1], ' - p', x[2]) else paste0('p', x[2], ' - p', x[1])})
+  np <- combn(seq_along(p), 2, FUN = function(x){if(how == "one.two") paste0('Group', x[1], ' - Group', x[2]) else paste0('Group', x[2], ' - Group', x[1])})
   
   leg <- if(comp == 1) loop else 2
   
