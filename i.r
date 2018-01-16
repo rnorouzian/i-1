@@ -506,7 +506,7 @@ for(i in 1:loop){
       to[i] <- mean[i] + margin *sd[i]
  }
   
-  np <- combn(seq_along(p), 2, FUN = function(x){if(how == "one.two") paste0('Group', x[1], ' - Group', x[2]) else paste0('Group', x[2], ' - Group', x[1])})
+  np <- combn(seq_along(p), 2, FUN = function(x){if(how == "one.two") paste0('Grp', x[1], ' - Grp', x[2]) else paste0('Grp', x[2], ' - Grp', x[1])})
   
   leg <- if(comp == 1) loop else 2
   
