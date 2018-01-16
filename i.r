@@ -523,7 +523,7 @@ for(i in 1:loop){
                                                  
   rownames(CI) <- paste0(np, ":")
   colnames(CI) <- c("lower", "upper")
-  return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI, eq.prob = BB))
+  return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI, prob.diff.eq.zero = BB))
 }     
      
 #====================================================================================================================
