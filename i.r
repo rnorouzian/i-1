@@ -442,8 +442,6 @@ prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.tw
   if(any(is.s(n, yes))) stop("Error: 'yes' & 'n' must each have a length of '2' or larger.")
   
   eq.b <- if(is.character(eq.level)) as.numeric(substr(eq.level, 1, nchar(eq.level)-1)) / 1e2 else eq.level
-  pL <- -eq.b
-  pU <-  eq.b
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(n, yes)   
@@ -486,24 +484,19 @@ median <- numeric(loop)
   sd <- numeric(loop)
 from <- numeric(loop)                  
   to <- numeric(loop)
-   x <- numeric(loop)
-   y <- numeric(loop)
   BB <- numeric(loop)                 
 
 for(i in 1:loop){
      CI[i,] <- hdir(ps[, i], level = level)
-   den[[i]] <- density(ps[, i], adjust = 2, n = 1e4)
-          f <- approxfun(den[[i]]$x, den[[i]]$y, yleft = 0, yright = 0)
-       x[i] <- integrate(f, -1, pL)[[1]]
-       y[i] <- integrate(f, -1, pU)[[1]]
-      BB[i] <- y[i] - x[i]
+   den[[i]] <- density(ps[, i], adjust = 2, n = 1e3)
+      BB[i] <- mean(abs((ps[, i])) <= eq.b)
     mode[i] <- den[[i]]$x[which.max(den[[i]]$y)]
     peak[i] <- den[[i]]$y[which.max(den[[i]]$y)]
     mean[i] <- mean(ps[, i])
   median[i] <- median(ps[, i])
       sd[i] <- sd(ps[, i])
-    from[i] <- mean[i] - margin *sd[i]
-      to[i] <- mean[i] + margin *sd[i]
+    from[i] <- mean[i] - margin * sd[i]
+      to[i] <- mean[i] + margin * sd[i]
  }
   
   np <- combn(seq_along(p), 2, FUN = function(x){if(how == "one.two") paste0('Gr', x[1], ' - Gr', x[2]) else paste0('Gr', x[2], ' - Gr', x[1])})
