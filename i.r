@@ -430,7 +430,7 @@ prop.diff <- function(yes, ...)
   UseMethod("prop.diff")
 }
 
-prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.two"), level = .95, top = 1, bottom = 1, scale = .1, margin = 6, legend = "topleft"){
+prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.two"), level = .95, pL = -.05, pU = .05, top = 1, bottom = 1, scale = .1, margin = 6, legend = "topleft"){
   
     n <- round(n)
   yes <- round(yes)  
@@ -482,11 +482,18 @@ median <- numeric(loop)
   sd <- numeric(loop)
 from <- numeric(loop)                  
   to <- numeric(loop)
-
+   f <- list()
+   x <- numeric(loop)
+   y <- numeric(loop)
+  BB <- numeric(loop)                 
 
 for(i in 1:loop){
      CI[i,] <- hdir(ps[, i], level = level)
      den[i] <- list(density(ps[, i], adjust = 2, n = 1e3))
+     f[[i]] <- approxfun(den[[i]]$x, den[[i]]$y, yleft = 0, yright = 0)
+       x[i] <- integrate(f[[i]], -1, pL)[[1]]
+       y[i] <- integrate(f[[i]], -1, pU)[[1]]
+      BB[i] <- y[i] - x[i]
     mode[i] <- den[[i]]$x[which.max(den[[i]]$y)]
     peak[i] <- den[[i]]$y[which.max(den[[i]]$y)]
     mean[i] <- mean(ps[, i])
@@ -520,7 +527,7 @@ for(i in 1:loop){
                                                  
   rownames(CI) <- paste0(np, ":")
   colnames(CI) <- c("lower", "upper")
-  return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI))
+  return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI, eq.prob = BB))
 }     
      
 #====================================================================================================================
