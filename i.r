@@ -440,6 +440,7 @@ prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.tw
   
   if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.") 
   if(any(is.s(n, yes))) stop("Error: 'yes' & 'n' must each have a length of '2' or larger.")
+  
   eq.b <- if(is.character(eq.level)) as.numeric(substr(eq.level, 1, nchar(eq.level)-1)) / 1e2 else eq.level
   pL <- -eq.b
   pU <-  eq.b
@@ -485,17 +486,16 @@ median <- numeric(loop)
   sd <- numeric(loop)
 from <- numeric(loop)                  
   to <- numeric(loop)
-   f <- list()
    x <- numeric(loop)
    y <- numeric(loop)
   BB <- numeric(loop)                 
 
 for(i in 1:loop){
      CI[i,] <- hdir(ps[, i], level = level)
-   den[[i]] <- density(ps[, i], adjust = 2, n = 1e3)
-     f[[i]] <- approxfun(den[[i]]$x, den[[i]]$y, yleft = 0, yright = 0)
-       x[i] <- integrate(f[[i]], -1, pL)[[1]]
-       y[i] <- integrate(f[[i]], -1, pU)[[1]]
+   den[[i]] <- density(ps[, i], adjust = 2, n = 1e4)
+          f <- approxfun(den[[i]]$x, den[[i]]$y, yleft = 0, yright = 0)
+       x[i] <- integrate(f, -1, pL)[[1]]
+       y[i] <- integrate(f, -1, pU)[[1]]
       BB[i] <- y[i] - x[i]
     mode[i] <- den[[i]]$x[which.max(den[[i]]$y)]
     peak[i] <- den[[i]]$y[which.max(den[[i]]$y)]
@@ -513,7 +513,7 @@ for(i in 1:loop){
   plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, xaxt = "n", yaxt = "n", xlab = "Credible Interval (Proportion Differences)", font.lab = 2, mgp = c(2, .3, 0))
   axis(1, at = axTicks(1), labels = paste0(round(axTicks(1), 2)*1e2, "%"), mgp = c(2, .3, 0))
   abline(h = 1:loop, col = 8, lty = 3)
-  axis(2, at = 1:loop, labels = np, font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0), cex.lab = .9)
+  axis(2, at = 1:loop, labels = np, font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0), cex.lab = .85)
   legend(legend, rep(rev(paste0("beta", "(", round(a, 2), ", ", round(b, 2), ")")), leg), pch = 22, title = "Priors", pt.bg = rep(loop:1, each = leg), col = rep(loop:1, each = leg), cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
   segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
   box()
