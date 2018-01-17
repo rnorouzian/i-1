@@ -499,7 +499,8 @@ yeses <- combn(yes, 2, FUN = sum)
   }
   
   BF01 <- H0/H1                 
-  
+  BF10 <- 1/BF01
+                  
   CI <- matrix(NA, loop, 2)
  den <- list()
 mode <- numeric(loop)
@@ -548,7 +549,7 @@ for(i in 1:loop){
                                                  
   rownames(CI) <- paste0(np, ":")
   colnames(CI) <- c("lower", "upper")
-  return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI, prob.eq.zero = BB, BF01 = BF01))
+  return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI, prob.eq.zero = BB, BF01 = BF01, BF10 = BF10))
 }     
      
 #====================================================================================================================
