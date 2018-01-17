@@ -480,19 +480,22 @@ yeses <- combn(yes, 2, FUN = sum)
   
   H0 <- numeric(loop)
   A0 <- rbeta(1e5, 1, 1)
+  B0 <- list()                
   for(i in 1:loop){
-  B0 <- dbinom(yeses[i], ns[i], A0)
-  H0[i] <- mean(B0)
+  B0[[i]] <- dbinom(yeses[i], ns[i], A0)
+  H0[i] <- mean(B0[[i]])
   }
   
   yes1 <- combn(yes, 2, simplify = FALSE)
   n1 <- combn(n, 2, simplify = FALSE)
   
   H1 <- numeric(loop)
+  B1 <- list()
+  B2 <- list()                
   for(i in 1:loop){
-  B1 <- dbinom(yes1[[i]][1], n1[[i]][1], A0)
-  B2 <- dbinom(yes1[[i]][2], n1[[i]][2], A0)
-  H1 <- mean(B1[i])*mean(B2[i])
+  B1[[i]] <- dbinom(yes1[[i]][1], n1[[i]][1], A0)
+  B2[[i]] <- dbinom(yes1[[i]][2], n1[[i]][2], A0)
+    H1[i] <- mean(B1[[i]])*mean(B2[[i]])
   }
   
   BF01 <- H0/H1                 
