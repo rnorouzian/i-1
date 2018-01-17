@@ -474,6 +474,28 @@ for(i in 1:loop){
  ps <- combn(p, 2, FUN = delta)
                   
  loop <- ncol(ps)
+                  
+yeses <- combn(yes, 2, FUN = sum)
+   ns <- combn(n, 2, FUN = sum)
+  
+  H0 <- numeric(loop)
+  A0 <- rbeta(1e5, 1, 1)
+  for(i in 1:loop){
+  B0 <- dbinom(yeses[i], ns[i], A0)
+  H0[i] <- mean(B0)
+  }
+  
+  yes1 <- combn(yes, 2, simplify = FALSE)
+  n1 <- combn(n, 2, simplify = FALSE)
+  
+  H1 <- numeric(loop)
+  for(i in 1:loop){
+  B1 <- dbinom(yes1[[i]][1], n1[[i]][1], A0)
+  B2 <- dbinom(yes1[[i]][2], n1[[i]][2], A0)
+  H1 <- mean(B1[i])*mean(B2[i])
+  }
+  
+  BF01 <- H0/H1                 
   
   CI <- matrix(NA, loop, 2)
  den <- list()
@@ -523,7 +545,7 @@ for(i in 1:loop){
                                                  
   rownames(CI) <- paste0(np, ":")
   colnames(CI) <- c("lower", "upper")
-  return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI, prob.diff.eq.zero = BB))
+  return(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, CI = CI, prob.eq.zero = BB, BF01 = BF01))
 }     
      
 #====================================================================================================================
