@@ -710,13 +710,13 @@ d.priors.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.nam
       k = integrate(function(x) prior(x)*likelihood(x), lo[i], hi[i])[[1]]
       posterior = function(x) prior(x)*likelihood(x) / k
       mean[i] = integrate(function(x) x*posterior(x), lo[i], hi[i])[[1]]
-      sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean^2)
+      sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean[i]^2)
       from[i] = mean[i] - margin * sd[i]
       to[i] = mean[i] + margin * sd[i]
-      mode[i] = optimize(posterior, c(from, to), maximum = TRUE)[[1]]
+      mode[i] = optimize(posterior, c(from[i], to[i]), maximum = TRUE)[[1]]
       peak[i] = posterior(mode[i])
       CI[i,] = HDI(posterior, LL, UL)
-      h[i] = list(curve(posterior, from, to, type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
+      h[i] = list(curve(posterior, from[i], to[i], type = "n", ann = FALSE, yaxt = "n", xaxt = "n", add = i!= 1, bty = "n", n = 5e2))
     }
                              
     f = peak + 1:loop
@@ -785,7 +785,7 @@ if(!pr){
     posterior = function(x) prior(x)*likelihood(x) / k
     mode[i] = optimize(posterior, c(LL, UL), maximum = TRUE)[[1]]
     mean[i] = integrate(function(x) x*posterior(x), lo[i], hi[i])[[1]]
-    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean^2)
+    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean[i]^2)
     CI[i,] = HDI(posterior, LL, UL)
     from[i] = mean[i] - margin * sd[i]
     to[i] = mean[i] + margin * sd[i] 
@@ -850,7 +850,7 @@ if(!pr){
     posterior = function(x) prior(x)*likelihood(x) / k
     mode[i] = optimize(posterior, c(LL, UL), maximum = TRUE)[[1]]
     mean[i] = integrate(function(x) x*posterior(x), lo[i], hi[i])[[1]]
-    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean^2)
+    sd[i] = sqrt(integrate(function(x) x^2*posterior(x), lo[i], hi[i])[[1]] - mean[i]^2)
     CI[i,] = HDI(posterior, LL, UL)
     from[i] = mean[i] - top * sd[i]
     to[i] = mean[i] + top * sd[i]
