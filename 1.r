@@ -5,7 +5,7 @@ Responses = sample(0:1, size = N, prob = c(1 - pBi, pBi), replace = TRUE)  # Gen
 Prop = cumsum(Responses) / 1:N   # Compute running proportion of B as each parent responds
    
 par(las = 1, tck = -.02, font.lab = 2, ...)  
-plot.ts(Prop, ty = "o", ylim = 0:1, yaxt = "n", pch = 21, bg = 3, xlab = "Number of Parents", 
+plot.ts(Prop, type = "o", ylim = 0:1, yaxt = "n", pch = 21, bg = 3, xlab = "Number of Parents", 
         ylab = "Proportion of (B)")
 
 CI = binom.test(cumsum(Responses)[N], N)[[4]]
