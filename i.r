@@ -1068,6 +1068,49 @@ axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .4, 0))
 
 #=================================================================================================================
 
+cor.bayes <- function(prior.mean = 0, prior.sd = 1000, r = .1, n = 30, scale = .5, eq.bound = .1, level = .95){ 
+  
+deci <- function(x, k = 3) format(round(x, k), nsmall = k)
+  
+mu     <- prior.mean
+lambda <- 1/(prior.sd^2)
+
+lambda.post <- (lambda + (n - 3))
+mu.post     <- (lambda*mu + (n - 3)*atanh(r))/lambda.post
+posterior   <- tanh(rnorm(1e6, mu.post, sqrt(1/lambda.post)))
+
+d <- density(posterior, adjust = 2, n = 1e4)
+
+original.par = par(no.readonly = TRUE)
+on.exit(par(original.par))
+
+par(xpd = NA)
+
+plot(d, type = "n", col = 0, main = NA, bty = "n", zero.line = FALSE,
+     xlab = bquote(rho[~("Pearson correlation")]), cex.lab = 2, ylab = NA, axes = FALSE, yaxs = "i")
+
+polygon(x = d$x, y = scale*d$y, border = NA, col = rgb(1, 0, 0, .5))
+
+I = hdir(posterior, level = level)
+eq.prob = mean(abs(posterior) <= eq.bound)
+axis(1, at = seq(min(d$x), max(d$x), length.out = 7), labels = deci(seq(min(d$x), max(d$x), length.out = 7), 2), mgp = c(2, .5, 0))
+
+segments(I[1], 0, I[2], 0, lend = 1, lwd = 6)
+median <- median(posterior)
+mode <- d$x[which.max(d$y)]
+peak <- d$y[which.max(d$y)]*scale
+mean <- mean(posterior)
+sd <- sd(posterior)
+segments(mode, 0, mode, peak, lend = 1, lty = 3)
+points(mode, 0, cex = 2, pch = 21, col = "magenta", bg = "cyan")
+
+text(c(I, median), 0, deci(c(I, median), 3), pos = 3, font = 2, col = 4)
+
+return(round(data.frame(mean = mean, mode = mode, median = median, sd = sd, lower = I[1], upper = I[2], eq.prob = eq.prob, row.names = "Pearson r posterior: "), 6))
+}
+
+#==================================================================================================================
+
 prop.update <- function(n, ...)
 {
   UseMethod("prop.update")
