@@ -1068,7 +1068,13 @@ axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .4, 0))
 
 #=================================================================================================================
 
-cor.bayes <- function(prior.mean = 0, prior.sd = 1000, r = .1, n = 30, scale = .5, eq.bound = .1, level = .95){ 
+cor.bayes <- function(r, ...)
+{
+  UseMethod("cor.bayes")
+}
+
+
+cor.bayes.default <- function(r = .1, n = 30, prior.mean = 0, prior.sd = 1000, scale = .5, eq.bound = .1, level = .95){ 
   
 deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
