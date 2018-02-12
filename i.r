@@ -1073,7 +1073,7 @@ cor.bayes <- function(r, ...)
   UseMethod("cor.bayes")
 }
                        
-cor.bayes.default <- Vectorize(function(r = .1, n = 30, prior.mean = 0, prior.sd = 1000, scale = .5, eq.bound = .1, level = .95){ 
+cor.bayes.default <- Vectorize(function(r, n, prior.mean = 0, prior.sd = 1000, scale = .5, eq.bound = .1, level = .95){ 
   
 deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
