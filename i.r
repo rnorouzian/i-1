@@ -1116,6 +1116,98 @@ return(round(data.frame(mean = mean, mode = mode, median = median, sd = sd, lowe
 
 #==================================================================================================================
 
+cor.diff <- function(r, ...)
+{
+  UseMethod("cor.diff")
+}
+
+cor.diff.default <- function(r, n, prior.mean = 0, prior.sd = 100, how = c("two.one", "one.two"), eq.bound = .05, level = .95, top = 1, bottom = 1, scale = .1, margin = 5, legend = "topleft"){ 
+  
+  is.s <- function(...)lengths(list(...)) < 2
+  if(any(is.s(n, r))) stop("Error: 'r' & 'n' must each have a length of '2' or larger.")
+  
+  eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+  I = eq(n, r, prior.mean, prior.sd)   
+  n = I[[1]] ; r = I[[2]] ; prior.mean = I[[3]] ; prior.sd = I[[4]]
+  
+  loop <- length(r)
+  
+  deci <- function(x, k = 3) format(round(x, k), nsmall = k)
+  
+  mu     <- prior.mean
+  lambda <- 1/(prior.sd^2)
+  
+  how <- match.arg(how)
+  
+  delta <- switch(how,
+                  one.two = function(x) x[[1]] - x[[2]], 
+                  two.one = function(x) x[[2]] - x[[1]])
+  
+  lambda.post <- (lambda + (n - 3))
+  mu.post     <- (lambda*mu + (n - 3)*atanh(r))/lambda.post
+  
+  p <- list()
+  for(i in 1:loop){
+    p[[i]] <- tanh(rnorm(1e6, mu.post[i], sqrt(1/lambda.post[i])))
+  }
+  
+  ps <- combn(p, 2, FUN = delta)
+  
+  loop <- ncol(ps)
+  
+    CI <- matrix(NA, loop, 2)
+   den <- list()
+  mode <- numeric(loop)
+  peak <- numeric(loop)
+  mean <- numeric(loop)
+median <- numeric(loop)                  
+    sd <- numeric(loop)
+  from <- numeric(loop)                  
+    to <- numeric(loop)
+    BB <- numeric(loop)
+   
+  for(i in 1:loop){
+    CI[i,] <- hdir(ps[, i], level = level)
+  den[[i]] <- density(ps[, i], adjust = 2, n = 1e3)
+     BB[i] <- mean(abs(ps[, i]) <= eq.bound)
+   mode[i] <- den[[i]]$x[which.max(den[[i]]$y)]
+   peak[i] <- den[[i]]$y[which.max(den[[i]]$y)]
+   mean[i] <- mean(ps[, i])
+ median[i] <- median(ps[, i])
+     sd[i] <- sd(ps[, i])
+   from[i] <- mean[i] - margin * sd[i]
+     to[i] <- mean[i] + margin * sd[i]
+  }
+  
+  np <- combn(seq_along(p), 2, FUN = function(x){if(how == "one.two") paste0('r', x[1], ' - r', x[2]) else paste0('r', x[2], ' - r', x[1])})
+  
+  leg <- if(loop == 1) 1 else 2
+  
+  plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xlab = "Credible Interval (Correlation Differences)", font.lab = 2, mgp = c(2, .3, 0))
+  axis(2, at = 1:loop, labels = np, font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
+  abline(h = 1:loop, col = 8, lty = 3)
+  legend(legend, rep(rev(paste0("norm", "(", round(prior.mean, 2), ", ", round(prior.sd, 2), ")")), leg), pch = 22, title = "Priors", pt.bg = rep(loop:1, each = leg), col = rep(loop:1, each = leg), cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+  segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
+  box()
+  
+  for(i in 1:loop){
+    polygon(x = den[[i]]$x, y = scale*den[[i]]$y +i, col = adjustcolor(i, .55), border = NA, xpd = NA)
+  }
+  
+  m = scale*peak + 1:loop
+  segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
+  points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.3, col = "magenta", xpd = NA)
+  I = deci(CI, 2); o = deci(mode, 2)
+  text(mode, 1:loop, paste0(I[,1], "        ", o, "         ", I[,2]), cex = .75, pos = 3, font = 2, xpd = NA)
+  
+  rownames(CI) <- paste0(np, ":")
+  colnames(CI) <- c("lower", "upper")
+  
+  return(round(data.frame(mean = mean, mode = mode, median = median, sd = sd, CI = CI, eq.prob = BB), 6))
+}
+
+#===================================================================================================================
+
 prop.update <- function(n, ...)
 {
   UseMethod("prop.update")
