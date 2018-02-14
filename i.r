@@ -1109,7 +1109,7 @@ sd <- sd(posterior)
 segments(mode, 0, mode, peak, lend = 1, lty = 3)
 points(mode, 0, cex = 2, pch = 21, col = "magenta", bg = "cyan")
 
-text(c(I, median), 0, deci(c(I, median), 3), pos = 3, font = 2, col = 4)
+text(c(I, mode), 0, deci(c(I, mode), 3), pos = 3, font = 2, col = 4)
 
 return(round(data.frame(mean = mean, mode = mode, median = median, sd = sd, lower = I[1], upper = I[2], eq.prob = eq.prob, row.names = "Pearson r posterior: "), 6))
 }
