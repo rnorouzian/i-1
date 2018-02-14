@@ -1073,45 +1073,64 @@ cor.bayes <- function(r, ...)
   UseMethod("cor.bayes")
 }
                        
-cor.bayes.default <- function(r, n, prior.mean = 0, prior.sd = 1000, scale = .5, eq.bound = .1, level = .95){ 
+cor.bayes.default <- function(r, n, prior.mean = 0, prior.sd = 10, eq.bound = .05, level = .95, top = 1, bottom = 1, scale = .1, margin = 5, legend = "topleft"){ 
+  
+eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
+I = eq(n, r, prior.mean, prior.sd)   
+n = I[[1]] ; r = I[[2]] ; prior.mean = I[[3]] ; prior.sd = I[[4]] ;  
   
 deci <- function(x, k = 3) format(round(x, k), nsmall = k)
   
-mu     <- prior.mean
-lambda <- 1/(prior.sd^2)
-
+         mu <- prior.mean
+     lambda <- 1/(prior.sd^2)
 lambda.post <- (lambda + (n - 3))
-mu.post     <- (lambda*mu + (n - 3)*atanh(r))/lambda.post
-posterior   <- tanh(rnorm(1e6, mu.post, sqrt(1/lambda.post)))
+    mu.post <- (lambda*mu + (n - 3)*atanh(r))/lambda.post
+    
+   loop <- length(r)
+      p <- list()
+     CI <- matrix(NA, loop, 2)
+    den <- list()
+   mode <- numeric(loop)
+   peak <- numeric(loop)
+   mean <- numeric(loop)
+ median <- numeric(loop)                  
+     sd <- numeric(loop)
+   from <- numeric(loop)                  
+     to <- numeric(loop)
+eq.prob <- numeric(loop)          
+    
+for(i in 1:loop){
+    p[[i]] <- tanh(rnorm(1e6, mu.post[i], sqrt(1/lambda.post[i])))
+    CI[i,] <- hdir(p[[i]], level = level)
+  den[[i]] <- density(p[[i]], adjust = 2, n = 1e3)
+eq.prob[i] <- mean(abs(p[[i]]) <= eq.bound)
+   mode[i] <- den[[i]]$x[which.max(den[[i]]$y)]
+   peak[i] <- den[[i]]$y[which.max(den[[i]]$y)]
+   mean[i] <- mean(p[[i]])
+ median[i] <- median(p[[i]])
+     sd[i] <- sd(p[[i]])
+   from[i] <- mean[i] - margin * sd[i]
+     to[i] <- mean[i] + margin * sd[i]
+}
 
-d <- density(posterior, adjust = 2, n = 1e4)
+plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xlab = "Credible Interval (Pearson correlation)", font.lab = 2, mgp = c(2, .3, 0))
+axis(2, at = 1:loop, labels = paste0("r", 1:loop), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
+abline(h = 1:loop, col = 8, lty = 3)
+legend(legend, rev(paste0("norm", "(", round(prior.mean, 2), ", ", round(prior.sd, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
+box()
 
-original.par = par(no.readonly = TRUE)
-on.exit(par(original.par))
+for(i in 1:loop){
+polygon(x = den[[i]]$x, y = scale*den[[i]]$y +i, col = adjustcolor(i, .55), border = NA, xpd = NA)
+}
 
-par(xpd = NA)
+m = scale*peak + 1:loop
+segments(mode, 1:loop, mode, m, lty = 3, xpd = NA, lend = 1)  
+points(mode, 1:loop, pch = 21, bg = "cyan", cex = 1.3, col = "magenta", xpd = NA)
+I = deci(CI, 2); o = deci(mode, 2)
+text(mode, 1:loop, paste0(I[,1], "        ", o, "         ", I[,2]), cex = .75, pos = 3, font = 2, xpd = NA)
 
-plot(d, type = "n", col = 0, main = NA, bty = "n", zero.line = FALSE,
-     xlab = bquote(rho[~("Pearson correlation")]), cex.lab = 2, ylab = NA, axes = FALSE, yaxs = "i")
-
-polygon(x = d$x, y = scale*d$y, border = NA, col = rgb(1, 0, 0, .5))
-
-I = hdir(posterior, level = level)
-eq.prob = mean(abs(posterior) <= eq.bound)
-axis(1, at = seq(min(d$x), max(d$x), length.out = 7), labels = deci(seq(min(d$x), max(d$x), length.out = 7), 2), mgp = c(2, .5, 0))
-
-segments(I[1], 0, I[2], 0, lend = 1, lwd = 6)
-median <- median(posterior)
-mode <- d$x[which.max(d$y)]
-peak <- d$y[which.max(d$y)]*scale
-mean <- mean(posterior)
-sd <- sd(posterior)
-segments(mode, 0, mode, peak, lend = 1, lty = 3)
-points(mode, 0, cex = 2, pch = 21, col = "magenta", bg = "cyan")
-
-text(c(I, mode), 0, deci(c(I, mode), 3), pos = 3, font = 2, col = 4)
-
-return(round(data.frame(mean = mean, mode = mode, median = median, sd = sd, lower = I[1], upper = I[2], eq.prob = eq.prob, row.names = "Pearson r posterior: "), 6))
+return(round(data.frame(mean = mean, mode = mode, median = median, sd = sd, lower = CI[,1], upper = CI[,2], eq.prob = eq.prob, row.names = paste0("r", 1:loop, " posterior: ")), 6))
 }
 
 #==================================================================================================================
