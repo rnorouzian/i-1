@@ -141,9 +141,9 @@ cor.ci <- function(r, ...)
 }
                               
 cor.ci.default <- function(r, n, conf.level = .95){
-      p = (1 - conf.level) / 2 
-      I = tanh(atanh(r) + qnorm(c(p, 1-p))*1/sqrt(n - 3))
-data.frame(lower = I[1], upper = I[2], conf.level = conf.level, row.names = "Correlation Confidence Interval:")
+  p = (1 - conf.level) / 2 
+  I = tanh(atanh(r) + qnorm(c(p, 1-p))*1/sqrt(n - 3))
+  data.frame(lower = I[1], upper = I[2], conf.level = conf.level, row.names = "Correlation Confidence Interval:")
 }                              
 
 #==================================================================================================================
