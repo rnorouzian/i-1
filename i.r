@@ -91,6 +91,19 @@ hdir.default <- function(sample, level = .95){
 
 #==================================================================================================================
 
+cor.ci <- function(r, ...)
+{
+  UseMethod("cor.ci")
+}
+                              
+cor.ci.default <- function(r, n, conf.level = .95){
+      p = (1 - conf.level) / 2 
+      I = tanh(atanh(r) + qnorm(c(p, 1-p))*1/sqrt(n - 3))
+data.frame(lower = I[1], upper = I[2], row.names = "Confidence Interval: ")
+}                              
+
+#==================================================================================================================
+
 beta.id <- function(Low, ...)
 {
   UseMethod("beta.id")
@@ -1357,19 +1370,6 @@ cor.bayes.default <- function(r, n, prior.mean = 0, prior.sd = .707, eq.bound = 
   curve(p, -1, 1, yaxt = "n", ylab = NA, xlab = bquote(rho[~("Pearson correlation")]), bty = "n", font.lab = 2, cex.lab = 1.5, lwd = 2, n = 1e4, yaxs = "i", main = bquote(rho*" ~ "*"norm"(.(round(prior.mean[1], 3)), .(round(prior.sd[1], 3)))), xpd = NA) 
   }  
 }
-
-#==================================================================================================================
-
-cor.ci <- function(r, ...)
-{
-  UseMethod("cor.ci")
-}
-                              
-cor.ci.default <- function(r, n, conf.level = .95){
-  alpha = 1 - ((1 - conf.level)/2)  
-  I = tanh(atanh(r) + c(-1, 1)*qnorm(alpha)*1/sqrt(n - 3))
-data.frame(lower = I[1], upper = I[2], row.names = "Confidence Interval: ")
-}                              
 
 #==================================================================================================================                              
 
