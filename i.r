@@ -109,7 +109,7 @@ d.ci <- function(d, ...)
   UseMethod("d.ci")
 }
 
-d.ci <- function(d, n1, n2 = NA, conf.level = .95){
+d.ci.default <- function(d, n1, n2 = NA, conf.level = .95){
   
 options(warn = -1)  
 alpha = (1 - conf.level)/2
@@ -136,7 +136,12 @@ data.frame(lower = I[1], upper = I[2], conf.level = conf.level, ncp = t, row.nam
 
 #=================================================================================================================================
 
-peta.ci <- function(peta, N, df1, df2, conf.level = .9){
+peta.ci <- function(peta, ...)
+{
+  UseMethod("peta.ci")
+}
+                
+peta.ci.default <- function(peta, N, df1, df2, conf.level = .95){
 
 options(warn = -1) 
   
