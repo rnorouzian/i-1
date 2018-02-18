@@ -141,18 +141,20 @@ peta.ci <- function(peta, ...)
   UseMethod("peta.ci")
 }
                 
-peta.ci.default <- function(peta, N, df1, df2, conf.level = .95){
+peta.ci.default <- function(peta, N, df1, df2, conf.level = .9){
 
 options(warn = -1) 
   
-    q = (-peta * df2) / ((peta * df1) - df1)   
+    q = (-peta * df2) / ((peta * df1)-df1) 
 alpha = (1 - conf.level)/2
   
+if(q > 5e2) message("Warning: The confidence interval might not be accurate.")
+
 f <- function (ncp, alpha, q, df1, df2) {
 abs(suppressWarnings(pf(q = q, df1 = df1, df2 = df2, ncp, lower.tail = FALSE)) - alpha)
 }
 
-a = lapply(14:ifelse(peta!= 0, q+1e2, 30), function(x) c(-x, x))
+a = lapply(20:ifelse(peta!= 0, q+3e2, 30), function(x) c(-x, x))
 
 CI = matrix(NA, length(a), 2)
 
@@ -165,7 +167,7 @@ I = CI[which.max(ave(1:nrow(CI), do.call(paste, round(data.frame(CI), 3)), FUN =
 
 I <- I[1:2] / (I[1:2] + N)
 
-data.frame(lower = I[1], upper = I[2], conf.level = conf.level, ncp = (peta * N) / (1 - peta), row.names = "P.eta.sq CI:")
+data.frame(lower = I[1], upper = I[2], conf.level = conf.level, ncp = (peta * N) / (1 - peta), F.value = q, row.names = "P.eta.sq CI:")
 }               
 
 #=================================================================================================================================                
