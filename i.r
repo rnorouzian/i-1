@@ -145,7 +145,7 @@ peta.ci.default <- function(peta, N, df1, df2, conf.level = .95){
 
 options(warn = -1) 
   
-    q = (peta * N) / (1 - peta)  
+    q = (-peta * df2) / ((peta * df1) - df1)   
 alpha = (1 - conf.level)/2
   
 f <- function (ncp, alpha, q, df1, df2) {
@@ -165,7 +165,7 @@ I = CI[which.max(ave(1:nrow(CI), do.call(paste, round(data.frame(CI), 3)), FUN =
 
 I <- I[1:2] / (I[1:2] + N)
 
-data.frame(lower = I[1], upper = I[2], conf.level = conf.level, ncp = q, row.names = "P.eta.sq CI:")
+data.frame(lower = I[1], upper = I[2], conf.level = conf.level, ncp = (peta * N) / (1 - peta), row.names = "P.eta.sq CI:")
 }               
 
 #=================================================================================================================================                
