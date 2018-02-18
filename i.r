@@ -145,12 +145,12 @@ peta.ci.default <- function(peta, N, df1, df2, conf.level = .9){
 
 options(warn = -1) 
   
-    q = (-peta * df2) / ((peta * df1)-df1) 
+    q = (-peta * df2) / ((peta * df1) - df1) 
 alpha = (1 - conf.level)/2
   
 if(q > 5e2) message("Warning: The confidence interval might not be accurate.")
 
-f <- function (ncp, alpha, q, df1, df2) {
+f <- function (ncp, alpha, q, df1, df2){
 abs(suppressWarnings(pf(q = q, df1 = df1, df2 = df2, ncp, lower.tail = FALSE)) - alpha)
 }
 
