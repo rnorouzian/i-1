@@ -1,3 +1,4 @@
+
 HDI <- function(FUN, ...)
 {
   UseMethod("HDI")
@@ -96,11 +97,11 @@ prop.ci <- function(k, ...)
   UseMethod("prop.ci")
 }
 
-prop.ci.default <- function(k, n, conf.level = .95){
+prop.ci.default <- Vectorize(function(k, n, conf.level = .95){
   
-I = as.numeric(binom.test(k, n, conf.level = conf.level)[[4]])
-data.frame(lower = I[1], upper = I[2], conf.level = conf.level, row.names = "Prop CI:")
-}
+I = round(as.numeric(binom.test(k, n, conf.level = conf.level)[[4]]), 6)
+data.frame(Prop = k/n, lower = I[1], upper = I[2], conf.level = conf.level, row.names = "Prop CI:")
+})
 
 #==================================================================================================
 
@@ -109,30 +110,35 @@ d.ci <- function(d, ...)
   UseMethod("d.ci")
 }
 
-d.ci.default <- function(d, n1, n2 = NA, conf.level = .95){
+d.ci.default <- Vectorize(function(d, t = NA, n1, n2 = NA, conf.level = .95){
   
-options(warn = -1)  
-alpha = (1 - conf.level)/2
-    N = ifelse(is.na(n2), n1, (n1 * n2)/(n1 + n2))
-   df = ifelse(is.na(n2), n1 - 1, (n1 + n2) - 2)
- d.SE = 1/sqrt(N)  ;   t = d/d.SE
+  options(warn = -1)  
+  alpha = (1 - conf.level)/2
+  N = ifelse(is.na(n2), n1, (n1 * n2)/(n1 + n2))
+  df = ifelse(is.na(n2), n1 - 1, (n1 + n2) - 2)
+  d.SE = 1/sqrt(N)
+  q = ifelse(is.na(t), d/d.SE, t)
   
-f <- function(ncp, alpha, q, df){
-abs(suppressWarnings(pt(q = t, df = df, ncp, lower.tail = FALSE)) - alpha)
-}
+  f <- function(ncp, alpha, q, df){
+    abs(suppressWarnings(pt(q = q, df = df, ncp, lower.tail = FALSE)) - alpha)
+  }
   
-a = lapply(14:ifelse(d!= 0, d*sqrt(N)+1e2, 30), function(x) c(-x, x))
-           
-CI = matrix(NA, length(a), 2)
+  a = if(is.na(t)){ lapply(14:ifelse(d!= 0, q+2e2, 30), function(x) c(-x, x))
+    }else{ lapply(14:ifelse(t!= 0, q+2e2, 30), function(x) c(-x, x)) }
   
-for(i in 1:length(a)){
-CI[i,] = sapply(c(alpha, 1-alpha),
-function(x) optimize(f, interval = a[[i]], alpha = x, q = t, df = df)[[1]]*d.SE)
-}  
-
-I = CI[which.max(ave(1:nrow(CI), do.call(paste, round(data.frame(CI), 3)), FUN = seq_along)), ]  
-data.frame(lower = I[1], upper = I[2], conf.level = conf.level, ncp = t, row.names = "Cohen's d CI:")
-}
+  CI = matrix(NA, length(a), 2)
+  
+  for(i in 1:length(a)){
+    CI[i,] = sapply(c(alpha, 1-alpha),
+    function(x) optimize(f, interval = a[[i]], alpha = x, q = q, df = df)[[1]]*d.SE)
+  }  
+  
+  I = CI[which.max(ave(1:nrow(CI), do.call(paste, round(data.frame(CI), 3)), FUN = seq_along)), ]  
+  
+  Cohen.d = ifelse(is.na(t), d, t*d.SE)
+  
+ round(data.frame(Cohen.d = Cohen.d, lower = I[1], upper = I[2], conf.level = conf.level, ncp = q, row.names = "Cohen's d CI:"), 6)
+})
 
 #=================================================================================================================================
 
@@ -141,20 +147,19 @@ peta.ci <- function(peta, ...)
   UseMethod("peta.ci")
 }
                 
-peta.ci.default <- function(peta, N, df1, df2, conf.level = .9){
+peta.ci.default <- Vectorize(function(peta, F.value = NA, N, df1, df2, conf.level = .9){
 
 options(warn = -1) 
   
-    q = (-peta * df2) / ((peta * df1) - df1) 
+    q = ifelse(is.na(F.value), (-peta * df2) / ((peta * df1) - df1), F.value) 
 alpha = (1 - conf.level)/2
-  
-if(q > 5e2) message("Warning: The confidence interval might not be accurate.")
 
-f <- function (ncp, alpha, q, df1, df2){
+f <- function (ncp, alpha, q, df1, df2) {
 abs(suppressWarnings(pf(q = q, df1 = df1, df2 = df2, ncp, lower.tail = FALSE)) - alpha)
 }
 
-a = lapply(20:ifelse(peta!= 0, q+3e2, 30), function(x) c(-x, x))
+a = if(is.na(F.value)){ lapply(20:ifelse(peta!= 0, q+3e2, 30), function(x) c(-x, x))
+  }else{ lapply(20:ifelse(F.value!= 0, q+3e2, 30), function(x) c(-x, x)) }
 
 CI = matrix(NA, length(a), 2)
 
@@ -167,8 +172,10 @@ I = CI[which.max(ave(1:nrow(CI), do.call(paste, round(data.frame(CI), 3)), FUN =
 
 I <- I[1:2] / (I[1:2] + N)
 
-data.frame(lower = I[1], upper = I[2], conf.level = conf.level, ncp = (peta * N) / (1 - peta), F.value = q, row.names = "P.eta.sq CI:")
-}               
+P.eta.sq <- if(is.na(F.value)) peta else (F.value * df1)/ ((F.value * df1) + df2)
+
+round(data.frame(P.eta.sq = P.eta.sq, lower = I[1], upper = I[2], conf.level = conf.level, ncp = (P.eta.sq * N) / (1 - P.eta.sq), F.value = q, row.names = "P.eta.sq CI:"), 6)
+})               
 
 #=================================================================================================================================                
                 
@@ -177,11 +184,11 @@ cor.ci <- function(r, ...)
   UseMethod("cor.ci")
 }
                               
-cor.ci.default <- function(r, n, conf.level = .95){
+cor.ci.default <- Vectorize(function(r, n, conf.level = .95){
   p = (1 - conf.level) / 2 
-  I = tanh(atanh(r) + qnorm(c(p, 1-p))*1/sqrt(n - 3))
+  I = round(tanh(atanh(r) + qnorm(c(p, 1-p))*1/sqrt(n - 3)), 6)
   data.frame(lower = I[1], upper = I[2], conf.level = conf.level, row.names = "Correlation CI:")
-}                              
+})                              
 
 #==================================================================================================================
 
@@ -193,13 +200,13 @@ beta.id <- function(Low, ...)
 beta.id.default <- Vectorize(function(Low, High, Cover = NA){
   
   options(warn = -1)
-  L <- if(is.character(Low)) as.numeric(substr(Low, 1, nchar(Low)-1)) / 100 else Low
-  U <- if(is.character(High)) as.numeric(substr(High, 1, nchar(High)-1)) / 100 else High
+  L <- if(is.character(Low)) as.numeric(substr(Low, 1, nchar(Low)-1)) / 1e2 else Low
+  U <- if(is.character(High)) as.numeric(substr(High, 1, nchar(High)-1)) / 1e2 else High
   
   if(L <= 0 || U >= 1) stop("NOTE: The smallest LOWER value that you can choose is \".000001\"AND the largest UPPER value is \".999999\".")
   if(L >= U) stop("Put the smaller value for Low, and the larger value for High")
   
-  coverage  <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 100 else if(is.na(Cover)) .95 else Cover
+  coverage  <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 1e2 else if(is.na(Cover)) .95 else Cover
   
   p1 = (1 - coverage) / 2 
   p2 = 1 - p1
@@ -215,7 +222,7 @@ beta.id.default <- Vectorize(function(Low, High, Cover = NA){
     
     delta <- function(fit, actual) sum((fit-actual)^2)
     
-    objective <- function(theta, x, prob, ...) {
+    objective <- function(theta, x, prob, ...){
       ab <- exp(theta)
       fit <- f.beta(ab[1], ab[2], x, ...)
       return (delta(fit, prob))
@@ -238,7 +245,7 @@ beta.id.default <- Vectorize(function(Low, High, Cover = NA){
       
     }else{
       
-      return(c(alpha = parm[[1]], beta = parm[[2]]))    
+      return(c(alpha = round(parm[[1]], 6), beta = round(parm[[2]], 6)))    
     }
   } 
 })
@@ -254,7 +261,7 @@ cauchy.id.default <- Vectorize(function(Low, High, Cover = NA){
   
   options(warn = -1)
   
-  coverage  <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 100 else if(is.na(Cover)) .95 else Cover
+  coverage  <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 1e2 else if(is.na(Cover)) .95 else Cover
   
   p1 = (1 - coverage) / 2
   p2 = 1 - p1
@@ -282,11 +289,97 @@ cauchy.id.default <- Vectorize(function(Low, High, Cover = NA){
     
   } else { 
     
-    return(c(mode = parm[[1]], scale = parm[[2]])) 
+    return(c(mode = round(parm[[1]], 6), scale = round(parm[[2]], 6))) 
   }
 })    
 
 #===============================================================================================
+      
+logis.id <- function(Low, ...)
+{
+  UseMethod("logis.id")
+}
+
+logis.id.default <- Vectorize(function(Low, High, Cover = NA){
+  
+  options(warn = -1)
+  
+  coverage  <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 1e2 else if(is.na(Cover)) .95 else Cover
+  
+  p1 = (1 - coverage) / 2
+  p2 = 1 - p1
+  
+  if(p1 <= 0 || p2 >= 1 || Low > High || p1 > p2 || coverage >= 1) {
+    
+    stop("\n\tUnable to find such a prior, make sure you have selected the correct values.")
+    
+  } else {
+    
+    f <- function(x) {   
+      y <- c(Low, High) - qlogis(c(p1, p2), location = x[1],  scale = x[2])
+    }
+    
+    parm <- optim(c(1, 1), function(x) sum(f(x)^2), control = list(reltol = (.Machine$double.eps)))[[1]]
+  }
+  
+  q <- qlogis(c(p1, p2), parm[[1]], parm[[2]])
+  
+  is.df = function(a, b, sig = 4) round(a, sig) != round(b, sig)
+  
+  if(is.df(Low, q[1]) || is.df(High, q[2])) {
+    
+    stop("\n\tUnable to find such a prior, make sure you have selected the correct values")
+    
+  } else { 
+    
+    return(c(mode = round(parm[[1]], 6), scale = round(parm[[2]], 6))) 
+  }
+})
+      
+#============================================================================================================
+
+tdist.id <- function(Low, ...)
+{
+  UseMethod("tdist.id")
+}
+
+tdist.id.default <- Vectorize(function(Low, High, Cover = NA){
+  
+  options(warn = -1)
+  
+  coverage  <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 1e2 else if(is.na(Cover)) .95 else Cover
+  
+  p1 = (1 - coverage) / 2
+  p2 = 1 - p1
+  
+  if(p1 <= 0 || p2 >= 1 || Low > High || p1 > p2 || coverage >= 1) {
+    
+    stop("\n\tUnable to find such a prior, make sure you have selected the correct values.")
+    
+  } else {
+    
+    f <- function(x){   
+      y <- c(Low, High) - qt(c(p1, p2), df = x[1], ncp = x[2])
+    }
+    
+    parm <- optim(c(1, 0), function(x) sum(f(x)^2), control = list(reltol = (.Machine$double.eps)))[[1]]
+  }
+  
+  q <- qt(c(p1, p2), parm[[1]], parm[[2]])
+  
+  is.df = function(a, b, sig = 4) round(a, sig) != round(b, sig)
+  
+  if(is.df(Low, q[1]) || is.df(High, q[2])) {
+    
+    stop("\n\tUnable to find such a prior, make sure you have selected the correct values")
+    
+  } else { 
+    
+    return(c(df = round(parm[[1]], 6), ncp = round(parm[[2]], 6))) 
+  }
+}) 
+      
+#============================================================================================================      
 
 norm.id <- function(Low, ...)
 {
@@ -297,7 +390,7 @@ norm.id.default <- Vectorize(function(Low, High, Cover = NA){
   
   options(warn = -1)
   
-  coverage <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 100 else if(is.na(Cover)) .95 else Cover
+  coverage <- if(is.character(Cover)) as.numeric(substr(Cover, 1, nchar(Cover)-1)) / 1e2 else if(is.na(Cover)) .95 else Cover
   
   p1 <- (1 - coverage) / 2 
   p2 <- 1 - p1
@@ -325,7 +418,7 @@ norm.id.default <- Vectorize(function(Low, High, Cover = NA){
     stop("\n\tUnable to find such a prior, make sure you have selected the correct values.")
   } else {
     
-    return(c(mean = parm[[1]], sd = parm[[2]]))
+    return(c(mean = round(parm[[1]], 6), sd = round(parm[[2]], 6)))
     
   }
 })
@@ -337,7 +430,7 @@ prop.bayes <- function(a, ...)
   UseMethod("prop.bayes")
 }
 
-prop.bayes.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .1, h0.ref = .5){
+prop.bayes.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .1, p.h0 = .5){
   
   d = dist.name
   pr = show.prior
@@ -372,7 +465,7 @@ prop.bayes.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e
       CI[i,] = HDI(posterior)
       peak[i] = posterior(mode[i])
       eq.prob[i] = integrate(posterior, lo[i], eq.hi)[[1]] - integrate(posterior, lo[i], eq.lo)[[1]]
-      BF10[i] = k[i]/dbinom(yes[i], n[i], h0.ref)
+      BF10[i] = k[i]/dbinom(yes[i], n[i], p.h0)
       estimate[i] <- yes[i]/n[i]     
     }
     plot(CI, rep(1:loop, 2), type = "n", xlim = 0:1, ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = "Credible Interval (Proportion)", font.lab = 2, mgp = c(2, .3, 0))
@@ -524,12 +617,12 @@ prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e
 
 #===================================================================================================================
 
-ab.prop.hyper <- function(a, ...)
+prop.hyper.ab <- function(a, ...)
 {
-  UseMethod("ab.prop.hyper")
+  UseMethod("prop.hyper.ab")
 }
 
-ab.prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE, 
+prop.hyper.ab.default <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE, 
                                   yes = 55, n = 1e2, col = 1, show.prior = FALSE){
   
   is.v <- function(...) lengths(list(...)) > 1
@@ -833,7 +926,7 @@ d.bayes <- function(t, ...)
   UseMethod("d.bayes")
 }
        
- d.bayes.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = .1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6, legend = "topleft", eq.level = .1){
+ d.bayes.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = .1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6, legend = "topleft", eq.level = .1, d.h0 = 0){
   
   d = dist.name 
   pr = show.prior
@@ -876,7 +969,7 @@ for(i in 1:loop){
       peak[i] = posterior(mode[i])
       CI[i,] = HDI(posterior, LL, UL)
       h[[i]] = list(x = x <- seq(from[i], to[i], length.out = 5e2), y = posterior(x))
-   BF10[i] =  k[i] / dt(t[i], df[i])
+   BF10[i] =  k[i] / dt(t[i], df[i], d.h0*sqrt(N[i]))
    eq.prob[i] = integrate(posterior, lo[i], eq.level)[[1]] - integrate(posterior, lo[i], -eq.level)[[1]]
    estimate[i] <- t[i]/sqrt(N[i])
 }    
@@ -1049,12 +1142,12 @@ d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name
 
 #===================================================================================================================
 
-ms.d.hyper <- function(t, ...)
+d.hyper.ms <- function(t, ...)
 {
-  UseMethod("ms.d.hyper")
+  UseMethod("d.hyper.ms")
 }
 
-ms.d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
+d.hyper.ms.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
                                col = 1, top = 6, margin = 1.01, LL = -3, UL = 3, show.prior = FALSE, prior.left = -6, prior.right = 6){
   
   is.v <- function(...) lengths(list(...)) > 1
@@ -1124,7 +1217,7 @@ peta.bayes <- function(f, ...)
   UseMethod("peta.bayes")
 }
 
-peta.bayes.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .05){
+peta.bayes.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .05, peta.h0 = 0){
   
   d <- dist.name  
   pr <- show.prior
@@ -1158,7 +1251,7 @@ peta.bayes.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1,
       mode[i] = optimize(posterior, c(lo[i], hi[i]), maximum = TRUE)[[1]]
       peak[i] = posterior(mode[i])
       CI[i,] = HDI(posterior, 0, .9999999)
-      BF10[i] =  k[i] / df(f[i], df1[i], df2[i])
+      BF10[i] =  k[i] / df(f[i], df1[i], df2[i], (peta.h0 * N[i]) / (1 - peta.h0))
       eq.prob[i] = integrate(posterior, lo[i], eq.hi)[[1]] - integrate(posterior, lo[i], eq.lo)[[1]]
       estimate[i] <- (f[i]*df1[i]) / ((f[i]*df1[i]) + df2[i])
     } 
@@ -1312,12 +1405,12 @@ peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1,
 
 #===================================================================================================================
 
-ab.peta.hyper <- function(f, ...)
+peta.hyper.ab <- function(f, ...)
 {
-  UseMethod("ab.peta.hyper")
+  UseMethod("ab.peta.hyper.ab")
 }
 
-ab.peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", add = FALSE, 
+peta.hyper.ab.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", add = FALSE, 
                                   col = 1, show.prior = FALSE){
   
   is.v <- function(...) lengths(list(...)) > 1
@@ -1374,7 +1467,6 @@ ab.peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi =
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .4, 0))
   }
 }
-
 
 #=================================================================================================================
 
@@ -1935,4 +2027,182 @@ d.eq.test.default <- function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1
          pch = 21, cex = 2, bg = 'green')
   
   box()  
+}
+
+                       
+#======================================================================================================================
+   
+                       
+if(!require("rstanarm")) install.packages("rstanarm")
+library("rstanarm")                    
+
+R2.bayes <- function(fit, ...)
+{
+  UseMethod("R2.bayes")
+}                       
+                       
+R2.bayes.default <- function(fit, level = .95, scale = .5){
+  
+    y <- rstanarm::get_y(fit)
+ypred <- rstanarm::posterior_linpred(fit, transform = TRUE)
+
+  if(family(fit)$family == "binomial" && ncol(y) == 2) {
+    trials <- rowSums(y)
+    y <- y[, 1]
+    ypred <- ypred %*% diag(trials)
+  }
+  e <- -1 * sweep(ypred, 2, y)
+  var_ypred <- apply(ypred, 1, var)
+  var_e <- apply(e, 1, var)
+R2 <- var_ypred / (var_ypred + var_e)
+
+d <- density(R2, adjust = 2, n = 1e4)
+plot(d, zero.line = FALSE, main = NA, axes = FALSE, xlab = bquote(bold("M.R. coefficient " (R^2))), ylab = NA, bty = "n", type = "n", yaxs = "i")
+axis(1, at = seq(min(d$x), max(d$x), l = 6), labels = paste0(round(seq(min(d$x), max(d$x), l = 6), 4)*1e2, "%"), mgp = c(2, .5, 0))
+polygon(d$x, scale*d$y, border = NA, col = adjustcolor(2, .6))
+mode = d$x[which.max(d$y)]
+peak <- d$y[which.max(d$y)]*scale
+
+segments(mode, 0, mode, peak, lty = 3)
+I = hdir(R2, level = level)
+
+original.par = par(no.readonly = TRUE)
+on.exit(par(original.par))
+
+par(xpd = NA)
+segments(I[1], 0, I[2], 0, lend = 1, lwd = 6, col = 2)
+points(mode, 0, pch = 21, bg = "cyan", col = "magenta", cex = 2)
+text(c(I, mode), 0, paste0(round(c(I,mode), 4)*1e2, "%"), pos = 3, font = 2)
+    
+round(data.frame(mean = mean(R2), mode = mode, median = median(R2), lower = I[1], upper = I[2], coverage = level, row.names = "R2 posterior: "), 6)
+}
+
+
+#=======================================================================
+
+
+type.sm <- function(d, ...)
+{
+  UseMethod("type.sm")
+}
+
+
+type.sm.default <- function(d = .1, obs.d = .6, n1 = 20, n2 = NA){
+  
+  original.par = par(no.readonly = TRUE)
+  on.exit(par(original.par))
+  
+  par(mfrow = c(2, 1), mgp = c(2, .5, 0), mar = c(4, 4, 3, 2), xpd = TRUE)  
+  
+     N = ifelse(is.na(n2), n1, (n1 * n2)/(n1 + n2))
+    df = ifelse(is.na(n2), n1 - 1, (n1 + n2) - 2)
+  d.SE = 1/sqrt(N) ; ncp = d*sqrt(N)
+  
+ min.d = qt(1e-4, df)*d.SE  ;  max.d = qt(0.9999, df)*d.SE
+  
+`d|H0` = curve( dt(x/d.SE, df)/d.SE, min.d, max.d, n = 1e4, xlab = "Effect Size", 
+                  ylab = NA, font = 2, font.lab = 2, type = "n", yaxt = "n", bty = "n",
+                  cex.axis = 1, cex.lab = 1, yaxs = "i")
+  
+    CI = qt(c(.025, .975), df)*d.SE
+  
+     x = seq(min.d, CI[1], l = 1e4) ;  y = dt(x /d.SE, df)/d.SE
+    xx = seq(max.d, CI[2], l = 1e4) ; yy = dt(xx/d.SE, df)/d.SE
+  
+  polygon(c(min.d,  x, CI[1]), c( y[1],  y, rev( y[1])), col = 2, border = NA)  
+  polygon(c(max.d, xx, CI[2]), c(yy[1], yy, rev(yy[1])), col = 2, border = NA)  
+  
+  lines(`d|H0`, lwd = 2)
+  
+  points(obs.d, 0, pch = 23, bg = 3, cex = 1.4, xpd = TRUE)
+  
+  legend("topright", "Observed \nS.S. Effect", pch = 23, pt.bg = 3, pt.cex = 1.2, bty = "n", text.font = 2)   
+  abline(v = 0, col = 2, xpd = FALSE) 
+  
+  par(mar = c(5, 4, 1, 2))
+  
+`d|H1` = curve( dt(x/d.SE, df, ncp)/d.SE, min.d, max.d, n = 1e4, xlab = "Effect Size", 
+                  ylab = NA, font = 2, font.lab = 2, yaxt = "n", bty = "n",
+                  cex.axis = 1, cex.lab = 1, yaxs = "i", ty = "n")
+  
+     x = seq(min.d, CI[1], l = 1e4)   ;  y = dt(x /d.SE, df, ncp)/d.SE
+    xx = seq(max.d, CI[2], l = 1e4)   ; yy = dt(xx/d.SE, df, ncp)/d.SE 
+  
+  polygon(c(min.d,  x, CI[1]), c( y[1],  y, rev( y[1])), col = 2, border = NA)  
+  polygon(c(max.d, xx, CI[2]), c(yy[1], yy, rev(yy[1])), col = 2, border = NA) 
+  
+  lines(`d|H1`, lwd = 2)
+  
+  axis(1, at = d, col = 4, col.axis = 4, font = 2)
+  points(obs.d, 0, pch = 23, bg = 3, cex = 1.4, xpd = TRUE)
+  abline(v = d, col = 4, xpd = FALSE)
+  
+  segments(c(CI[1], CI[2]), 0, c(CI[1], CI[2]), 20, lty = 2, col = 2, xpd = NA)
+  
+  type.s.area = pt(ifelse(d > 0, CI[1]/d.SE, CI[2]/d.SE), df, ncp, lower.tail = ifelse(d > 0, TRUE, FALSE))
+        power = type.s.area + pt(ifelse(d > 0, CI[2]/d.SE, CI[1]/d.SE), df, ncp, lower.tail = ifelse(d > 0, FALSE, TRUE))
+       type.s = type.s.area / power
+      p.value = 2*pt(abs(obs.d)/d.SE, df, lower.tail = FALSE)
+     random.d = rt(n = 1e6, df, ncp)*d.SE
+          sig = if(d > 0) abs(random.d) > CI[2] else -abs(random.d) < CI[1]
+  exaggration = if(d > 0) mean(abs(random.d)[sig])/ d else mean(-abs(random.d)[sig])/ d
+  
+  round(data.frame(exaggration = exaggration, type.s = type.s, power = power, Crit.d = CI[2], p.value = p.value, row.names = "Results:"), 6)
+}
+
+
+#=======================================================================
+
+
+type.sm.fun <- function(n1, ...)
+{
+  UseMethod("type.sm.fun")
+}
+
+
+type.sm.fun.default <- function(n1, n2 = NA, d.min = 0, d.max = 1.4, alpha = .05){
+  
+   type.sm <- function(n1, n2, d, alpha){
+    
+          N = ifelse(is.na(n2), n1, (n1 * n2)/(n1 + n2))
+         df = ifelse(is.na(n2), n1 - 1, (n1 + n2) - 2)
+       d.SE = 1/sqrt(N) ; ncp = d*sqrt(N)
+         CI = qt(c(alpha/2, 1-(alpha/2)), df)*d.SE
+    
+type.s.area = pt(ifelse(d > 0, CI[1]/d.SE, CI[2]/d.SE), df, ncp, lower.tail = ifelse(d > 0, TRUE, FALSE))
+      power = type.s.area + pt(ifelse(d > 0, CI[2]/d.SE, CI[1]/d.SE), df, ncp, lower.tail = ifelse(d > 0, FALSE, TRUE))
+     type.s = type.s.area / power
+   random.d = rt(1e4, df, ncp)*d.SE
+        sig = if(d > 0) abs(random.d) > CI[2] else -abs(random.d) < CI[1]
+exaggration = if(d > 0) mean(abs(random.d)[sig])/ d else mean(-abs(random.d)[sig])/ d
+    
+    list(exaggration = exaggration, type.s = type.s, power = power)
+  }
+  
+  original.par = par(no.readonly = TRUE)
+  on.exit(par(original.par))
+  
+  par(mfrow = c(2, 1), mgp = c(2, .5, 0), mar = c(4, 4, 3, 2), las = 1)  
+  
+       d_range = seq(d.min, d.max, by = 5e-3)
+             n = length(d_range)
+         power = numeric(n)
+        type.s = numeric(n)
+   exaggration = numeric(n)
+  
+  for(i in 1L:n){
+             a = type.sm(d = d_range[i], n1 = n1, n2 = n2, alpha = alpha)
+      power[i] = a$power
+     type.s[i] = a$type.s
+exaggration[i] = a$exaggration
+  }
+  
+  plot(power, type.s, type = "l", xaxt = "n", lwd = 2, font.lab = 2, col = 2)
+  axis(1, at = c(alpha, seq(.2, 1, by = .2)))
+  abline(v = alpha, col = 8)
+  plot(power, exaggration, ty = "l", ylim = c(1, 10), xaxt = "n", yaxt = "n", lwd = 2, font.lab = 2, col = 4)
+  axis(1, at = c(alpha, seq(.2, 1, by = .2)))
+  axis(2, at = seq(1, 10, by = 2))
+  abline(h = 1, v = alpha, col = 8)
+  
 }
