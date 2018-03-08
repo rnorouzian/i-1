@@ -430,7 +430,7 @@ prop.bayes <- function(a, ...)
   UseMethod("prop.bayes")
 }
 
-prop.bayes.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .1, p.h0 = .5){
+prop.bayes.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .1, p.h0 = .5){
   
   d = dist.name
   pr = show.prior
@@ -500,7 +500,7 @@ prop.priors <- function(a, ...)
   UseMethod("prop.priors")
 }  
 
-prop.priors.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft"){
+prop.priors.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft"){
   
   d = dist.name
   pr = show.prior
@@ -563,7 +563,7 @@ prop.hyper <- function(a, ...)
   UseMethod("prop.hyper")
 }
 
-prop.hyper.default <- function(a, b, lo = 0, hi = 1, dist.name, yes = 55, n = 1e2, show.prior = FALSE, pos = 3, top = 1.01){
+prop.hyper.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", yes = 55, n = 1e2, show.prior = FALSE, pos = 3, top = 1.01){
   
   is.v <- function(...) lengths(list(...)) > 1
   
@@ -622,7 +622,7 @@ prop.hyper.ab <- function(a, ...)
   UseMethod("prop.hyper.ab")
 }
 
-prop.hyper.ab.default <- function(a, b, lo = 0, hi = 1, dist.name, add = FALSE, 
+prop.hyper.ab.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", add = FALSE, 
                                   yes = 55, n = 1e2, col = 1, show.prior = FALSE){
   
   is.v <- function(...) lengths(list(...)) > 1
@@ -926,7 +926,7 @@ d.bayes <- function(t, ...)
   UseMethod("d.bayes")
 }
        
- d.bayes.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = .1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6, legend = "topleft", eq.level = .1, d.h0 = 0){
+ d.bayes.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, dist.name = "dnorm", scale = .1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6, legend = "topleft", eq.level = .1, d.h0 = 0){
   
   d = dist.name 
   pr = show.prior
@@ -1005,7 +1005,7 @@ d.priors <- function(t, ...)
   UseMethod("d.priors")
 }
 
-d.priors.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, scale = .1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6, legend = "topleft"){
+d.priors.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, dist.name = "dnorm", scale = .1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6, legend = "topleft"){
   
   is.v <- function(...) lengths(list(...)) > 1
   d = dist.name 
@@ -1081,7 +1081,7 @@ d.hyper <- function(t, ...)
   UseMethod("d.hyper")
 }
 
-d.hyper.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, LL = -3, UL = 3, pos = 3, show.prior = FALSE, top = 1.01, margin = 6, prior.left = -6, prior.right = 6){
+d.hyper.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, dist.name = "dnorm", LL = -3, UL = 3, pos = 3, show.prior = FALSE, top = 1.01, margin = 6, prior.left = -6, prior.right = 6){
   
   is.v <- function(...) lengths(list(...)) > 1
   
@@ -1147,7 +1147,7 @@ d.hyper.ms <- function(t, ...)
   UseMethod("d.hyper.ms")
 }
 
-d.hyper.ms.default <- function(t, n1, n2 = NA, m, s, lo = -Inf, hi = Inf, dist.name, add = FALSE, 
+d.hyper.ms.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, dist.name = "dnorm", add = FALSE, 
                                col = 1, top = 6, margin = 1.01, LL = -3, UL = 3, show.prior = FALSE, prior.left = -6, prior.right = 6){
   
   is.v <- function(...) lengths(list(...)) > 1
@@ -1540,7 +1540,7 @@ cor.bayes.default <- function(r, n, prior.mean = 0, prior.sd = .707, eq.bound = 
   }else{
   
   p <- function(x) dnorm(atanh(x), prior.mean[1], prior.sd[1])*1/(1-x^2)
-  curve(p, -1, 1, yaxt = "n", ylab = NA, xlab = bquote(rho[~("Pearson correlation")]), bty = "n", font.lab = 2, cex.lab = 1.5, lwd = 2, n = 1e4, yaxs = "i", main = bquote(rho*" ~ "*"scaled norm"(.(round(prior.mean[1], 3)), .(round(prior.sd[1], 3)))), xpd = NA) 
+  curve(p, -1, 1, yaxt = "n", ylab = NA, xlab = bquote(rho[~("Pearson correlation")]), bty = "n", font.lab = 2, cex.lab = 1.5, lwd = 2, n = 1e4, yaxs = "i", main = bquote(rho*" ~ "*"norm"(.(round(prior.mean[1], 3)), .(round(prior.sd[1], 3)))), xpd = NA) 
   }  
 }
 
@@ -1640,7 +1640,7 @@ prop.update <- function(n, ...)
   UseMethod("prop.update")
 }
 
-prop.update.default <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, hi = 1, a = 1.5, b = 1.5, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
+prop.update.default <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, hi = 1, a = 1.2, b = 1.2, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
   
   pri <- show.prior
   s <- round(yes)
@@ -1712,7 +1712,7 @@ d.update <- function(t, ...)
   UseMethod("d.update")
 }
 
-d.update.default <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.name, prior.scale = 1, level = .95, show.prior = FALSE, lo = -2, hi = 2, tol = 1e4, margin = hi){
+d.update.default <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.name = "dnorm", prior.scale = 1, level = .95, show.prior = FALSE, lo = -2, hi = 2, tol = 1e4, margin = hi){
   
   pri <- show.prior
   d <- dist.name
@@ -1858,7 +1858,7 @@ d.eq.test <- function(t, ...)
   UseMethod("d.eq.test")
 }
 
-d.eq.test.default <- function(t, n1, n2 = NA, m, s, dist.name, dL = -.1, dU = .1, lo = -Inf, hi = Inf){
+d.eq.test.default <- function(t, n1, n2 = NA, m = 0, s = 1, dist.name = "dnorm", dL = -.1, dU = .1, lo = -Inf, hi = Inf){
   
   d <- dist.name
   
@@ -2090,7 +2090,6 @@ type.sm <- function(d, ...)
   UseMethod("type.sm")
 }
 
-
 type.sm.default <- function(d = .1, obs.d = .6, n1 = 20, n2 = NA){
   
   original.par = par(no.readonly = TRUE)
@@ -2114,7 +2113,7 @@ type.sm.default <- function(d = .1, obs.d = .6, n1 = 20, n2 = NA){
     xx = seq(max.d, CI[2], l = 1e4) ; yy = dt(xx/d.SE, df)/d.SE
   
   polygon(c(min.d,  x, CI[1]), c( 0,  y, 0), col = 2, border = NA)  
-  polygon(c(max.d, xx, CI[2]), c(0, yy, 0), col = 2, border = NA)  
+  polygon(c(max.d, xx, CI[2]), c(0, yy, 0), col = 2, border = NA)   
   
   lines(`d|H0`, lwd = 2)
   
@@ -2133,7 +2132,7 @@ type.sm.default <- function(d = .1, obs.d = .6, n1 = 20, n2 = NA){
     xx = seq(max.d, CI[2], l = 1e4)   ; yy = dt(xx/d.SE, df, ncp)/d.SE 
   
   polygon(c(min.d,  x, CI[1]), c( 0,  y, 0), col = 2, border = NA)  
-  polygon(c(max.d, xx, CI[2]), c(0, yy, 0), col = 2, border = NA) 
+  polygon(c(max.d, xx, CI[2]), c(0, yy, 0), col = 2, border = NA)  
   
   lines(`d|H1`, lwd = 2)
   
@@ -2154,7 +2153,9 @@ type.sm.default <- function(d = .1, obs.d = .6, n1 = 20, n2 = NA){
   round(data.frame(exaggration = exaggration, type.s = type.s, power = power, Crit.d = CI[2], p.value = p.value, row.names = "Results:"), 6)
 }
 
+
 #=======================================================================
+
 
 type.sm.fun <- function(n1, ...)
 {
@@ -2201,7 +2202,7 @@ exaggration[i] = a$exaggration
   plot(power, type.s, type = "l", xaxt = "n", lwd = 2, font.lab = 2, col = 2)
   axis(1, at = c(alpha, seq(.2, 1, by = .2)))
   abline(v = alpha, col = 8)
-  plot(power, exaggration, ty = "l", ylim = c(1, 10), xaxt = "n", yaxt = "n", lwd = 2, font.lab = 2, col = 4)
+  plot(power, exaggration, type = "l", ylim = c(1, 10), xaxt = "n", yaxt = "n", lwd = 2, font.lab = 2, col = 4)
   axis(1, at = c(alpha, seq(.2, 1, by = .2)))
   axis(2, at = seq(1, 10, by = 2))
   abline(h = 1, v = alpha, col = 8)
