@@ -2058,7 +2058,7 @@ R2 <- var_ypred / (var_ypred + var_e)
 
 d <- density(R2, adjust = 2, n = 1e4)
 plot(d, zero.line = FALSE, main = NA, axes = FALSE, xlab = bquote(bold("M.R. coefficient " (R^2))), ylab = NA, bty = "n", type = "n", yaxs = "i")
-axis(1, at = seq(min(d$x), max(d$x), l = 6), labels = paste0(round(seq(min(d$x), max(d$x), l = 6), 4)*1e2, "%"), mgp = c(2, .5, 0))
+axis(1, at = seq(0, max(d$x), length.out = 6), labels = paste0(round(seq(0, max(d$x), length.out = 6), 4)*1e2, "%"), mgp = c(2, .5, 0))
 polygon(d$x, scale*d$y, border = NA, col = adjustcolor(2, .6))
 mode = d$x[which.max(d$y)]
 peak <- d$y[which.max(d$y)]*scale
@@ -2150,15 +2150,12 @@ type.sm.default <- function(d = .1, obs.d = .6, n1 = 20, n2 = NA){
   round(data.frame(exaggration = exaggration, type.s = type.s, power = power, Crit.d = CI[2], p.value = p.value, row.names = "Results:"), 6)
 }
 
-
 #=======================================================================
-
 
 type.sm.fun <- function(n1, ...)
 {
   UseMethod("type.sm.fun")
 }
-
 
 type.sm.fun.default <- function(n1, n2 = NA, d.min = 0, d.max = 1.4, alpha = .05){
   
