@@ -1,4 +1,5 @@
 
+
 #==================================================================================================================
 
 HDI <- function(FUN, lower = 0, upper = 1, level = .95, eps = 1e-3)
@@ -2241,11 +2242,12 @@ OK <- I[,1] < dep & dep < I[,2]
 points(dep ~ pred, pch = 19, col = ifelse(OK, adjustcolor(4, .55), 2))
 
 x <- sort(pred)
+o <- order(pred)
     
 if(pred.int){   
     
-y <- I[,1][order(pred)]
-z <- I[,2][order(pred)]
+y <- I[,1][o]
+z <- I[,2][o]
 
 polygon(c(rev(x), x), c(rev(z), y), col = adjustcolor('gray', .5), border = NA)
 }
@@ -2259,8 +2261,8 @@ I2[i,] = hdir(pred_lin2[,i], level = level)
 
 if(line.int){
     
-y <- I2[,1][order(pred)]
-z <- I2[,2][order(pred)]
+y <- I2[,1][o]
+z <- I2[,2][o]
 
 polygon(c(rev(x), x), c(rev(z), y), col = adjustcolor('magenta', .4), border = NA)
 }
@@ -2619,35 +2621,48 @@ index.default <- function(...){
 #=================================================================================================================
               
 
-standard <- function(data = mtcars, center = TRUE, scale = TRUE)
+standard <- function(data = mtcars, center = TRUE, scale = TRUE, na.rm = TRUE)
 {
   UseMethod("standard")
 }
 
-              
-standard.default <- function(data, scale = TRUE, center = TRUE){
-  
+
+standard.default <- function(data = mtcars, scale = TRUE, center = TRUE, na.rm = TRUE){
+    
+ 
+message("\nNote: You now have new column(s) in your 'data' with suffix '.s' ('.s' for standardized).
+      Also, 'NA's are removed by default. Use 'na.rm = FALSE' for otherwise.") 
+    
   if(inherits(data, "data.frame") && ncol(data) > 1){ 
-  
-data[paste0(names(data), ".s")] <- scale(data, center = center, scale = scale)
-message("Note: You now have new column(s) in your 'data' with suffix '.s' ('.s' for standardized).")
-return(data)
-}
+    
+    data <- if(na.rm) data[complete.cases(data), ]    
+    
+    ind <- sapply(data, is.numeric)
+    
+    data[paste0(names(data)[ind], ".s")] <- lapply(data[ind], scale)
+    
+    return(data)
+  }
   
   if(inherits(data, "data.frame") && ncol(data) == 1){
-  
- d <- scale(data, center = center, scale = scale)
- data[, paste0(names(data), ".s") ] <- c(d)
- return(data)
-}  
+    
+    data <- if(na.rm) data[complete.cases(data), , drop = FALSE]    
+    
+    d <- scale(data, center = center, scale = scale)
+    
+    data[, paste0(names(data), ".s") ] <- c(d)
+    return(data)
+  }  
   
   if(!inherits(data, "data.frame")){
-
-data <- as.data.frame(data)
-names(data) <- "V1"
-d <- scale(data, center = center, scale = scale)  
-data[, paste0(names(d), ".s") ] <- c(d)
-return(data)
+    
+    data <- if(na.rm) data[complete.cases(data), drop = FALSE]
+    
+    data <- as.data.frame(data)
+    names(data) <- "V1"
+    d <- as.data.frame(scale(data, center = center, scale = scale))  
+    data[, paste0(names(d), ".s") ] <- d
+    return(data)
   }
 }
    
@@ -2697,6 +2712,8 @@ newdata <- function(fit.data, focus.var, n = 1e2, FUN = mean, hold.at = NA)
 
 newdata.default <- function(fit.data, focus.var, n = 1e2, FUN = mean, hold.at = NA){
   
+if(!inherits(fit.data, "data.frame") || ncol(fit.data) < 2) stop("Error: 'data.fit' must be 'data.frame' with '>= 2' columns.")
+    
   tgt <- fit.data[, focus.var]
   focus.var.new <- seq(min(tgt), max(tgt), length.out = n)
   fit.data2 <- data.frame(focus.var.new)
@@ -2725,14 +2742,14 @@ newdata.default <- function(fit.data, focus.var, n = 1e2, FUN = mean, hold.at = 
               
  
 count.plot <- function(fit, xlab = NA, ylab = NA, line.int = TRUE, pred.int = TRUE, level = .95,
-                       focus.pred, n = 2e2, FUN = mean, hold.at = NA, ...)
+                       focus.pred, n = 2e2, FUN = mean, hold.at = NA, legend = "topleft", ...)
 {
   UseMethod("count.plot")
 }
 
 
 count.plot.default <- function(fit, xlab = NA, ylab = NA, line.int = TRUE, pred.int = TRUE, level = .95,
-                               focus.pred, n = 2e2, FUN = mean, hold.at = NA, ...){
+                               focus.pred, n = 2e2, FUN = mean, hold.at = NA, legend = "topleft", ...){
   
 if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
 if(length(coef(fit)) < 3) stop("Error: 'fit' must contain at least 'two' predictors.")
@@ -2768,11 +2785,12 @@ for(i in 1:loop){
 }
 
 x <- sort(pred)
-
+o <- order(pred)
+    
 if(pred.int){   
   
-  y <- I[,1][order(pred)]
-  z <- I[,2][order(pred)]
+  y <- I[,1][o]
+  z <- I[,2][o]
   
   polygon(c(rev(x), x), c(rev(z), y), col = adjustcolor('gray', .5), border = NA)
 }
@@ -2786,16 +2804,18 @@ for(i in 1:loop){
 
 if(line.int){
   
-  y <- I2[,1][order(pred)]
-  z <- I2[,2][order(pred)]
+  y <- I2[,1][o]
+  z <- I2[,2][o]
   
-  polygon(c(rev(x), x), c(rev(z), y), col = adjustcolor('magenta', .4), border = NA)
+  polygon(c(rev(x), x), c(rev(z), y), col = adjustcolor('magenta', .35), border = NA)
 }
 
 E.mu <- apply(pred_lin2, 2, mean)
 
 lines(pred, E.mu, col = "cyan", lwd = 2)
 
+legend(legend, "Counterfactual Plot\n(prediction analysis)", text.font = 4,
+      cex = .9, bg = 0, box.col = 0)    
 box()
 }              
               
@@ -2803,13 +2823,13 @@ box()
 #=======================================================================================================
               
               
-case.fit.plot <- function(fit, level = .95, legend = "topleft")
+case.fit.plot <- function(fit, level = .95, legend = "topleft", lwd = 2, fit.tol = 1, pt.cex = 1)
 {
   UseMethod("case.fit.plot")
 }  
 
 
-case.fit.plot.default <- function(fit, level = .95, legend = "topleft"){
+case.fit.plot.default <- function(fit, level = .95, legend = "topleft", lwd = 2, fit.tol = 1, pt.cex = 1){
   
 if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
   
@@ -2838,29 +2858,33 @@ for(i in 1:loop){
 }
 
 
-hope <- 0 > CI.e[,2] & CI.e[,1] > 0
+ok <- min(e[o]) < e[o] & e[o] < max(e[o])
 
-out <- min(e[o]) < e[o] & e[o] < max(e[o])
+unit <- fit.tol*sd(e)
+    
+plot(e[o], 1:loop, cex = .6, xlim = range(PI.e), pch = 19, ylab = NA, yaxt = "n", mgp = c(2, .4, 0), type = "n", xlab = "Credible Interval (Residuals)", font.lab = 2)
+rect(-unit, par('usr')[3], unit, par('usr')[4], border = NA, col = adjustcolor("yellow", .4), lend = 1)
 
-plot(e[o], 1:loop, cex = .6, xlim = range(PI.e), pch = 19, ylab = NA, yaxt = "n", mgp = c(2, .3, 0), type = "n", xlab = "Credible Interval (Residuals)", font.lab = 2)
 abline(v = 0, h = 1:loop, lty = 3, col = 8)
 
+good <- -unit < e[o] & e[o] < unit
+    
 pos <- (1:loop)[o]
 
-axis(2, at = (1:loop)[-range(1:loop)], labels = paste0("subj ", pos[-range(pos)]), las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
-axis(2, at = range(1:loop), labels = paste0("subj ", c(pos[1], rev(pos)[1])), las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0), col.axis = 2)
+axis(2, at = (1:loop)[-range(1:loop)], labels = paste0("subj ", pos[-range(pos)]), las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .2, 0))
+axis(2, at = range(1:loop), labels = paste0("subj ", c(pos[1], rev(pos)[1])), las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .2, 0), col.axis = 2)
 
-segments(PI.e[, 1], 1:loop, PI.e[, 2], 1:loop, lend = 1, lwd = 2, col = 8)
+segments(PI.e[, 1], 1:loop, PI.e[, 2], 1:loop, lend = 1, col = 8, lwd = lwd)
 
-segments(CI.e[, 1], 1:loop, CI.e[, 2], 1:loop, lend = 1, lwd = 2, col = ifelse(hope, "green4", 1))
+segments(CI.e[, 1], 1:loop, CI.e[, 2], 1:loop, lend = 1, lwd = lwd, col = ifelse(good, "green3", 1))
 
-points(e[o], 1:loop, pch = 21, bg = ifelse(out, "cyan", 2), col = "magenta")
+points(e[o], 1:loop, pch = 21, bg = ifelse(ok, "cyan", 2), col = ifelse(ok, "magenta", 2), cex = pt.cex)
 
-text(.8*par('usr')[1:2], par('usr')[4], c("Low", "High"), pos = 3, cex = 1.5, xpd = NA, font = 2, col = 2)
+text(.8*par('usr')[1:2], par('usr')[4], c("High", "High"), pos = 3, cex = 1.5, xpd = NA, font = 2, col = 2)
 
-legend(legend, c("Worst fit", "Good fit", "Fair-Bad fit"), pch = 22, title = "Person Fit", 
+legend(legend, c("Worst fit", "Perfect-Good fit", "Fair-Bad fit"), pch = 22, title = "Person Fit", 
        pt.bg = c(2, "green3", 1), col = c(2, "green3", 1), cex = .7, pt.cex = .6, bg = 0, 
-       box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+       box.col = 0, xpd = NA, x.intersp = .5, title.adj = .2)
 box()
 }
               
