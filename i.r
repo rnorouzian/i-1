@@ -426,8 +426,10 @@ norm.id.default <- Vectorize(function(Low, High, Cover = NA){
   }
 })
 
+      
 #===============================================================================================
 
+      
 prop.bayes <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .1, p.h0 = .5)
 {
   UseMethod("prop.bayes")
@@ -435,7 +437,9 @@ prop.bayes <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", ye
 
 prop.bayes.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .1, p.h0 = .5){
   
-  d = dist.name
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name)) 
+  leg <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(a, b, d, lo, hi, yes, n)
@@ -475,7 +479,7 @@ prop.bayes.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "db
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
-    legend(legend, rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+    legend(x = leg, legend = rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
     box()
     for(i in 1:loop){
@@ -495,8 +499,10 @@ prop.bayes.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "db
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .4, 0))
   }
 }      
-      
+    
+    
 #================================================================================================      
+      
       
 prop.priors <- function(a, ...)
 {
@@ -505,7 +511,9 @@ prop.priors <- function(a, ...)
 
 prop.priors.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", yes = 55, n = 1e2, scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft"){
   
-  d = dist.name
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name)) 
+  leg <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   pr = show.prior
   is.v <- function(...) lengths(list(...)) > 1  
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -541,7 +549,7 @@ prop.priors.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "d
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0))
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
-    legend(legend, rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+    legend(x = leg, legend = rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
     box()
     for(i in 1:loop){
@@ -559,7 +567,9 @@ prop.priors.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "d
   }
 }
 
+
 #==========================================================================================================================
+
 
 prop.hyper <- function(a, ...)
 {
@@ -571,7 +581,7 @@ prop.hyper.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "db
   is.v <- function(...) lengths(list(...)) > 1
   
   pr = show.prior
-  d = dist.name  
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name))   
   eq <- function(...) { lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(a, b, d, lo, hi)
   a = I[[1]] ; b = I[[2]] ; d = I[[3]] ; lo = I[[4]] ; hi = I[[5]]
@@ -618,7 +628,9 @@ prop.hyper.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "db
   }
 }
 
+
 #===================================================================================================================
+
 
 prop.hyper.ab <- function(a, ...)
 {
@@ -630,7 +642,7 @@ prop.hyper.ab.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = 
   
   is.v <- function(...) lengths(list(...)) > 1
   pr = show.prior    
-  d = dist.name
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name)) 
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(a, b, d, lo, hi)
@@ -683,7 +695,9 @@ prop.hyper.ab.default <- function(a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = 
   }
 }
 
+
 #====================================================================================================================
+
 
 prop.diff <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.two"), level = .95, top = 1, bottom = 1, scale = .1, margin = 6, legend = "topleft", eq.level = "2.5%")
 {
@@ -702,7 +716,8 @@ prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.tw
   if(any(is.s(n, yes))) stop("Error: 'yes' & 'n' must each have a length of '2' or larger.")
   
   eq.b <- if(is.character(eq.level)) as.numeric(substr(eq.level, 1, nchar(eq.level)-1)) / 1e2 else eq.level
-  
+  legn <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(n, yes)   
   n = I[[1]] ; yes = I[[2]] 
@@ -793,7 +808,7 @@ prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.tw
   axis(1, at = axTicks(1), labels = paste0(round(axTicks(1), 2)*1e2, "%"), mgp = c(2, .3, 0))
   abline(h = 1:loop, col = 8, lty = 3)
   axis(2, at = 1:loop, labels = np, font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
-  legend(legend, rep(rev(paste0("beta", "(", round(a, 2), ", ", round(b, 2), ")")), leg), pch = 22, title = "Priors", pt.bg = rep(loop:1, each = leg), col = rep(loop:1, each = leg), cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+  legend(x = legn, legend = rep(rev(paste0("beta", "(", round(a, 2), ", ", round(b, 2), ")")), leg), pch = 22, title = "Priors", pt.bg = rep(loop:1, each = leg), col = rep(loop:1, each = leg), cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
   segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
   box()
   
@@ -810,8 +825,10 @@ prop.diff.default <- function(yes, n, a = 1.2, b = a, how = c("two.one", "one.tw
   return(round(data.frame(estimate = estimate, mean = mean, mode = mode, median = median, sd = sd, lower = CI[,1], upper = CI[,2], eq.prob = BB, BF01 = BF01, BF10 = BF10, row.names = paste0(np, ":")), 6))                                                
 }     
 
+              
 #====================================================================================================================
 
+              
 prop.diff.eq <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1, b2 = b1, how = c("two.one", "one.two"), pL = -.025, pU = .025, level = .95, scale = .1)
 {
   UseMethod("prop.diff.eq")
@@ -922,8 +939,10 @@ prop.diff.eq.default <- function(n1, n2, yes1, yes2, a1 = 1.2, b1 = 1.2, a2 = a1
     }
 }             
 
+       
 #====================================================================================================================              
 
+       
 d.bayes <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, dist.name = "dnorm", scale = .1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6, legend = "topleft", eq.level = .1, d.h0 = 0)
 {
   UseMethod("d.bayes")
@@ -931,7 +950,9 @@ d.bayes <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, dist.name
        
  d.bayes.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, dist.name = "dnorm", scale = .1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6, legend = "topleft", eq.level = .1, d.h0 = 0){
   
-  d = dist.name 
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name))
+  leg <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(m, s, d, lo, hi, t, n1, n2)
@@ -979,7 +1000,7 @@ for(i in 1:loop){
     f = peak + 1:loop
     plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
-    legend(legend, rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+    legend(x = leg, legend = rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
     box()
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop)
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
@@ -1000,8 +1021,10 @@ for(i in 1:loop){
     curve(p, prior.left, prior.right, yaxt = "n", ylab = NA, xlab = bquote(bold("Effect Size "(delta))), bty = "n", font.lab = 2, lwd = 2, n = 1e3, main = bquote(delta*" ~ "*.(if(lo[1] > -Inf || hi[1] < Inf) "truncated-")*.(substring(d[1], 2))(.(round(m[1], 2)), .(round(s[1], 2)))), mgp = c(2, .5, 0))
   }
 }       
-       
+   
+   
 #====================================================================================================================
+       
        
 d.priors <- function(t, ...)
 {
@@ -1011,7 +1034,9 @@ d.priors <- function(t, ...)
 d.priors.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, dist.name = "dnorm", scale = .1, margin = 7, top = .8, show.prior = FALSE, LL = -3, UL = 3, bottom = 1, prior.left = -6, prior.right = 6, legend = "topleft"){
   
   is.v <- function(...) lengths(list(...)) > 1
-  d = dist.name 
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name))  
+  leg <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(m, s, d, lo, hi)
@@ -1058,7 +1083,7 @@ d.priors.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, 
     f = peak + 1:loop
     plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*max(f)), ylab = NA, yaxt = "n", xlab = bquote(bold("Credible Interval "(delta))), font.lab = 2, mgp = c(2, .5, 0))
     abline(h = 1:loop, col = 8, lty = 3)
-    legend(legend, rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+    legend(x = leg, legend = rev(paste0(substring(d, 2), "(", round(m, 2), ", ", round(s, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
     box()
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop)
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
@@ -1077,7 +1102,9 @@ d.priors.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, 
   }
 }
 
+
 #========================================================================================================================
+
 
 d.hyper <- function(t, ...)
 {
@@ -1088,7 +1115,7 @@ d.hyper.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, d
   
   is.v <- function(...) lengths(list(...)) > 1
   
-  d = dist.name 
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name)) 
   pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(m, s, d, lo, hi)
@@ -1143,7 +1170,9 @@ d.hyper.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf, d
   }  
 }
 
+
 #===================================================================================================================
+
 
 d.hyper.ms <- function(t, ...)
 {
@@ -1155,7 +1184,7 @@ d.hyper.ms.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf
   
   is.v <- function(...) lengths(list(...)) > 1
   
-  d = dist.name 
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name))  
   pr = show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I = eq(m, s, d, lo, hi)
@@ -1213,7 +1242,9 @@ d.hyper.ms.default <- function(t, n1, n2 = NA, m = 0, s = 1, lo = -Inf, hi = Inf
   }
 }
 
+
 #==================================================================================================================
+
 
 peta.bayes <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .05, peta.h0 = 0)
 {
@@ -1222,7 +1253,9 @@ peta.bayes <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.na
 
 peta.bayes.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft", eq.lo = 0, eq.hi = .05, peta.h0 = 0){
   
-  d <- dist.name  
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name))
+  leg <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   pr <- show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I <- eq(a, b, d, lo, hi, f, N, df1, df2)
@@ -1263,7 +1296,7 @@ peta.bayes.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1,
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0)) 
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
-    legend(legend, rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+    legend(x = leg, legend = rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
     box()
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
     for(i in 1:loop){
@@ -1283,7 +1316,9 @@ peta.bayes.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1,
   }
 }
 
+
 #===================================================================================================================
+
 
 peta.priors <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", scale = .1, top = 1.5, show.prior = FALSE, bottom = 1, legend = "topleft")
 {
@@ -1294,7 +1329,9 @@ peta.priors.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1
   
   is.v <- function(...) lengths(list(...)) > 1
   
-  d <- dist.name  
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name))
+  leg <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   pr <- show.prior
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
   I <- eq(a, b, d, lo, hi)
@@ -1329,7 +1366,7 @@ peta.priors.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"), mgp = c(2, .3, 0)) 
     axis(2, at = 1:loop, lab = substring(d, 2), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
-    legend(legend, rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+    legend(x = leg, legend = rev(paste0(substring(d, 2), "(", round(a, 2), ", ", round(b, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
     box()
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
     for(i in 1:loop){
@@ -1347,7 +1384,9 @@ peta.priors.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1
   }
 }
 
+
 #===================================================================================================================
+
 
 peta.hyper <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", show.prior = FALSE, pos = 3, top = 1.01)
 {
@@ -1358,7 +1397,7 @@ peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1,
   
   is.v <- function(...) lengths(list(...)) > 1
   
-  d <- dist.name
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name)) 
   pr <- show.prior
   
   eq <- function(...) { lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -1389,7 +1428,7 @@ peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1,
     on.exit(par(original.par))
     
     par(mgp = c(2.2, .3, 0), mar = c(5.1, 4.1, 4.1, 3))   
-    plot(CI, rep(1:loop, 2), type = "n", xlim = c(0, 1), ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = bquote(bold("Credible Interval"~(eta[p]^2))), font.lab = 2)
+    plot(CI, rep(1:loop, 2), type = "n", xlim = 0:1, ylim = c(1, top*loop), ylab = NA, yaxt = "n", xaxt = "n", xlab = bquote(bold("Credible Interval"~(eta[p]^2))), font.lab = 2)
     abline(h = 1:loop, col = 8, lty = 3)
     axis(1, at = axTicks(1), lab = paste0(axTicks(1)*1e2, "%"))
     segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, col = "red4", xpd = NA)
@@ -1406,12 +1445,14 @@ peta.hyper.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1,
   }
 }
 
+
 #===================================================================================================================
+
 
 peta.hyper.ab <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", add = FALSE, 
                                   col = 1, show.prior = FALSE)
 {
-  UseMethod("ab.peta.hyper.ab")
+  UseMethod("peta.hyper.ab")
 }
 
 peta.hyper.ab.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi = 1, dist.name = "dbeta", add = FALSE, 
@@ -1419,7 +1460,7 @@ peta.hyper.ab.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi =
   
   is.v <- function(...) lengths(list(...)) > 1
   
-  d <- dist.name
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name)) 
   pr <- show.prior    
   
   eq <- function(...){ lapply(list(...), function(x) c(x, rep(rev(x)[1], max(lengths(list(...))) - length(x)))) }
@@ -1472,7 +1513,9 @@ peta.hyper.ab.default <- function(f, N, df1, df2, a = 1.2, b = 1.2, lo = 0, hi =
   }
 }
 
+
 #=================================================================================================================
+
 
 cor.bayes <- function(r, n, prior.mean = 0, prior.sd = .707, eq.bound = .05, level = .95, top = 1, bottom = 1, scale = .1, margin = 5, legend = "topleft", show.prior = FALSE)
 {
@@ -1491,7 +1534,8 @@ cor.bayes.default <- function(r, n, prior.mean = 0, prior.sd = .707, eq.bound = 
   n = I[[1]] ; r = I[[2]] ; prior.mean = I[[3]] ; prior.sd = I[[4]] ;  
   
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
-                       
+  leg <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   lambda.post <- (lambda + (n - 3))
   mu.post <- (lambda*mu + (n - 3)*atanh(r))/lambda.post
   
@@ -1525,7 +1569,7 @@ cor.bayes.default <- function(r, n, prior.mean = 0, prior.sd = .707, eq.bound = 
   plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xlab = "Credible Interval (Pearson correlation)", font.lab = 2, mgp = c(2, .3, 0))
   axis(2, at = 1:loop, labels = paste0("r", 1:loop), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
   abline(h = 1:loop, col = 8, lty = 3)
-  legend(legend, rev(paste0("norm", "(", round(prior.mean, 2), ", ", round(prior.sd, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+  legend(x = leg, legend = rev(paste0("norm", "(", round(prior.mean, 2), ", ", round(prior.sd, 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
   segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
   box()
   
@@ -1548,8 +1592,10 @@ cor.bayes.default <- function(r, n, prior.mean = 0, prior.sd = .707, eq.bound = 
   }  
 }
 
+                              
 #==================================================================================================================                              
 
+                              
 cor.diff <- function(r, n, prior.mean = 0, prior.sd = .707, how = c("two.one", "one.two"), eq.bound = .05, level = .95, top = 1, bottom = 1, scale = .1, margin = 5, legend = "topleft")
 {
   UseMethod("cor.diff")
@@ -1564,6 +1610,8 @@ cor.diff.default <- function(r, n, prior.mean = 0, prior.sd = .707, how = c("two
   I = eq(n, r, prior.mean, prior.sd)   
   n = I[[1]] ; r = I[[2]] ; prior.mean = I[[3]] ; prior.sd = I[[4]]
   
+  legn <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   loop <- length(r)
   
   deci <- function(x, k = 3) format(round(x, k), nsmall = k)
@@ -1620,7 +1668,7 @@ cor.diff.default <- function(r, n, prior.mean = 0, prior.sd = .707, how = c("two
   plot(CI, rep(1:loop, 2), type = "n", xlim = c(min(from), max(to)), ylim = c(bottom*1, top*loop), ylab = NA, yaxt = "n", xlab = "Credible Interval (Correlation Differences)", font.lab = 2, mgp = c(2, .3, 0))
   axis(2, at = 1:loop, labels = np, font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
   abline(h = 1:loop, col = 8, lty = 3)
-  legend(legend, rev(paste0("norm", "(", round(rep(prior.mean[1], loop), 2), ", ", round(rep(prior.sd[1], loop), 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
+  legend(x = legn, legend = rev(paste0("norm", "(", round(rep(prior.mean[1], loop), 2), ", ", round(rep(prior.sd[1], loop), 2), ")")), pch = 22, title = "Priors", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5, title.adj = .4)
   segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
   box()
   
@@ -1637,8 +1685,10 @@ cor.diff.default <- function(r, n, prior.mean = 0, prior.sd = .707, how = c("two
   return(round(data.frame(mean = mean, mode = mode, median = median, sd = sd, lower = CI[,1], upper = CI[,2], eq.prob = BB, row.names = paste0(np, ":")), 6))
 }
 
+              
 #===================================================================================================================
 
+              
 prop.update <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, hi = 1, a = 1.2, b = 1.2, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5)
 {
   UseMethod("prop.update")
@@ -1649,7 +1699,7 @@ prop.update.default <- function(n = 100, yes = 55, top = 5, scale = .1, lo = 0, 
   pri <- show.prior
   s <- round(yes)
   n <- round(n)  
-  d <- dist.name 
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name))  
   is.v <- function(...) lengths(list(...)) > 1
   if(any(is.v(a, b, d))) stop("Error: Choose only 'one' prior knowledge base at a time.")
   if(any(yes > n)) stop("Error: 'yes' cannot be larger than 'n'.")  
@@ -1719,7 +1769,7 @@ d.update <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.nam
 d.update.default <- function(t, n1, n2 = NA, top = 5, scale = .1, m = 0, s = 1, dist.name = "dnorm", prior.scale = 1, level = .95, show.prior = FALSE, lo = -2, hi = 2, tol = 1e4, margin = hi){
   
   pri <- show.prior
-  d <- dist.name
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name)) 
   if(is.infinite(lo)) lo <- -6
   if(is.infinite(hi)) hi <- 6
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
@@ -1796,7 +1846,7 @@ peta.update <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 2, lo = 
 peta.update.default <- function(f, N, df1, df2, top = 5, scale = .1, a = 2, b = 2, lo = 0, hi = 1, dist.name = "dbeta", prior.scale = 1, level = .95, show.prior = FALSE, tol = 1e5){
   
   pri <- show.prior
-  d <- dist.name
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name)) 
   if(hi == 1) hi <- .9999999 ;
   if(tol < 1e4) stop("'tol' must be '10,000' or larger.")
   is.v <- function(...) lengths(list(...)) > 1
@@ -1864,7 +1914,7 @@ d.eq.test <- function(t, n1, n2 = NA, m = 0, s = 1, dist.name = "dnorm", dL = -.
 
 d.eq.test.default <- function(t, n1, n2 = NA, m = 0, s = 1, dist.name = "dnorm", dL = -.1, dU = .1, lo = -Inf, hi = Inf){
   
-  d <- dist.name
+  d <- if(is.character(dist.name)) dist.name else deparse(substitute(dist.name)) 
   
   if(any(lengths(list(get(formalArgs(d.eq.test))))) > 1) stop("Error: Only 'one' equivalence testing at a time is allowed.")
   if(dL >= dU) stop("Your Upper value must be larger than your Lower value")
@@ -2037,13 +2087,13 @@ d.eq.test.default <- function(t, n1, n2 = NA, m = 0, s = 1, dist.name = "dnorm",
 #======================================================================================================================
    
                        
-need <- c("rstanarm", "MASS")
+need <- c("rstanarm") #, "MASS")
 have <- need %in% rownames(installed.packages())
 if(any(!have)){ install.packages( need[!have] ) }
                        
 suppressMessages({ 
     library("rstanarm")
-    library("MASS")
+  # library("MASS")
 })
                       
                        
@@ -2084,7 +2134,7 @@ R2.bayes.default <- function(..., scale = .02, bottom = 1, top = 1, margin = 5, 
 {
 
 if(!(all(sapply(list(...), inherits, "stanreg")))) stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")    
-    
+leg <- if(is.character(legend)) legend else deparse(substitute(legend))   
 Rs <- lapply(list(...), R)
 loop <- length(Rs)
 
@@ -2130,7 +2180,7 @@ polygon(x = d[[i]]$x, y = scale*d[[i]]$y + i, col = adjustcolor(i, .55), border 
 axis(1, at = seq(a, b, length.out = 4), labels = paste0(round(seq(a, b, length.out = 4), 4)*1e2, "%"), mgp = c(2, .5, 0))
 axis(2, at = 1:loop, labels = paste0("Model ", 1:loop), font = 2, las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .3, 0))
 
-legend(legend, rev(paste0("Model ", loop:1)), pch = 22, title = "Models ", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5)
+legend(x = leg, legend = rev(paste0("Model ", loop:1)), pch = 22, title = "Models ", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5)
 segments(I[, 1], 1:loop, I[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
 box()
 
@@ -2148,67 +2198,130 @@ round(data.frame(mode = mode, mean = mean, sd = sd, MAD = mad, lower = I[,1], up
 #=======================================================================
                          
                        
-lm.sample <- function(fit, n = 1e4, no.names = TRUE)
+#lm.sample2 <- function(fit, n = 1e4, no.names = TRUE)
+#{
+#  UseMethod("lm.sample2")
+#}                       
+                
+                       
+#lm.sample2.default <- function(fit, n = 1e4, no.names = TRUE){
+ 
+#if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")
+    
+#  output <- as.data.frame(MASS::mvrnorm(n = n, mu = c(coef(fit), sigma(fit)), Sigma = cov(as.matrix(fit))))
+  
+#  if(no.names == TRUE){
+#    for(i in 1:ncol(output)){
+#      if(colnames(output)[i] == "(Intercept)"){
+#        colnames(output)[i] <- "Intercept"
+#      }
+#      if(colnames(output)[i] == paste0("V", ncol(output))){
+#        colnames(output)[i] <- "Sigma"
+#      }
+#    }
+#  }
+#  output
+#}
+                     
+                       
+#======================================================================================
+                       
+                       
+lm.sample <- function(fit, no.names = TRUE)
 {
   UseMethod("lm.sample")
 }                       
                 
                        
-lm.sample.default <- function(fit, n = 1e4, no.names = TRUE){
+lm.sample.default <- function(fit, no.names = TRUE){
  
 if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")
     
-  output <- as.data.frame(MASS::mvrnorm(n = n, mu = c(coef(fit), sigma(fit)), Sigma = cov(as.matrix(fit))))
+  output <- as.data.frame(as.matrix(fit))
   
   if(no.names == TRUE){
     for(i in 1:ncol(output)){
       if(colnames(output)[i] == "(Intercept)"){
         colnames(output)[i] <- "Intercept"
       }
-      if(colnames(output)[i] == paste0("V", ncol(output))){
-        colnames(output)[i] <- "Sigma"
-      }
     }
   }
   output
 }
-                     
+                       
                        
 #======================================================================================
 
  
-lm.cond.mean <- function(fit, xi, scale = .5, level = .95, ...)
+lm.cond.mean <- function(fit, predi, scale = .5, level = .95, ...)
 {
   UseMethod("lm.cond.mean")
 } 
        
                        
-lm.cond.mean.default <- function(fit, xi, scale = .5, level = .95, ...){
+lm.cond.mean.default <- function(fit, predi, scale = .5, level = .95, ...){
   
 if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
 if(length(coef(fit)) > 2) stop("Error: 'fit' must contain only 'one' predictor.")  
 
 post <- lm.sample(fit)
 
-mus_at_xi = post[,1] + post[,2] * xi
+mus_at_xi = post[,1] + post[,2] * predi
 
 d <- density(mus_at_xi, adjust = 2, n = 1e3)
 plot(d, type = "n", ylab = NA, main = NA, yaxt = "n", bty = "n", las = 1, zero.line = FALSE, yaxs = "i",
-     xlab = bquote(bold((mu[i] *" | "* .(names(fit$model)[2])[i] == .(xi)))), ...)
+     xlab = bquote(bold((mu[i] *" | "* .(names(fit$model)[2])[i] == .(predi)))), ...)
 
   I <- hdir(mus_at_xi, level = level)
 med <- mean(mus_at_xi)
-peak <- d$y[which.max(d$y)]*scale
+peak <- approx(d$x, d$y, xout = med)[[2]]*scale
 
-polygon(d$x, scale*d$y, col = adjustcolor(2, .5), border = NA)
+polygon(d$x, scale*d$y, col = adjustcolor('magenta', .35), border = NA)
 segments(med, 0, med, peak, lty = 3)
 
-segments(I[1], 0, I[2], 0, lend = 1, lwd = 6, col = 2, xpd = NA)
+segments(I[1], 0, I[2], 0, lend = 1, lwd = 6, col = 'magenta', xpd = NA)
 points(med, 0, pch = 21, bg = "cyan", col = 'magenta', cex = 2, xpd = NA)
 text(c(I, med), 0, round(c(I, med), 2), pos = 3, font = 2)
 }                       
                        
  
+                       
+#======================================================================================                       
+
+                       
+                       
+lm.cond.case <- function(fit, predi, scale = .5, level = .95, ...)
+{
+  UseMethod("lm.cond.case")
+} 
+                       
+                       
+lm.cond.case.default <- function(fit, predi, scale = .5, level = .95, ...){
+  
+  if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
+  if(length(coef(fit)) > 2) stop("Error: 'fit' must contain only 'one' predictor.")  
+  
+  post <- lm.sample(fit)
+  
+  case_at_xi = post[,1] + post[,2] * predi + post[,3]
+  
+  d <- density(case_at_xi, adjust = 2, n = 1e3)
+  plot(d, type = "n", ylab = NA, main = NA, yaxt = "n", bty = "n", las = 1, zero.line = FALSE, yaxs = "i",
+       xlab = bquote(bold((subj[i] *" | "* .(names(fit$model)[2])[i] == .(predi)))), ...)
+  
+  I <- hdir(case_at_xi, level = level)
+  med <- mean(case_at_xi)
+  peak <- approx(d$x, d$y, xout = med)[[2]]*scale
+  
+  polygon(d$x, scale*d$y, col = 8, border = NA)
+  segments(med, 0, med, peak, lty = 3)
+  
+  segments(I[1], 0, I[2], 0, lend = 1, lwd = 6, xpd = NA)
+  points(med, 0, pch = 21, bg = "cyan", col = 'magenta', cex = 2, xpd = NA)
+  text(c(I, med), 0, round(c(I, med), 2), pos = 3, font = 2)
+} 
+                       
+                       
 #======================================================================================                       
 
                        
@@ -2285,7 +2398,8 @@ compare.R2.default <- function(..., how = c("two.one", "one.two"), scale = .02, 
   if(!(all(sapply(list(...), inherits, "stanreg")))) stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")
   
   eq.bound <- if(is.character(eq.level)) as.numeric(substr(eq.level, 1, nchar(eq.level)-1)) / 1e2 else eq.level
-  
+  leg <- if(is.character(legend)) legend else deparse(substitute(legend))
+      
   Rs <- lapply(list(...), R)
   
   if(length(Rs) < 2) stop("Error: You need to have a least '2' fitted models (from 'rstanarm' package) for comparison!")
@@ -2343,7 +2457,7 @@ compare.R2.default <- function(..., how = c("two.one", "one.two"), scale = .02, 
   abline(h = 1:loop, col = 8, lty = 3)
   axis(1, at = seq(a, b, length.out = 4), labels = paste0(round(seq(a, b, length.out = 4), 4)*1e2, "%"), mgp = c(2, .5, 0))
   axis(2, at = 1:loop, labels = np, font = 2, las = 1, cex.axis = .7, tck = -.006, mgp = c(2, .3, 0))
-  legend(legend, rev(paste0(np)), pch = 22, title = "Comparisons", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5)
+  legend(x = leg, legend = rev(paste0(np)), pch = 22, title = "Comparisons", pt.bg = loop:1, col = loop:1, cex = .7, pt.cex = .6, bg = 0, box.col = 0, xpd = NA, x.intersp = .5)
   segments(CI[, 1], 1:loop, CI[, 2], 1:loop, lend = 1, lwd = 4, col = 1:loop, xpd = NA)
   box()
   
@@ -2406,7 +2520,7 @@ panel.hist <- function(x, col.hist = "khaki", ...)
 #=====================================================================================
               
               
-lm.check.plot <- function(fit, pch = 19, cex = 1.6, col = adjustcolor("magenta", .4), 
+lm.check.plot <- function(data, pch = 19, cex = 1.6, col = adjustcolor("magenta", .05), 
                           gap = .15, panel = panel.lm, lower.panel = panel.cor, 
                           cex.labels = 1.3, font.labels = 2, font = 2, diag.panel = panel.hist, 
                           mgp = c(2, .6, 0), las = 1, ...)
@@ -2415,14 +2529,12 @@ lm.check.plot <- function(fit, pch = 19, cex = 1.6, col = adjustcolor("magenta",
 }
 
 
-lm.check.plot.default <- function(fit, pch = 19, cex = 1.6, col = adjustcolor("magenta", .4), 
+lm.check.plot.default <- function(data, pch = 19, cex = 1.6, col = adjustcolor("magenta", .05), 
                           gap = .15, panel = panel.lm, lower.panel = panel.cor, 
                           cex.labels = 1.3, font.labels = 2, font = 2, diag.panel = panel.hist, 
-                          mgp = c(2, .6, 0), las = 1, ...){
- 
-if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
+                          mgp = c(2, .6, 0), las = 1, ...){ 
 
-pairs(fit$formula, data = fit$data, pch = pch, cex = cex, col = col, gap = gap, panel = panel, 
+pairs(data, pch = pch, cex = cex, col = col, gap = gap, panel = panel, 
       cex.labels = cex.labels, font.labels = font.labels, lower.panel = lower.panel, font = font, 
       diag.panel = diag.panel, mgp = mgp, las = las, ...)
  
@@ -2432,7 +2544,7 @@ pairs(fit$formula, data = fit$data, pch = pch, cex = cex, col = col, gap = gap, 
 #===================================================================================
      
               
-lm.post.plot <- function(fit, n = 1e3, pch = 19, cex = 1.6, col = adjustcolor(4, .3), 
+lm.post.plot <- function(fit, pch = 19, cex = 1.6, col = adjustcolor(4, .3), 
                           gap = .15, panel = panel.lm, lower.panel = panel.cor, diag.panel = panel.hist,
                           cex.labels = 1.3, font.labels = 2, font = 2, mgp = c(2, .6, 0), las = 1, ...)
 {
@@ -2440,13 +2552,13 @@ lm.post.plot <- function(fit, n = 1e3, pch = 19, cex = 1.6, col = adjustcolor(4,
 }
 
 
-lm.post.plot.default <- function(fit, n = 1e3, pch = 19, cex = 1.6, col = adjustcolor(4, .3), 
+lm.post.plot.default <- function(fit, pch = 19, cex = 1.6, col = adjustcolor(4, .3), 
                          gap = .15, panel = panel.lm, lower.panel = panel.cor, diag.panel = panel.hist,
                          cex.labels = 1.3, font.labels = 2, font = 2, mgp = c(2, .6, 0), las = 1, ...){
 
 if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")
 
-post <- lm.sample(fit, n = n)
+post <- lm.sample(fit)
 
 pairs(post, pch = pch, cex = cex, col = col, gap = gap, panel = panel, 
       cex.labels = cex.labels, font.labels = font.labels, lower.panel = lower.panel, 
@@ -2651,6 +2763,7 @@ message("\nNote: You now have new column(s) in your 'data' with suffix '.s' ('.s
     d <- scale(data, center = center, scale = scale)
     
     data[, paste0(names(data), ".s") ] <- c(d)
+      
     return(data)
   }  
   
@@ -2659,9 +2772,13 @@ message("\nNote: You now have new column(s) in your 'data' with suffix '.s' ('.s
     data <- if(na.rm) data[complete.cases(data), drop = FALSE]
     
     data <- as.data.frame(data)
+      
     names(data) <- "V1"
+      
     d <- as.data.frame(scale(data, center = center, scale = scale))  
+      
     data[, paste0(names(d), ".s") ] <- d
+      
     return(data)
   }
 }
@@ -2712,14 +2829,16 @@ newdata <- function(fit.data, focus.var, n = 1e2, FUN = mean, hold.at = NA)
 
 newdata.default <- function(fit.data, focus.var, n = 1e2, FUN = mean, hold.at = NA){
   
-if(!inherits(fit.data, "data.frame") || ncol(fit.data) < 2) stop("Error: 'data.fit' must be 'data.frame' with '>= 2' columns.")
+if(!inherits(fit.data, "data.frame") || ncol(fit.data) < 2) stop("Error: 'fit.data' must be 'data.frame' with '>= 2' columns.")
     
-  tgt <- fit.data[, focus.var]
+  foc <- if(is.character(focus.var)) focus.var else deparse(substitute(focus.var))
+      
+  tgt <- fit.data[, foc]
   focus.var.new <- seq(min(tgt), max(tgt), length.out = n)
   fit.data2 <- data.frame(focus.var.new)
-  names(fit.data2) <- focus.var
+  names(fit.data2) <- foc
   
-  for(i in names(fit.data)[!names(fit.data) %in% focus.var]){
+  for(i in names(fit.data)[!names(fit.data) %in% foc]){
     
     if(is.na(hold.at)){
       
@@ -2727,7 +2846,7 @@ if(!inherits(fit.data, "data.frame") || ncol(fit.data) < 2) stop("Error: 'data.f
     
     } else { 
       
-    fit.data2[[i]] <- rep(hold.at, 1)
+    fit.data2[[i]] <- hold.at
       
       }
   }
@@ -2755,20 +2874,22 @@ if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm
 if(length(coef(fit)) < 3) stop("Error: 'fit' must contain at least 'two' predictors.")
   
   m <- stats::model.frame(fit)
+  leg <- if(is.character(legend)) legend else deparse(substitute(legend))
+  foc <- if(is.character(focus.pred)) focus.pred else deparse(substitute(focus.pred))
+    
+if(names(m)[1] == foc) message("\nYou're looking at effect of the changing 'dep.var' against itself on the original model's prediction! This leads to a horizontal line showing 'No Change'!")    
   
-if(names(m)[1] == focus.pred) message("\nYou're looking at effect of the changing 'dep.var' against itself on the original model's prediction! This leads to a horizontal line showing 'No Change'!")    
-  
-    pred <- range(m[focus.pred])
+    pred <- range(m[foc])
    dep <- range(m[names(m)[1]])
   
   pred <- seq(pred[1], pred[2], length.out = n)
    dep <- seq(dep[1], dep[2], length.out = n)
   
-nd <- newdata(m, focus.pred, n = n, FUN = FUN, hold.at = hold.at)   
+nd <- newdata(m, foc, n = n, FUN = FUN, hold.at = hold.at)   
    
   pred_lin <- rstanarm::posterior_predict(fit, newdata = nd)
 
-xlab <- ifelse(is.na(xlab), focus.pred, xlab)
+xlab <- ifelse(is.na(xlab), foc, xlab)
 ylab <- ifelse(is.na(ylab), names(m)[1], ylab)
 
 loop <- n
@@ -2814,7 +2935,7 @@ E.mu <- apply(pred_lin2, 2, mean)
 
 lines(pred, E.mu, col = "cyan", lwd = 2)
 
-legend(legend, "Counterfactual Plot\n(prediction analysis)", text.font = 4,
+legend(x = leg, legend = "Counterfactual Plot\n(prediction analysis)", text.font = 4,
       cex = .9, bg = 0, box.col = 0)    
 box()
 }              
@@ -2823,17 +2944,18 @@ box()
 #=======================================================================================================
               
               
-case.fit.plot <- function(fit, level = .95, legend = "topleft", lwd = 2, fit.tol = 1, pt.cex = 1)
+case.fit.plot <- function(fit, level = .95, legend = "topleft", lwd = 2, fit.tol = 1, pt.cex = 1, cex.axis = .8)
 {
   UseMethod("case.fit.plot")
 }  
 
 
-case.fit.plot.default <- function(fit, level = .95, legend = "topleft", lwd = 2, fit.tol = 1, pt.cex = 1){
+case.fit.plot.default <- function(fit, level = .95, legend = "topleft", lwd = 2, fit.tol = 1, pt.cex = 1, cex.axis = .8){
   
 if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
-  
-m <- model.frame(fit)
+
+leg <- if(is.character(legend)) legend else deparse(substitute(legend))    
+m <- stats::model.frame(fit)
 y <- m[, 1]
 
 loop <- nrow(m)
@@ -2857,7 +2979,6 @@ for(i in 1:loop){
   PI.e[i,] <- c(y[j] - c(CI.y[1,j], CI.y[2,j]))
 }
 
-
 ok <- min(e[o]) < e[o] & e[o] < max(e[o])
 
 unit <- fit.tol*sd(e)
@@ -2871,8 +2992,8 @@ good <- -unit < e[o] & e[o] < unit
     
 pos <- (1:loop)[o]
 
-axis(2, at = (1:loop)[-range(1:loop)], labels = paste0("subj ", pos[-range(pos)]), las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .2, 0))
-axis(2, at = range(1:loop), labels = paste0("subj ", c(pos[1], rev(pos)[1])), las = 1, cex.axis = .8, tck = -.006, mgp = c(2, .2, 0), col.axis = 2)
+axis(2, at = (1:loop)[-range(1:loop)], labels = paste0("subj ", pos[-range(pos)]), las = 1, cex.axis = cex.axis, tck = -.006, mgp = c(2, .2, 0))
+axis(2, at = range(1:loop), labels = paste0("subj ", c(pos[1], rev(pos)[1])), las = 1, cex.axis = cex.axis, tck = -.006, mgp = c(2, .2, 0), col.axis = 2)
 
 segments(PI.e[, 1], 1:loop, PI.e[, 2], 1:loop, lend = 1, col = 8, lwd = lwd)
 
@@ -2880,9 +3001,13 @@ segments(CI.e[, 1], 1:loop, CI.e[, 2], 1:loop, lend = 1, lwd = lwd, col = ifelse
 
 points(e[o], 1:loop, pch = 21, bg = ifelse(ok, "cyan", 2), col = ifelse(ok, "magenta", 2), cex = pt.cex)
 
-text(.8*par('usr')[1:2], par('usr')[4], c("High", "High"), pos = 3, cex = 1.5, xpd = NA, font = 2, col = 2)
+a <- par('usr')[1:2] ; b <- par('usr')[4]
+    
+text(.1*mean(a), b, "Fit Corridor", pos = 3, cex = 1, xpd = NA, font = 2, col = 3)
+    
+text(.8*a, b, rep("Misfit", 2), pos = 3, cex = 1.5, xpd = NA, font = 2, col = 2)
 
-legend(legend, c("Worst fit", "Perfect-Good fit", "Fair-Bad fit"), pch = 22, title = "Person Fit", 
+legend(x = leg, legend = c("Worst fit", "Perfect-Good fit", "Fair-Bad fit"), pch = 22, title = "Person Fit", 
        pt.bg = c(2, "green3", 1), col = c(2, "green3", 1), cex = .7, pt.cex = .6, bg = 0, 
        box.col = 0, xpd = NA, x.intersp = .5, title.adj = .2)
 box()
