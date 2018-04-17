@@ -36,8 +36,13 @@ cor.pop = correlation
 mu <- c(0, 0)
 cov.pop <- matrix(c(1, cor.pop, cor.pop, 1), nrow = 2)
 
-if(!require(MASS)) install.packages("MASS")
-library(MASS)
+need <- c("MASS")
+have <- need %in% rownames(installed.packages())
+if(any(!have)){ install.packages( need[!have] ) }
+                       
+suppressMessages({ 
+  library("MASS")
+})
 mvnorm.mat <- mvrnorm(n1, Sigma = cov.pop, mu = mu)
 
 a <- mvnorm.mat[ , 1] * sd + mean.g1
