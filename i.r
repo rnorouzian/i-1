@@ -2093,7 +2093,7 @@ if(any(!have)){ install.packages( need[!have] ) }
                        
 suppressMessages({ 
     library("rstanarm")
-  # library("MASS")
+  #  library("MASS")
 })
                       
                        
@@ -2133,7 +2133,8 @@ R2.bayes <- function(..., scale = .02, bottom = 1, top = 1, margin = 5, legend =
 R2.bayes.default <- function(..., scale = .02, bottom = 1, top = 1, margin = 5, legend = "topleft", level = .95, eq.lo = 0, eq.hi = .1)
 {
 
-if(!(all(sapply(list(...), inherits, "stanreg")))) stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")    
+if(!(all(sapply(list(...), inherits, "stanreg")))) stop("Error: all '...' must be models from package 'rstanarm's 'stan_glm()'.")  
+    
 leg <- if(is.character(legend)) legend else deparse(substitute(legend))   
 Rs <- lapply(list(...), R)
 loop <- length(Rs)
@@ -2212,7 +2213,7 @@ round(data.frame(mode = mode, mean = mean, sd = sd, MAD = mad, lower = I[,1], up
   
 #  if(no.names == TRUE){
 #    for(i in 1:ncol(output)){
-#      if(colnames(output)[i] == "(Intercept)"){
+#     if(colnames(output)[i] == "(Intercept)"){
 #        colnames(output)[i] <- "Intercept"
 #      }
 #      if(colnames(output)[i] == paste0("V", ncol(output))){
@@ -2221,7 +2222,7 @@ round(data.frame(mode = mode, mean = mean, sd = sd, MAD = mad, lower = I[,1], up
 #    }
 #  }
 #  output
-#}
+# }
                      
                        
 #======================================================================================
@@ -2237,7 +2238,7 @@ lm.sample.default <- function(fit, no.names = TRUE){
  
 if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")
     
-  output <- as.data.frame(as.matrix(fit))
+  output <- as.data.frame(fit)
   
   if(no.names == TRUE){
     for(i in 1:ncol(output)){
@@ -2253,136 +2254,139 @@ if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm
 #======================================================================================
 
  
-lm.cond.mean <- function(fit, predi, scale = .5, level = .95, ...)
+predict.mean <- function(fit, predi, scale = .5, level = .95, col.hump = "cyan", integer = FALSE, xlab = NA, ...)
 {
-  UseMethod("lm.cond.mean")
+  UseMethod("predict.mean")
 } 
        
                        
-lm.cond.mean.default <- function(fit, predi, scale = .5, level = .95, ...){
+predict.mean.default <- function(fit, predi, scale = .5, level = .95, col.hump = "cyan", integer = FALSE, xlab = NA, ...){
   
 if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
 if(length(coef(fit)) > 2) stop("Error: 'fit' must contain only 'one' predictor.")  
+if(!(predi %in% fit$model[, 2])) message("WARNING: \nYou have no data on ", dQuote(names(fit$model)[2]), " = ", predi, ". The prediction is not highly reliable.")
 
-post <- lm.sample(fit)
-
-mus_at_xi = post[,1] + post[,2] * predi
+mus_at_xi <- rstanarm::posterior_linpred(fit, newdata = setNames(data.frame(tmp = predi), names(fit$model)[2]))
 
 d <- density(mus_at_xi, adjust = 2, n = 1e3)
+
+xlab = if(is.na(xlab)) bquote(bold(bolditalic(p)*(Ave.*.(names(fit$model)[1])[i] *" | "* .(names(fit$model)[2])[i] == .(predi)))) else xlab   
+
 plot(d, type = "n", ylab = NA, main = NA, yaxt = "n", bty = "n", las = 1, zero.line = FALSE, yaxs = "i",
-     xlab = bquote(bold((mu[i] *" | "* .(names(fit$model)[2])[i] == .(predi)))), ...)
+     xlab = xlab, ...)
 
   I <- hdir(mus_at_xi, level = level)
 med <- mean(mus_at_xi)
 peak <- approx(d$x, d$y, xout = med)[[2]]*scale
 
-polygon(d$x, scale*d$y, col = adjustcolor('magenta', .35), border = NA)
+polygon(d$x, scale*d$y, col = adjustcolor(col.hump, .35), border = NA)
 segments(med, 0, med, peak, lty = 3)
 
 segments(I[1], 0, I[2], 0, lend = 1, lwd = 6, col = 'magenta', xpd = NA)
 points(med, 0, pch = 21, bg = "cyan", col = 'magenta', cex = 2, xpd = NA)
-text(c(I, med), 0, round(c(I, med), 2), pos = 3, font = 2)
+text(c(I, med), 0, if(integer) round(c(I, med)) else round(c(I, med), 2), pos = 3, font = 2)
 }                       
                        
- 
-                       
+                      
 #======================================================================================                       
 
                        
-                       
-lm.cond.case <- function(fit, predi, scale = .5, level = .95, ...)
+predict.case <- function(fit, predi, scale = .5, level = .95, col.hump = "gray", integer = FALSE, xlab = NA, ...)
 {
-  UseMethod("lm.cond.case")
+  UseMethod("predict.case")
 } 
                        
                        
-lm.cond.case.default <- function(fit, predi, scale = .5, level = .95, ...){
+predict.case.default <- function(fit, predi, scale = .5, level = .95, col.hump = "gray", integer = FALSE, xlab = NA, ...){
   
   if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
   if(length(coef(fit)) > 2) stop("Error: 'fit' must contain only 'one' predictor.")  
+  if(!(predi %in% fit$model[, 2])) message("WARNING: \nYou have no data on ", dQuote(names(fit$model)[2]), " = ", predi, ". The prediction is not highly reliable.")
   
-  post <- lm.sample(fit)
-  
-  case_at_xi = post[,1] + post[,2] * predi + post[,3]
+case_at_xi <- rstanarm::posterior_predict(fit, newdata = setNames(data.frame(tmp = predi), names(fit$model)[2]))
   
   d <- density(case_at_xi, adjust = 2, n = 1e3)
+    
+  xlab = if(is.na(xlab)) bquote(bold(bolditalic(p)*(.(names(fit$model)[1])[i] *" | "* .(names(fit$model)[2])[i] == .(predi)))) else xlab  
   plot(d, type = "n", ylab = NA, main = NA, yaxt = "n", bty = "n", las = 1, zero.line = FALSE, yaxs = "i",
-       xlab = bquote(bold((subj[i] *" | "* .(names(fit$model)[2])[i] == .(predi)))), ...)
+       xlab = xlab, ...)
   
   I <- hdir(case_at_xi, level = level)
   med <- mean(case_at_xi)
   peak <- approx(d$x, d$y, xout = med)[[2]]*scale
   
-  polygon(d$x, scale*d$y, col = 8, border = NA)
+  polygon(d$x, scale*d$y, col = col.hump, border = NA)
   segments(med, 0, med, peak, lty = 3)
   
   segments(I[1], 0, I[2], 0, lend = 1, lwd = 6, xpd = NA)
   points(med, 0, pch = 21, bg = "cyan", col = 'magenta', cex = 2, xpd = NA)
-  text(c(I, med), 0, round(c(I, med), 2), pos = 3, font = 2)
-} 
+  text(c(I, med), 0, if(integer) round(c(I, med)) else round(c(I, med), 2), pos = 3, font = 2)
+}  
                        
                        
 #======================================================================================                       
 
                        
-predict.bayes <- function(fit, xlab = NA, ylab = NA, level = .95, line.int = TRUE, pred.int = TRUE, ...)
+predict.bayes <- function(fit, xlab = NA, ylab = NA, ylim = NA, level = .95, line.int = TRUE, pred.int = TRUE, pt.cex = 1, pt.col = 4, col.depth = .3, col.line = "cyan", col.pred = "gray", col.reg = "cyan", ...)
 {
   UseMethod("predict.bayes")
 } 
 
                        
-predict.bayes.default <- function(fit, xlab = NA, ylab = NA, level = .95, line.int = TRUE, pred.int = TRUE, ...){
-
-if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
-if(length(coef(fit)) > 2) stop("Error: 'fit' must contain only 'one' predictor.")
+predict.bayes.default <- function(fit, xlab = NA, ylab = NA, ylim = NA, level = .95, line.int = TRUE, pred.int = TRUE, pt.cex = 1, pt.col = 4, col.depth = .3, col.line = "cyan", col.pred = "gray", col.reg = "cyan", ...){
+  
+  if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")  
+  if(length(coef(fit)) > 2) stop("Error: 'fit' must contain only 'one' predictor.")
+  
+  pred <- fit$model[, 2]
+  dep <- fit$model[, 1]  
+  
+  pred_lin <- rstanarm::posterior_predict(fit, transform = TRUE)
+  pred_lin2 <- rstanarm::posterior_linpred(fit, transform = TRUE)
+   
+  r <- range(pred_lin2)  
+  ylim <- if(is.na(ylim)) c(.97*r[1], 1.03*r[2]) else ylim 
+  
+  plot(dep ~ pred, xlab = ifelse(is.na(xlab), names(fit$model)[2], xlab), ylab = ifelse(is.na(ylab), names(fit$model)[1], ylab), type = "n", las = 1, ylim = ylim, ...)
+  
+  loop <- length(pred)
+  
+  I <- matrix(NA, loop, 2)
+  for(i in 1:loop){
+    I[i,] = hdir(pred_lin[,i], level = level)
+  }
+  
+  OK <- I[,1] < dep & dep < I[,2]
+  
+  points(dep ~ pred, pch = 19, col = ifelse(OK, adjustcolor(pt.col, .55), 2), cex = pt.cex)
+  
+  x <- sort(pred)
+  o <- order(pred)
+  
+  if(pred.int){   
     
-pred <- fit$model[, 2]
- dep <- fit$model[, 1]  
-
-plot(dep ~ pred, xlab = ifelse(is.na(xlab), names(fit$model)[2], xlab), ylab = ifelse(is.na(ylab), names(fit$model)[1], ylab), type = "n", las = 1, ...)
-
-pred_lin <- rstanarm::posterior_predict(fit, transform = TRUE)
-
-loop <- length(pred)
-
-I <- matrix(NA, loop, 2)
-for(i in 1:loop){
-  I[i,] = hdir(pred_lin[,i], level = level)
-}
-
-OK <- I[,1] < dep & dep < I[,2]
-
-points(dep ~ pred, pch = 19, col = ifelse(OK, adjustcolor(4, .55), 2))
-
-x <- sort(pred)
-o <- order(pred)
+    y <- I[,1][o]
+    z <- I[,2][o]
     
-if(pred.int){   
+    polygon(c(rev(x), x), c(rev(z), y), col = adjustcolor(col.pred, col.depth), border = NA)
+  }
+  
+  I2 <- matrix(NA, loop, 2)
+  for(i in 1:loop){
+    I2[i,] = hdir(pred_lin2[,i], level = level)
+  }
+  
+  if(line.int){
     
-y <- I[,1][o]
-z <- I[,2][o]
-
-polygon(c(rev(x), x), c(rev(z), y), col = adjustcolor('gray', .5), border = NA)
-}
+    y <- I2[,1][o]
+    z <- I2[,2][o]
     
-pred_lin2 <- rstanarm::posterior_linpred(fit, transform = TRUE)
-
-I2 <- matrix(NA, loop, 2)
-for(i in 1:loop){
-I2[i,] = hdir(pred_lin2[,i], level = level)
-}
-
-if(line.int){
-    
-y <- I2[,1][o]
-z <- I2[,2][o]
-
-polygon(c(rev(x), x), c(rev(z), y), col = adjustcolor('magenta', .4), border = NA)
-}
-    
-abline(fit, col = "cyan", lwd = 2)
-box()    
-}                       
+    polygon(c(rev(x), x), c(rev(z), y), col = adjustcolor(col.line, col.depth), border = NA)
+  }
+  
+  abline(fit, col = col.reg, lwd = 2)
+  box()    
+}                                              
                        
 #==================================================================================
                   
@@ -2395,7 +2399,7 @@ compare.R2 <- function(..., how = c("two.one", "one.two"), scale = .02, bottom =
                        
 compare.R2.default <- function(..., how = c("two.one", "one.two"), scale = .02, bottom = 1, top = 1, margin = 5, legend = "topleft", level = .95, eq.level = "2.5%"){
   
-  if(!(all(sapply(list(...), inherits, "stanreg")))) stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")
+if(!(all(sapply(list(...), inherits, "stanreg")))) stop("Error: all '...' must be models from package 'rstanarm's 'stan_glm()'.")  
   
   eq.bound <- if(is.character(eq.level)) as.numeric(substr(eq.level, 1, nchar(eq.level)-1)) / 1e2 else eq.level
   leg <- if(is.character(legend)) legend else deparse(substitute(legend))
@@ -2516,6 +2520,16 @@ panel.hist <- function(x, col.hist = "khaki", ...)
   rect(breaks[-nB], 0, breaks[-1], y, col = col.hist, ...)
 }
               
+
+panel.dens <- function(x, col.dens = adjustcolor(2, .2), ...)
+{
+  usr <- par("usr"); on.exit(par(usr))
+  par(usr = c(usr[1:2], 0, 1.5) )
+  hist(x, plot = FALSE)
+  d <- density(x); y <- d$y/max(d$y)
+  polygon(x = d$x, y = y, col = col.dens, border = NA, ...)
+}
+              
               
 #=====================================================================================
               
@@ -2545,7 +2559,7 @@ pairs(data, pch = pch, cex = cex, col = col, gap = gap, panel = panel,
      
               
 lm.post.plot <- function(fit, pch = 19, cex = 1.6, col = adjustcolor(4, .3), 
-                          gap = .15, panel = panel.lm, lower.panel = panel.cor, diag.panel = panel.hist,
+                          gap = .15, panel = panel.lm, lower.panel = panel.cor, diag.panel = panel.dens,
                           cex.labels = 1.3, font.labels = 2, font = 2, mgp = c(2, .6, 0), las = 1, ...)
 {
   UseMethod("lm.post.plot")
@@ -2553,7 +2567,7 @@ lm.post.plot <- function(fit, pch = 19, cex = 1.6, col = adjustcolor(4, .3),
 
 
 lm.post.plot.default <- function(fit, pch = 19, cex = 1.6, col = adjustcolor(4, .3), 
-                         gap = .15, panel = panel.lm, lower.panel = panel.cor, diag.panel = panel.hist,
+                         gap = .15, panel = panel.lm, lower.panel = panel.cor, diag.panel = panel.dens,
                          cex.labels = 1.3, font.labels = 2, font = 2, mgp = c(2, .6, 0), las = 1, ...){
 
 if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")
@@ -2982,8 +2996,12 @@ for(i in 1:loop){
 ok <- min(e[o]) < e[o] & e[o] < max(e[o])
 
 unit <- fit.tol*sd(e)
+
+original.par = par(no.readonly = TRUE)
+on.exit(par(original.par))    
+par(mar = c(2.6, 4, 2.2, 4))
     
-plot(e[o], 1:loop, cex = .6, xlim = range(PI.e), pch = 19, ylab = NA, yaxt = "n", mgp = c(2, .4, 0), type = "n", xlab = "Credible Interval (Residuals)", font.lab = 2)
+plot(e[o], 1:loop, cex = .6, xlim = range(PI.e), pch = 19, ylab = NA, yaxt = "n", mgp = c(1.3, .4, 0), type = "n", xlab = "Credible Interval (Residuals)", font.lab = 2)
 rect(-unit, par('usr')[3], unit, par('usr')[4], border = NA, col = adjustcolor("yellow", .4), lend = 1)
 
 abline(v = 0, h = 1:loop, lty = 3, col = 8)
@@ -3012,4 +3030,82 @@ legend(x = leg, legend = c("Worst fit", "Perfect-Good fit", "Fair-Bad fit"), pch
        box.col = 0, xpd = NA, x.intersp = .5, title.adj = .2)
 box()
 }
+        
+              
+#====================================================================================================================
+      
+              
+cor.fit <- function(fit, cor = TRUE){
+  
+  UseMethod("cor.fit")
+}
+
+cor.fit.default <- function(fit, cor = TRUE){
+
+if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")    
+
+m <- if(cor) cov2cor(cov(as.matrix(fit))) else cov(as.matrix(fit))
+
+colnames(m)[1] <- "intercept"
+rownames(m)[1] <- "intercept"
+
+return(round(data.frame(m), 6))
+}
+              
+              
+#============================================================================================================================
+  
+              
+cor.norm <- function(x, r, m = 95, s = 4){
+  e  = rnorm(length(x), m, s)
+  return(y = round(r*x + e))
+}
+
+prof <- {
+set.seed(1170)  
+data.frame(LAA = LAA <- round(rnorm(60, 32, 4)), TOEFL = cor.norm(LAA, .3)  )
+
+}        
+  
+              
+#=================================================================================================================================
+     
+              
+hdi.fit <- function(fit, level = .95, digits = 6)
+{
+ UseMethod("hdi.fit")
+}
+
+
+hdi.fit.default <- function(fit, level = .95, digits = 6){
+    
+if(class(fit)[1] != "stanreg") stop("Error: 'fit' must be from package 'rstanarm's 'stan_glm()'.")     
+
+m <- round(data.frame(t(apply(as.matrix(fit), 2, hdir, level = level)), level), digits = digits)
+
+colnames(m) <- c("lower", "upper", "level")
+
+return(m)
+
+}             
+              
+
+#===================================================================================================================================
+      
+              
+model.interval <- function(..., level = .95, digits = 6)
+{
+  UseMethod("model.interval")
+}
+
+
+model.interval.default <- function(..., level = .95, digits = 6){
+  
+if(!(all(sapply(list(...), inherits, "stanreg")))) stop("Error: all '...' must be models from package 'rstanarm's 'stan_glm()'.")  
+
+m <- lapply(list(...), hdi.fit, level = level, digits = digits)  
+
+return(m)
+}
+
               
