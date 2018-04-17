@@ -36,7 +36,7 @@ cor.pop = correlation
 mu <- c(0, 0)
 cov.pop <- matrix(c(1, cor.pop, cor.pop, 1), nrow = 2)
 
-need <- c("MASS")
+need <- "MASS"
 have <- need %in% rownames(installed.packages())
 if(any(!have)){ install.packages( need[!have] ) }
                        
