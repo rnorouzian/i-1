@@ -1,3 +1,4 @@
+
 ttest = function(n1 = 5, n2 = 5, min.score = 0, max.score = 25, subjects = TRUE, 
                  descriptives = TRUE, correlation = .7, effect.size = 1, ...){
   
