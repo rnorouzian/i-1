@@ -20,7 +20,7 @@ ResponseSeq = paste(c("M", "B")[Responses[1L:1e1] + 1L], collapse = "")
 Display = paste0("Response Sequence = ", ResponseSeq, ". . .")
 CI = paste0("95% CI: [", round(CI[1], 3), ", ", round(CI[2], 3), "]")
 
-text(N, c(1, .95, .9), c(Display, paste0("Proportion of Y in ", N, " responses = ", Prop[N]), CI), adj = c(1, .5), col = "red4", font = 2, cex = .8)  
+text(N, c(1, .95, .9), c(Display, paste0("Proportion of B in ", N, " responses = ", Prop[N]), CI), adj = c(1, .5), col = "red4", font = 2, cex = .8)  
 }
 #Example of use:
 biling.survey(N = 100, pBi = .75)
